@@ -22,7 +22,6 @@ class CreateItemsTable extends Migration
             $table->string('manufacturer');
             $table->string('description');
             $table->string('product_unit');
-            $table->string('picture');
             $table->timestamps();
         });
     }
