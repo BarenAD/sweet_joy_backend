@@ -1,0 +1,106 @@
+swagger: "2.0"
+info:
+  description: "Информационный ресурс для точек продаж сладостей"
+  version: "1.0.0"
+  title: "Сладкая радость"
+  contact:
+    email: "baren1998@gmail.com"
+host: "barenad.info"
+basePath: "/api/v1"
+tags:
+  - name: "MANAGEMENT"
+    description: "Management"
+  - name: "PRODUCTS"
+    description: "products info"
+schemes:
+  - "https"
+  - "http"
+paths:
+
+  /management/login:
+    post:
+      security:
+        - ApiKey: []
+      tags:
+        - "MANAGEMENT"
+      summary: "login for management"
+      description: ""
+      operationId: "managementLogin"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "login and password"
+          required: true
+          schema:
+            $ref: "#/definitions/AuthLogin"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/AuthLoginResponse"
+
+definitions:
+  AuthLogin:
+    type: "object"
+    required:
+      - e_mail
+      - password
+    properties:
+      login:
+        type: "string"
+        example: "barenad"
+      password:
+        type: "string"
+        example: "@Pass9752word000"
+        
+  AuthLoginResponse:
+    type: "object"
+    properties:
+      access_token:
+        type: "string"
+        example: "YWNjZXNzX3Rva2Vu"
+      refresh_token:
+        type: "string"
+        example: "YWNjZXNzX3Rva2Vu"
+      admin:
+         $ref: '#/definitions/Admin'
+        
+  Admin:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      fio:
+        type: "string"
+        example: "Иванов Иван Иванович"
+      login:
+        type: "string"
+        example: "baren"
+      password:
+        type: "string"
+        example: "c6a40522f88b3527f3b7e137ac998179"
+      e_mail:
+        type: "string"
+        example: "baren1998@gmail.com"
+      email_verified_at:
+        type: "integer"
+        example: 1594899010
+      phone:
+        type: "string"
+        example: "+7(912)-765-43-21"
+      note:
+        type: "string"
+        example: "Ворует из кассы"
+        
+securityDefinitions:
+  ApiKey:
+    type: apiKey
+    name: x-api-key
+    in: header
+  JWTToken:
+    type: basic
