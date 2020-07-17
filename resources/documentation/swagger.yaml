@@ -8,6 +8,8 @@ info:
 host: "barenad.info"
 basePath: "/api/v1"
 tags:
+  - name: "AUTHORIZATION"
+    description: "Authorization and register users"
   - name: "MANAGEMENT"
     description: "Management"
   - name: "PRODUCTS"
@@ -17,15 +19,15 @@ schemes:
   - "http"
 paths:
 
-  /management/login:
+  /login:
     post:
       security:
         - ApiKey: []
       tags:
-        - "MANAGEMENT"
-      summary: "login for management"
+        - "AUTHORIZATION"
+      summary: "login for user"
       description: ""
-      operationId: "managementLogin"
+      operationId: "userLogin"
       consumes:
         - "application/json"
       produces:
@@ -42,6 +44,297 @@ paths:
           description: "Ok"
           schema:
             $ref: "#/definitions/AuthLoginResponse"
+            
+  /register:
+    post:
+      security:
+        - ApiKey: []
+      tags:
+        - "AUTHORIZATION"
+      summary: "register new user"
+      description: ""
+      operationId: "userRegister"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "userInfo"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Ok"
+            
+  /management/admins/create_role:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create admin role"
+      description: ""
+      operationId: "adminCreateRole"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "name admin role"
+          required: true
+          schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Управляющий"
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/admins/give_grant:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "give grant for admin role"
+      description: ""
+      operationId: "adminGiveGrant"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "ids admin role and admin actions"
+          required: true
+          schema:
+              type: object
+              properties:
+                id_admin_role:
+                  type: integer
+                id_action:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/admins/assign_administrator_role:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "assign administrator role for user"
+      description: ""
+      operationId: "assignAdministratorRole"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "ids admin role and admin actions"
+          required: true
+          schema:
+              type: object
+              properties:
+                id_user:
+                  type: integer
+                id_admin_role:
+                  type: integer
+                id_point_of_sale:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/points_of_sale/create_schedule:
+    post:
+      security:
+        - ApiKey: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create new schedule"
+      description: ""
+      operationId: "createSchedule"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "scheduleInfo"
+          required: true
+          schema:
+            $ref: "#/definitions/Schedule"
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/points_of_sale/create:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create new point of sale"
+      description: ""
+      operationId: "createPointOfSale"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id schedule and info about point of sale"
+          required: true
+          schema:
+              type: object
+              properties:
+                id_schedule:
+                  type: integer
+                address:
+                  type: string
+                  example: "пр. Ленина 86/2, корпус 7 (вход со двора)"
+                phone:
+                  type: string
+                  example: "+7(543)-453-32-43"
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/create_item:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create new item"
+      description: ""
+      operationId: "createItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "itemInfo"
+          required: true
+          schema:
+            $ref: "#/definitions/Item"
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/create_products_information:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create product information in point of sale"
+      description: ""
+      operationId: "productsInformation"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "info about product"
+          required: true
+          schema:
+              type: object
+              properties:
+                id_item:
+                  type: integer
+                id_point_of_sale:
+                  type: integer
+                price:
+                  type: integer
+                count:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/create_categorie_item:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create new categorie for item"
+      description: ""
+      operationId: "createCategorieItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "name"
+          required: true
+          schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Подарочные наборы"
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/set_categorie_for_item:
+    post:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "set categorie for item"
+      description: ""
+      operationId: "setCategorieForItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "ids categorie and item"
+          required: true
+          schema:
+              type: object
+              properties:
+                id_item:
+                  type: integer
+                id_categorie:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
 
 definitions:
   AuthLogin:
@@ -66,10 +359,10 @@ definitions:
       refresh_token:
         type: "string"
         example: "YWNjZXNzX3Rva2Vu"
-      admin:
-         $ref: '#/definitions/Admin'
+      user:
+         $ref: '#/definitions/User'
         
-  Admin:
+  User:
     type: "object"
     properties:
       id:
@@ -97,10 +390,100 @@ definitions:
         type: "string"
         example: "Ворует из кассы"
         
+  Schedule:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      monday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      tuesday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      wednesday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      thursday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      friday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      saturday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      sunday:
+        type: "string"
+        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
+      holiday:
+        type: "string"
+        example: "с 11:00 до 15:00"
+      particular:
+        type: "string"
+        example: "в праздники не работаем, исключение - новый год"
+        
+  Item:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      picture:
+        type: "string"
+        example: "/images/product_items/4342525.png"
+      miniature_picture:
+        type: "string"
+        example: "/images/mini/product_items/4342525.png"
+      name:
+        type: "string"
+        example: "Конфеты коркунов"
+      composition:
+        type: "string"
+        example: "Молочный шоколад, орехи, глютен"
+      manufacturer:
+        type: "string"
+        example: "ООО 'Чарли и шоколадная фабрика'"
+      description:
+        type: "string"
+        example: "Отлично подойдёт к красному вину"
+      product_unit:
+        type: "string"
+        example: "1 коробка"
+        
+  PointOfSale:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      adress:
+        type: "string"
+        example: "пр Ленина 86/2 корпус 3 (вход с торца)"
+      phone:
+        type: "string"
+        example: "+7(654)-544-24-21"
+      schedule:
+        $ref: '#/definitions/Schedule'
+        
+  ProductInformation:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      item:
+        $ref: '#/definitions/Item'
+      point_of_sale:
+        $ref: '#/definitions/PointOfSale'
+        
 securityDefinitions:
   ApiKey:
     type: apiKey
     name: x-api-key
     in: header
   JWTToken:
-    type: basic
+    type: apiKey
+    name: Authorization
+    in: header

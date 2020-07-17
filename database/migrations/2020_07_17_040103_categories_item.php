@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAdminActionsTable extends Migration
+class CategoriesItem extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateAdminActionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_actions', function (Blueprint $table) {
+        Schema::create('categories_item', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateAdminActionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin_actions');
+        Schema::dropIfExists('categories_item');
     }
 }
