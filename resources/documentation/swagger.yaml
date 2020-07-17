@@ -69,7 +69,28 @@ paths:
         200:
           description: "Ok"
             
-  /management/admins/create_role:
+  /management/admins/roles:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get admin roles"
+      description: ""
+      operationId: "getAdminRoles"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/AdminRole"
+  
     post:
       security:
         - ApiKey: []
@@ -98,7 +119,85 @@ paths:
         200:
           description: "Ok"
           
-  /management/admins/give_grant:
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change admin role"
+      description: ""
+      operationId: "adminChangeRole"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id role and new name role"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                  example: "Управляющий"
+      responses:
+        200:
+          description: "Ok"
+          
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete admin role"
+      description: ""
+      operationId: "adminDeleteRole"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id role"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/admins/grants:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get admin grants"
+      description: ""
+      operationId: "getAdminGrants"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/AdminGrant"
+  
     post:
       security:
         - ApiKey: []
@@ -128,7 +227,55 @@ paths:
         200:
           description: "Ok"
           
-  /management/admins/assign_administrator_role:
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete grant for admin role"
+      description: ""
+      operationId: "adminDeleteGrant"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id grant"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/admins/admins_information:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get admins information"
+      description: ""
+      operationId: "getAdminInfo"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/AdminInfo"
+  
     post:
       security:
         - ApiKey: []
@@ -160,15 +307,87 @@ paths:
         200:
           description: "Ok"
           
-  /management/points_of_sale/create_schedule:
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete admin iformation"
+      description: ""
+      operationId: "deleteAdminInfo"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id admin info"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/points_of_sale/schedules:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get schedules"
+      description: ""
+      operationId: "getSchedules"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Schedule"
+  
     post:
       security:
         - ApiKey: []
+        - JWTToken: []
       tags:
         - "MANAGEMENT"
       summary: "create new schedule"
       description: ""
       operationId: "createSchedule"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "schedule Info whit not 'id'"
+          required: true
+          schema:
+            $ref: "#/definitions/Schedule"
+      responses:
+        200:
+          description: "Ok"
+  
+    put:
+      security:
+        - ApiKey: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change schedule"
+      description: ""
+      operationId: "changeSchedule"
       consumes:
         - "application/json"
       produces:
@@ -184,7 +403,55 @@ paths:
         200:
           description: "Ok"
           
-  /management/points_of_sale/create:
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete schedule"
+      description: ""
+      operationId: "deleteSchedule"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id schedule"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/points_of_sale/points_of_sale:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get points of sale"
+      description: ""
+      operationId: "getPointOfSale"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PointOfSale"
+  
     post:
       security:
         - ApiKey: []
@@ -218,7 +485,90 @@ paths:
         200:
           description: "Ok"
           
-  /management/products/create_item:
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "create new point of sale"
+      description: ""
+      operationId: "changePointOfSale"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id schedule and info about point of sale"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                id_schedule:
+                  type: integer
+                address:
+                  type: string
+                  example: "пр. Ленина 86/2, корпус 7 (вход со двора)"
+                phone:
+                  type: string
+                  example: "+7(543)-453-32-43"
+      responses:
+        200:
+          description: "Ok"
+          
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete point of sale"
+      description: ""
+      operationId: "deletePointOfSale"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id point of sale"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/items:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get all items"
+      description: ""
+      operationId: "getItems"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Item"
+    
     post:
       security:
         - ApiKey: []
@@ -235,7 +585,7 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "itemInfo"
+          description: "item info whitch not 'id'"
           required: true
           schema:
             $ref: "#/definitions/Item"
@@ -243,7 +593,79 @@ paths:
         200:
           description: "Ok"
           
-  /management/products/create_products_information:
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change new item"
+      description: ""
+      operationId: "changeItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "new item info"
+          required: true
+          schema:
+            $ref: "#/definitions/Item"
+      responses:
+        200:
+          description: "Ok"
+          
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete item"
+      description: ""
+      operationId: "deleteItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id item"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/products_information:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get all product information"
+      description: ""
+      operationId: "getProductsInformation"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ProductInformation"
+  
     post:
       security:
         - ApiKey: []
@@ -252,7 +674,7 @@ paths:
         - "MANAGEMENT"
       summary: "create product information in point of sale"
       description: ""
-      operationId: "productsInformation"
+      operationId: "createProductsInformation"
       consumes:
         - "application/json"
       produces:
@@ -277,7 +699,94 @@ paths:
         200:
           description: "Ok"
           
-  /management/products/create_categorie_item:
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change product information in point of sale"
+      description: ""
+      operationId: "changeProductsInformation"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "new info about product"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                id_item:
+                  type: integer
+                id_point_of_sale:
+                  type: integer
+                price:
+                  type: integer
+                count:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete product information"
+      description: ""
+      operationId: "deleteProductsInformation"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id product information"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/categories_item:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get all categories for item"
+      description: ""
+      operationId: "getCategoriesItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Подарочные наборы"
+  
     post:
       security:
         - ApiKey: []
@@ -286,7 +795,7 @@ paths:
         - "MANAGEMENT"
       summary: "create new categorie for item"
       description: ""
-      operationId: "createCategorieItem"
+      operationId: "createCategoriesItem"
       consumes:
         - "application/json"
       produces:
@@ -306,7 +815,64 @@ paths:
         200:
           description: "Ok"
           
-  /management/products/set_categorie_for_item:
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change categorie for item"
+      description: ""
+      operationId: "changeCategoriesItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "name"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                  example: "Подарочные наборы"
+      responses:
+        200:
+          description: "Ok"
+          
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete categorie for item"
+      description: ""
+      operationId: "deleteCategoriesItem"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "id categorie for item"
+          required: true
+          schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        200:
+          description: "Ok"
+          
+  /management/products/categories_for_items:
     post:
       security:
         - ApiKey: []
@@ -339,9 +905,6 @@ paths:
 definitions:
   AuthLogin:
     type: "object"
-    required:
-      - e_mail
-      - password
     properties:
       login:
         type: "string"
@@ -362,12 +925,55 @@ definitions:
       user:
          $ref: '#/definitions/User'
         
-  User:
+  AdminRole:
     type: "object"
     properties:
       id:
         type: "integer"
         example: 1
+      name:
+        type: "string"
+        example: "Управляющий"
+        
+  AdminAction:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+        example: "Начначение ролей администратора"
+      description:
+        type: "string"
+        example: "Позволит выдавать права администратора пользователям"
+        
+  AdminGrant:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      role:
+        $ref: '#/definitions/AdminRole'
+      action:
+        $ref: '#/definitions/AdminAction'
+        
+  AdminInfo:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      user:
+        $ref: '#/definitions/User'
+      role:
+        $ref: '#/definitions/AdminRole'
+      point_of_sale:
+        $ref: '#/definitions/PointOfSale'
+        
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
       fio:
         type: "string"
         example: "Иванов Иван Иванович"
@@ -396,6 +1002,9 @@ definitions:
       id:
         type: "integer"
         example: 1
+      name:
+        type: "string"
+        example: "обычное расписание"
       monday:
         type: "string"
         example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
