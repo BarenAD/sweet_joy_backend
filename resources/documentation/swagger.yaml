@@ -242,6 +242,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/AdminGrant"
           
     delete:
       security:
@@ -324,6 +326,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/AdminInfo"
           
     delete:
       security:
@@ -399,6 +403,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/Schedule"
   
     put:
       security:
@@ -428,6 +434,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/Schedule"
           
     delete:
       security:
@@ -512,6 +520,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/PointOfSale"
           
     put:
       security:
@@ -551,6 +561,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/PointOfSale"
           
     delete:
       security:
@@ -601,7 +613,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Item"
+              $ref: "#/definitions/GetItems"
     
     post:
       security:
@@ -622,10 +634,12 @@ paths:
           description: "item info whitch not 'id'"
           required: true
           schema:
-            $ref: "#/definitions/Item"
+            $ref: "#/definitions/ItemDTO"
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/ItemDTO"
           
     put:
       security:
@@ -651,10 +665,12 @@ paths:
           description: "new item info"
           required: true
           schema:
-            $ref: "#/definitions/Item"
+            $ref: "#/definitions/ItemDTO"
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/ItemDTO"
           
     delete:
       security:
@@ -739,6 +755,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/ProductInformation"
           
     put:
       security:
@@ -780,6 +798,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/ProductInformation"
           
     delete:
       security:
@@ -830,11 +850,7 @@ paths:
           schema:
             type: "array"
             items:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "Подарочные наборы"
+              $ref: "#/definitions/CategoriesItemDTO"
   
     post:
       security:
@@ -863,6 +879,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/CategoriesItemDTO"
           
     put:
       security:
@@ -899,6 +917,8 @@ paths:
       responses:
         200:
           description: "Ok"
+          schema:
+            $ref: "#/definitions/CategoriesItemDTO"
           
     delete:
       security:
@@ -1107,7 +1127,7 @@ definitions:
         type: "string"
         example: "в праздники не работаем, исключение - новый год"
         
-  Item:
+  ItemDTO:
     type: "object"
     properties:
       id:
@@ -1135,6 +1155,74 @@ definitions:
         type: "string"
         example: "1 коробка"
         
+  GetItems:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      picture:
+        type: "string"
+        example: "/images/product_items/4342525.png"
+      miniature_picture:
+        type: "string"
+        example: "/images/mini/product_items/4342525.png"
+      name:
+        type: "string"
+        example: "Конфеты коркунов"
+      composition:
+        type: "string"
+        example: "Молочный шоколад, орехи, глютен"
+      manufacturer:
+        type: "string"
+        example: "ООО 'Чарли и шоколадная фабрика'"
+      description:
+        type: "string"
+        example: "Отлично подойдёт к красному вину"
+      product_unit:
+        type: "string"
+        example: "1 коробка"
+      categories_item:
+        type: "array"
+        items:
+          $ref: "#/definitions/CategoriesItemDTO"
+        
+  InformationCategoriesItemsDTO:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      id_item:
+        type: "integer"
+        example: 1
+      id_categories_item:
+        type: "integer"
+        example: 1
+        
+  CategoriesItemDTO:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      name:
+        type: "string"
+        example: "подарочные наборы"
+        
+  GetInformationCategoriesItems:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 1
+      item:
+        $ref: '#/definitions/ItemDTO'
+      categories_item:
+        type: "array"
+        items:
+          $ref: "#/definitions/CategoriesItemDTO"
+        
   PointOfSale:
     type: "object"
     properties:
@@ -1157,9 +1245,15 @@ definitions:
         type: "integer"
         example: 1
       item:
-        $ref: '#/definitions/Item'
+        $ref: '#/definitions/ItemDTO'
       point_of_sale:
         $ref: '#/definitions/PointOfSale'
+      price:
+        type: "integer"
+        example: 199
+      count:
+        type: "integer"
+        example: 20
         
 securityDefinitions:
   ApiKey:

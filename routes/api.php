@@ -17,3 +17,48 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('management')->group(function () {
+    Route::prefix('admins')->group(function () {
+        Route::get('roles', '');
+        Route::post('roles', '');
+        Route::put('roles', '');
+        Route::delete('roles', '');
+
+        Route::get('grants', '');
+        Route::post('grants', '');
+        Route::delete('grants', '');
+    });
+
+    Route::prefix('points_of_sale')->group(function () {
+        Route::get('schedules', '');
+        Route::post('schedules', '');
+        Route::put('schedules', '');
+        Route::delete('schedules', '');
+
+        Route::get('points_of_sale', '');
+        Route::post('points_of_sale', '');
+        Route::put('points_of_sale', '');
+        Route::delete('points_of_sale', '');
+    });
+
+    Route::prefix('products')->group(function () {
+        Route::get('items', '');
+        Route::post('items', '');
+        Route::put('items', '');
+        Route::delete('items', '');
+
+        Route::get('products_information', '');
+        Route::post('products_information', '');
+        Route::put('products_information', '');
+        Route::delete('products_information', '');
+
+        Route::get('categories_item', '');
+        Route::post('categories_item', '');
+        Route::put('categories_item', '');
+        Route::delete('categories_item', '');
+
+        Route::post('categories_for_items', '');
+        Route::delete('categories_for_items', '');
+    });
+});
