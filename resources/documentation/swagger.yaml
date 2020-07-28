@@ -68,6 +68,83 @@ paths:
       responses:
         200:
           description: "Ok"
+  
+  /management/users:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get all users"
+      description: ""
+      operationId: "getUsers"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/User'
+              
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "change user"
+      description: ""
+      operationId: "changeUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "query"
+          description: "ID user"
+          required: true
+          type: "integer"
+          
+        - in: "body"
+          name: "body"
+          description: "newUserInfo"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/User"
+            
+    delete:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "delete user"
+      description: ""
+      operationId: "deleteUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "query"
+          description: "ID user"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Ok"
             
   /management/admins/roles:
     get:
@@ -95,7 +172,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/AdminRole"
+              $ref: "#/definitions/GetAdminRole"
               
     post:
       security:
@@ -119,13 +196,18 @@ paths:
               type: object
               properties:
                 name:
-                  type: string
+                  type: "string"
                   example: "Управляющий"
+                actions:
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1, 3]
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/AdminRole"
+            $ref: "#/definitions/GetAdminRole"
 
     put:
       security:
@@ -149,19 +231,24 @@ paths:
           
         - in: "body"
           name: "body"
-          description: "new name role"
+          description: "new options"
           required: true
           schema:
               type: object
               properties:
                 name:
-                  type: string
+                  type: "string"
                   example: "Управляющий"
+                actions:
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1, 3]
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/AdminRole"
+            $ref: "#/definitions/GetAdminRole"
           
     delete:
       security:
@@ -186,88 +273,6 @@ paths:
         200:
           description: "Ok"
           
-  /management/admins/grants:
-    get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get admin grants"
-      description: ""
-      operationId: "getAdminGrants"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID grant"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/AdminGrant"
-  
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "give grant for admin role"
-      description: ""
-      operationId: "adminGiveGrant"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "ids admin role and admin actions"
-          required: true
-          schema:
-              type: object
-              properties:
-                id_admin_role:
-                  type: integer
-                id_action:
-                  type: integer
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/AdminGrant"
-          
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete grant for admin role"
-      description: ""
-      operationId: "adminDeleteGrant"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID grant"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          
   /management/admins/admins_information:
     get:
       security:
@@ -283,9 +288,9 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - name: "id"
+        - name: "id_user"
           in: "query"
-          description: "ID admin info"
+          description: "ID user"
           required: false
           type: "integer"
       responses:
@@ -294,7 +299,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/AdminInfo"
+              $ref: "#/definitions/GetAdminInfo"
   
     post:
       security:
@@ -315,19 +320,69 @@ paths:
           description: "ids admin role and admin actions"
           required: true
           schema:
-              type: object
+              type: "object"
               properties:
                 id_user:
                   type: integer
+                  example: 12
                 id_admin_role:
-                  type: integer
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1]
                 id_point_of_sale:
-                  type: integer
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1]
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/AdminInfo"
+            $ref: "#/definitions/GetAdminInfo"
+            
+    put:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "chenge administrator role for user"
+      description: ""
+      operationId: "changeAdminInfo"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id_user"
+          in: "query"
+          description: "ID user"
+          required: false
+          type: "integer"
+      
+        - in: "body"
+          name: "body"
+          description: "ids admin role and admin actions"
+          required: true
+          schema:
+              type: "object"
+              properties:
+                id_admin_role:
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1]
+                id_point_of_sale:
+                  type: "array"
+                  items:
+                    type: "integer"
+                    example: [0, 1]
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/GetAdminInfo"
           
     delete:
       security:
@@ -343,10 +398,10 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - name: "id"
+        - name: "id_user"
           in: "query"
-          description: "ID admin info"
-          required: true
+          description: "ID user"
+          required: false
           type: "integer"
       responses:
         200:
@@ -378,7 +433,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Schedule"
+              $ref: "#/definitions/ScheduleDTO"
   
     post:
       security:
@@ -399,12 +454,12 @@ paths:
           description: "schedule Info whit not 'id'"
           required: true
           schema:
-            $ref: "#/definitions/Schedule"
+            $ref: "#/definitions/ScheduleDTO"
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/Schedule"
+            $ref: "#/definitions/ScheduleDTO"
   
     put:
       security:
@@ -430,12 +485,12 @@ paths:
           description: "scheduleInfo"
           required: true
           schema:
-            $ref: "#/definitions/Schedule"
+            $ref: "#/definitions/ScheduleDTO"
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/Schedule"
+            $ref: "#/definitions/ScheduleDTO"
           
     delete:
       security:
@@ -486,7 +541,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PointOfSale"
+              $ref: "#/definitions/PointOfSaleDTO"
   
     post:
       security:
@@ -521,7 +576,7 @@ paths:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/PointOfSale"
+            $ref: "#/definitions/PointOfSaleDTO"
           
     put:
       security:
@@ -562,7 +617,7 @@ paths:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/PointOfSale"
+            $ref: "#/definitions/PointOfSaleDTO"
           
     delete:
       security:
@@ -634,12 +689,12 @@ paths:
           description: "item info whitch not 'id'"
           required: true
           schema:
-            $ref: "#/definitions/ItemDTO"
+            $ref: "#/definitions/GetItems"
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/ItemDTO"
+            $ref: "#/definitions/GetItems"
           
     put:
       security:
@@ -665,12 +720,12 @@ paths:
           description: "new item info"
           required: true
           schema:
-            $ref: "#/definitions/ItemDTO"
+            $ref: "#/definitions/GetItems"
       responses:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/ItemDTO"
+            $ref: "#/definitions/GetItems"
           
     delete:
       security:
@@ -721,7 +776,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/ProductInformation"
+              $ref: "#/definitions/ProductInformationDTO"
   
     post:
       security:
@@ -756,7 +811,7 @@ paths:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/ProductInformation"
+            $ref: "#/definitions/ProductInformationDTO"
           
     put:
       security:
@@ -799,7 +854,7 @@ paths:
         200:
           description: "Ok"
           schema:
-            $ref: "#/definitions/ProductInformation"
+            $ref: "#/definitions/ProductInformationDTO"
           
     delete:
       security:
@@ -943,59 +998,6 @@ paths:
         200:
           description: "Ok"
           
-  /management/products/categories_for_items:
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "set categorie for item"
-      description: ""
-      operationId: "setCategorieForItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "ids categorie and item"
-          required: true
-          schema:
-              type: object
-              properties:
-                id_item:
-                  type: integer
-                id_categorie:
-                  type: integer
-      responses:
-        200:
-          description: "Ok"
-          
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "set categorie for item"
-      description: ""
-      operationId: "deleteCategorieForItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID categorie"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
 definitions:
   AuthLogin:
     type: "object"
@@ -1019,7 +1021,7 @@ definitions:
       user:
          $ref: '#/definitions/User'
         
-  AdminRole:
+  AdminRoleDTO:
     type: "object"
     properties:
       id:
@@ -1029,7 +1031,23 @@ definitions:
         type: "string"
         example: "Управляющий"
         
-  AdminAction:
+  GetAdminRole:
+    type: "object"
+    properties:
+      role:
+        $ref: '#/definitions/AdminRoleDTO'
+      grants:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              example: 1
+            action:
+              $ref: '#/definitions/AdminActionDTO'
+        
+  AdminActionDTO:
     type: "object"
     properties:
       id:
@@ -1041,27 +1059,22 @@ definitions:
         type: "string"
         example: "Позволит выдавать права администратора пользователям"
         
-  AdminGrant:
+  GetAdminInfo:
     type: "object"
     properties:
-      id:
+      id_user:
         type: "integer"
-      role:
-        $ref: '#/definitions/AdminRole'
-      action:
-        $ref: '#/definitions/AdminAction'
-        
-  AdminInfo:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      user:
-        $ref: '#/definitions/User'
-      role:
-        $ref: '#/definitions/AdminRole'
-      point_of_sale:
-        $ref: '#/definitions/PointOfSale'
+        example: 12
+      id_roles:
+        type: "array"
+        items:
+          type: "integer"
+          example: [0, 1]
+      id_points_of_sale:
+        type: "array"
+        items:
+          type: "integer"
+          example: [0, 1]
         
   User:
     type: "object"
@@ -1090,7 +1103,7 @@ definitions:
         type: "string"
         example: "Ворует из кассы"
         
-  Schedule:
+  ScheduleDTO:
     type: "object"
     properties:
       id:
@@ -1127,34 +1140,6 @@ definitions:
         type: "string"
         example: "в праздники не работаем, исключение - новый год"
         
-  ItemDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      picture:
-        type: "string"
-        example: "/images/product_items/4342525.png"
-      miniature_picture:
-        type: "string"
-        example: "/images/mini/product_items/4342525.png"
-      name:
-        type: "string"
-        example: "Конфеты коркунов"
-      composition:
-        type: "string"
-        example: "Молочный шоколад, орехи, глютен"
-      manufacturer:
-        type: "string"
-        example: "ООО 'Чарли и шоколадная фабрика'"
-      description:
-        type: "string"
-        example: "Отлично подойдёт к красному вину"
-      product_unit:
-        type: "string"
-        example: "1 коробка"
-        
   GetItems:
     type: "object"
     properties:
@@ -1185,20 +1170,8 @@ definitions:
       categories_item:
         type: "array"
         items:
-          $ref: "#/definitions/CategoriesItemDTO"
-        
-  InformationCategoriesItemsDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      id_item:
-        type: "integer"
-        example: 1
-      id_categories_item:
-        type: "integer"
-        example: 1
+          type: "integer"
+          example: [0, 1, 3]
         
   CategoriesItemDTO:
     type: "object"
@@ -1210,20 +1183,7 @@ definitions:
         type: "string"
         example: "подарочные наборы"
         
-  GetInformationCategoriesItems:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      item:
-        $ref: '#/definitions/ItemDTO'
-      categories_item:
-        type: "array"
-        items:
-          $ref: "#/definitions/CategoriesItemDTO"
-        
-  PointOfSale:
+  PointOfSaleDTO:
     type: "object"
     properties:
       id:
@@ -1235,19 +1195,22 @@ definitions:
       phone:
         type: "string"
         example: "+7(654)-544-24-21"
-      schedule:
-        $ref: '#/definitions/Schedule'
+      id_schedule:
+        type: "integer"
+        example: 0
         
-  ProductInformation:
+  ProductInformationDTO:
     type: "object"
     properties:
       id:
         type: "integer"
         example: 1
-      item:
-        $ref: '#/definitions/ItemDTO'
-      point_of_sale:
-        $ref: '#/definitions/PointOfSale'
+      id_item:
+        type: "integer"
+        example: 1
+      id_point_of_sale:
+        type: "integer"
+        example: 1
       price:
         type: "integer"
         example: 199
