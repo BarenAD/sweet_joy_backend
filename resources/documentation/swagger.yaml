@@ -145,7 +145,35 @@ paths:
       responses:
         200:
           description: "Ok"
-            
+           
+  /management/admins/actions:
+    get:
+      security:
+        - ApiKey: []
+        - JWTToken: []
+      tags:
+        - "MANAGEMENT"
+      summary: "get admin actions"
+      description: ""
+      operationId: "getAdminActions"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "query"
+          description: "ID action"
+          required: false
+          type: "integer"
+      responses:
+        200:
+          description: "Ok"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/AdminActionDTO"
+              
   /management/admins/roles:
     get:
       security:
@@ -202,7 +230,7 @@ paths:
                   type: "array"
                   items:
                     type: "integer"
-                    example: [0, 1, 3]
+                  example: [0, 1, 3]
       responses:
         200:
           description: "Ok"
@@ -243,7 +271,7 @@ paths:
                   type: "array"
                   items:
                     type: "integer"
-                    example: [0, 1, 3]
+                  example: [0, 1, 3]
       responses:
         200:
           description: "Ok"
@@ -1036,16 +1064,11 @@ definitions:
     properties:
       role:
         $ref: '#/definitions/AdminRoleDTO'
-      grants:
+      actions:
         type: "array"
         items:
-          type: "object"
-          properties:
-            id:
-              type: "integer"
-              example: 1
-            action:
-              $ref: '#/definitions/AdminActionDTO'
+          type: "integer"
+        example: [0, 1]
         
   AdminActionDTO:
     type: "object"
@@ -1054,7 +1077,7 @@ definitions:
         type: "integer"
       name:
         type: "string"
-        example: "Начначение ролей администратора"
+        example: "Назначение ролей администратора"
       description:
         type: "string"
         example: "Позволит выдавать права администратора пользователям"
@@ -1069,7 +1092,7 @@ definitions:
         type: "array"
         items:
           type: "integer"
-          example: [0, 1]
+        example: [0, 1]
       id_points_of_sale:
         type: "array"
         items:
