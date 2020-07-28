@@ -19,15 +19,22 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('management')->group(function () {
+    Route::get('users', '');
+    Route::put('users', '');
+    Route::delete('users', '');
+
     Route::prefix('admins')->group(function () {
+        Route::get('actions', '');
+
         Route::get('roles', '');
         Route::post('roles', '');
         Route::put('roles', '');
         Route::delete('roles', '');
 
-        Route::get('grants', '');
-        Route::post('grants', '');
-        Route::delete('grants', '');
+        Route::get('admins_information', '');
+        Route::post('admins_information', '');
+        Route::put('admins_information', '');
+        Route::delete('admins_information', '');
     });
 
     Route::prefix('points_of_sale')->group(function () {
@@ -57,8 +64,5 @@ Route::prefix('management')->group(function () {
         Route::post('categories_item', '');
         Route::put('categories_item', '');
         Route::delete('categories_item', '');
-
-        Route::post('categories_for_items', '');
-        Route::delete('categories_for_items', '');
     });
 });
