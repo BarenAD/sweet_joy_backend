@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('management')->group(function () {
+
+    Route::prefix('admins')->group(function () {
+        Route::get('actions', 'AdminActionsController@getActions');
+    });
+});
 /*
 Route::prefix('management')->group(function () {
     Route::get('users', '');
@@ -24,7 +31,7 @@ Route::prefix('management')->group(function () {
     Route::delete('users', '');
 
     Route::prefix('admins')->group(function () {
-        Route::get('actions', '');
+        Route::get('actions', 'AdminActionsController@getActions');
 
         Route::get('roles', '');
         Route::post('roles', '');
