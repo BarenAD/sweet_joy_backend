@@ -17,8 +17,8 @@ class CreateAdminGrantsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('id_ar');
             $table->unsignedBigInteger('id_aa');
-            $table->foreign('id_ar')->references('id')->on('admin_roles');
-            $table->foreign('id_aa')->references('id')->on('admin_actions');
+            $table->foreign('id_ar')->references('id')->on('admin_roles')->onDelete('cascade');
+            $table->foreign('id_aa')->references('id')->on('admin_actions')->onDelete('cascade');
             $table->timestamps();
         });
     }

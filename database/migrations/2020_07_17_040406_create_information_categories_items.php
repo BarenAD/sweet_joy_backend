@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class InformationCategoriesItems extends Migration
+class CreateInformationCategoriesItems extends Migration
 {
     /**
      * Run the migrations.
@@ -17,8 +17,8 @@ class InformationCategoriesItems extends Migration
             $table->id();
             $table->unsignedBigInteger('id_i');
             $table->unsignedBigInteger('id_ci');
-            $table->foreign('id_i')->references('id')->on('items');
-            $table->foreign('id_ci')->references('id')->on('categories_item');
+            $table->foreign('id_i')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('id_ci')->references('id')->on('categories_item')->onDelete('cascade');
             $table->timestamps();
         });
     }

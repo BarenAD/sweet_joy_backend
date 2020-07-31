@@ -4,7 +4,7 @@
 namespace App\Repositories\Interfaces;
 
 
-interface AdminActionsRepositoryInterfaces
+interface AdminActionsRepositoryInterface
 {
     public function getAllActions();
 }

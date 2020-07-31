@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Repositories\AdminActionsRepository;
-use App\Repositories\Interfaces\AdminActionsRepositoryInterfaces;
+use App\Repositories\AdminRolesRepository;
+use App\Repositories\Interfaces\AdminActionsRepositoryInterface;
+use App\Repositories\Interfaces\AdminRolesRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -16,8 +18,12 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(
-            AdminActionsRepositoryInterfaces::class,
+            AdminActionsRepositoryInterface::class,
             AdminActionsRepository::class
+        );
+        $this->app->bind(
+            AdminRolesRepositoryInterface::class,
+            AdminRolesRepository::class
         );
     }
 

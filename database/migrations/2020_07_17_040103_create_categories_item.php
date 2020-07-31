@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CategoriesItem extends Migration
+class CreateCategoriesItem extends Migration
 {
     /**
      * Run the migrations.

@@ -22,6 +22,11 @@ Route::prefix('management')->group(function () {
 
     Route::prefix('admins')->group(function () {
         Route::get('actions', 'AdminActionsController@getActions');
+
+        Route::get('roles', 'AdminRolesController@getRoles');
+        Route::post('roles', 'AdminRolesController@createRole');
+        Route::put('roles', 'AdminRolesController@changeRole');
+        Route::delete('roles', 'AdminRolesController@deleteRole');
     });
 });
 /*
@@ -31,13 +36,6 @@ Route::prefix('management')->group(function () {
     Route::delete('users', '');
 
     Route::prefix('admins')->group(function () {
-        Route::get('actions', 'AdminActionsController@getActions');
-
-        Route::get('roles', '');
-        Route::post('roles', '');
-        Route::put('roles', '');
-        Route::delete('roles', '');
-
         Route::get('admins_information', '');
         Route::post('admins_information', '');
         Route::put('admins_information', '');

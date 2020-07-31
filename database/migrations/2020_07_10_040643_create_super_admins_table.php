@@ -16,7 +16,7 @@ class CreateSuperAdminsTable extends Migration
         Schema::create('super_admins', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_u');
-            $table->foreign('id_u')->references('id')->on('users');
+            $table->foreign('id_u')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

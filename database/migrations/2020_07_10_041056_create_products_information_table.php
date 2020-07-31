@@ -19,8 +19,8 @@ class CreateProductsInformationTable extends Migration
             $table->integer('count');
             $table->unsignedBigInteger('id_i');
             $table->unsignedBigInteger('id_pos');
-            $table->foreign('id_i')->references('id')->on('items');
-            $table->foreign('id_pos')->references('id')->on('points_of_sale');
+            $table->foreign('id_i')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('id_pos')->references('id')->on('points_of_sale')->onDelete('cascade');
             $table->timestamps();
         });
     }

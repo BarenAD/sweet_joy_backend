@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Interfaces\AdminActionsRepositoryInterfaces;
+use App\Repositories\Interfaces\AdminActionsRepositoryInterface;
 use Illuminate\Http\Request;
 
 class AdminActionsController extends Controller
 {
     private $adminActionsRepository;
-    public function __construct(AdminActionsRepositoryInterfaces $adminActionsRepository)
+    public function __construct(AdminActionsRepositoryInterface $adminActionsRepository)
     {
         $this->adminActionsRepository = $adminActionsRepository;
     }

@@ -18,9 +18,9 @@ class CreateAdminsInformationTable extends Migration
             $table->unsignedBigInteger('id_ar');
             $table->unsignedBigInteger('id_pos');
             $table->unsignedBigInteger('id_u');
-            $table->foreign('id_ar')->references('id')->on('admin_roles');
-            $table->foreign('id_pos')->references('id')->on('points_of_sale');
-            $table->foreign('id_u')->references('id')->on('users');
+            $table->foreign('id_ar')->references('id')->on('admin_roles')->onDelete('cascade');
+            $table->foreign('id_pos')->references('id')->on('points_of_sale')->onDelete('cascade');
+            $table->foreign('id_u')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
