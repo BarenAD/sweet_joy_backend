@@ -3,7 +3,7 @@
 
 namespace App\Repositories;
 
-use App\Schedule;
+use App\Models\Schedule;
 
 class SchedulesRepository
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AdminRole extends Model
+class CategorieItem extends Model
 {
-    protected $table = 'admin_roles';
+    protected $table = 'categories_item';
 
     protected $fillable = [
         'name'

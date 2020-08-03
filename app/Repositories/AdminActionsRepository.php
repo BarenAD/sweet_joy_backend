@@ -4,7 +4,7 @@
 namespace App\Repositories;
 
 
-use App\AdminAction;
+use App\Models\AdminAction;
 
 class AdminActionsRepository
 {

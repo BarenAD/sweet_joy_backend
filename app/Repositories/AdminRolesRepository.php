@@ -4,8 +4,8 @@
 namespace App\Repositories;
 
 
-use App\AdminGrant;
-use App\AdminRole;
+use App\Models\AdminGrant;
+use App\Models\AdminRole;
 use Illuminate\Support\Facades\DB;
 
 class AdminRolesRepository
