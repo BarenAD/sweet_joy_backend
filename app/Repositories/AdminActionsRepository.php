@@ -5,9 +5,8 @@ namespace App\Repositories;
 
 
 use App\AdminAction;
-use App\Repositories\Interfaces\AdminActionsRepositoryInterface;
 
-class AdminActionsRepository implements AdminActionsRepositoryInterface
+class AdminActionsRepository
 {
     private $model;
 

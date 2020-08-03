@@ -6,16 +6,38 @@ namespace App\Repositories;
 
 use App\AdminGrant;
 use App\AdminRole;
-use App\Repositories\Interfaces\AdminRolesRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class AdminRolesRepository implements AdminRolesRepositoryInterface
+class AdminRolesRepository
 {
+    private function extractIdsFromAdminActions($adminActions) {
+        $resultArray = [];
+        if (isset($adminActions)) {
+            foreach ($adminActions as $action) {
+                array_push($resultArray, $action->id_aa);
+            }
+        }
+        return $resultArray;
+    }
+
     public function getRoles(int $id = null) {
         if (isset($id)) {
-            return AdminRole::find($id);
+            $adminActions = AdminGrant::where('id_ar', $id)->get();
+            return [
+                'role' => AdminRole::find($id),
+                'actions' => $this->extractIdsFromAdminActions($adminActions)
+            ];
         }
-        return AdminRole::all();
+        $adminRoles = AdminRole::all();
+        $adminsActions = AdminGrant::all()->groupBy('id_ar');
+        $resultArray = [];
+        foreach ($adminRoles as $role) {
+            array_push($resultArray, [
+                'role' => $role,
+                'actions' => $this->extractIdsFromAdminActions($adminsActions[$role->id])
+            ]);
+        }
+        return $resultArray;
     }
 
     public function createRole(string $name, array $actions) {

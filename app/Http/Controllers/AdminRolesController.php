@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateAdminRole;
-use App\Repositories\Interfaces\AdminRolesRepositoryInterface;
+use App\Repositories\AdminRolesRepository;
 use Illuminate\Http\Request;
 
 class AdminRolesController extends Controller
 {
     private $adminRolesRepository;
 
-    public function __construct(AdminRolesRepositoryInterface $adminRolesRepository)
+    public function __construct(AdminRolesRepository $adminRolesRepository)
     {
         $this->adminRolesRepository = $adminRolesRepository;
     }
