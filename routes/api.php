@@ -34,6 +34,11 @@ Route::prefix('management')->group(function () {
         Route::post('schedules', 'PointsOfSaleSchedulesController@createSchedule');
         Route::put('schedules', 'PointsOfSaleSchedulesController@changeSchedule');
         Route::delete('schedules', 'PointsOfSaleSchedulesController@deleteSchedules');
+
+        Route::get('points_of_sale', 'PointsOfSaleController@getPoints');
+        Route::post('points_of_sale', 'PointsOfSaleController@createPoints');
+        Route::put('points_of_sale', 'PointsOfSaleController@changePoints');
+        Route::delete('points_of_sale', 'PointsOfSaleController@deletePoints');
     });
 });
 /*
@@ -47,13 +52,6 @@ Route::prefix('management')->group(function () {
         Route::post('admins_information', '');
         Route::put('admins_information', '');
         Route::delete('admins_information', '');
-    });
-
-    Route::prefix('points_of_sale')->group(function () {
-        Route::get('points_of_sale', '');
-        Route::post('points_of_sale', '');
-        Route::put('points_of_sale', '');
-        Route::delete('points_of_sale', '');
     });
 
     Route::prefix('products')->group(function () {

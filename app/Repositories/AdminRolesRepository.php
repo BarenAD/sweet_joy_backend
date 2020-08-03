@@ -22,9 +22,10 @@ class AdminRolesRepository
 
     public function getRoles(int $id = null) {
         if (isset($id)) {
+            $role = AdminRole::findOrFail($id);
             $adminActions = AdminGrant::where('id_ar', $id)->get();
             return [
-                'role' => AdminRole::find($id),
+                'role' => $role,
                 'actions' => $this->extractIdsFromAdminActions($adminActions)
             ];
         }

@@ -10,7 +10,7 @@ class SchedulesRepository
     public function getSchedules(int $id = null)
     {
         if (isset($id)) {
-            return Schedule::find($id);
+            return Schedule::findOrFail($id);
         }
         return Schedule::all();
     }
