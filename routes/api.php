@@ -49,7 +49,7 @@ Route::prefix('management')->group(function () {
 
         Route::get('items', 'ProductItemsController@getItems');
         Route::post('items', 'ProductItemsController@createItem');
-        Route::put('items', 'ProductItemsController@changeItem');
+        Route::put('items', 'ProductItemsController@changeItem'); //поставить POST и будет всё ок
         Route::delete('items', 'ProductItemsController@deleteItem');
     });
 });

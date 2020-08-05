@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class PicturesItemsRepository
@@ -15,7 +16,7 @@ class PicturesItemsRepository
     private $pathForStorageToRootImages = 'public/';
 
     public function savePictureForItem($nameItem, $picture) {
-        $newNameForFile = md5($nameItem) . '.jpg';
+        $newNameForFile = md5($nameItem . '.' . Str::random(5)) . '.jpg';
         $fullPathForPicture = $this->pathPublicToStorage . $this->pathForPictures . $newNameForFile;
         $fullPathForMiniPicture = $this->pathPublicToStorage . $this->pathForMiniPictures . $newNameForFile;
 

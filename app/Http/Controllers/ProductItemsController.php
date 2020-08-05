@@ -41,13 +41,13 @@ class ProductItemsController extends Controller
         return response(
             $this->itemRepository->changeItem(
                 $request->get('id'),
-                $request->file('picture'),
-                $request->get('name'),
-                $request->get('composition'),
-                $request->get('manufacturer'),
-                $request->get('description'),
-                $request->get('product_unit'),
-                $request->get('categories_item')
+                $request->input('name'),
+                $request->input('composition'),
+                $request->input('manufacturer'),
+                $request->input('description'),
+                $request->input('product_unit'),
+                $request->input('categories_item'),
+                $request->file('picture')
             ),
             200
         );
