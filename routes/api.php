@@ -46,6 +46,11 @@ Route::prefix('management')->group(function () {
         Route::post('categories_item', 'ProductCategoriesItemController@createCategory');
         Route::put('categories_item', 'ProductCategoriesItemController@changeCategory');
         Route::delete('categories_item', 'ProductCategoriesItemController@deleteCategory');
+
+        Route::get('items', 'ProductItemsController@getItems');
+        Route::post('items', 'ProductItemsController@createItem');
+        Route::put('items', 'ProductItemsController@changeItem');
+        Route::delete('items', 'ProductItemsController@deleteItem');
     });
 });
 /*
@@ -62,10 +67,6 @@ Route::prefix('management')->group(function () {
     });
 
     Route::prefix('products')->group(function () {
-        Route::get('items', '');
-        Route::post('items', '');
-        Route::put('items', '');
-        Route::delete('items', '');
 
         Route::get('products_information', '');
         Route::post('products_information', '');

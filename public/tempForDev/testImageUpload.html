@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>HTML Document</title>
+</head>
+<body>
+    <div>
+        <div><input id="picture" name="picture" type="file"/></div>
+        <div><input id="name" name="name" type="text" value="Шоколад милка"/></div>
+        <div><input id="composition" name="composition" type="text"  value="Сахар, молоко, шоколад"/></div>
+        <div><input id="manufacturer" name="manufacturer" type="text"  value="ООО Яшкинский мясокомбинат"/></div>
+        <div><input id="description" name="description" type="text"  value="Отлично для покупки заклятому врагу"/></div>
+        <div><input id="product_unit" name="product_unit" type="text"  value="1 упаковка"/></div>
+        <div><button onClick="send(event)">отправить</button></div>
+    </div>
+</body>
+</html>
+
+<script>
+    function send(event) {
+        let data = new FormData();
+        data.append('picture', document.getElementById('picture').files[0]);
+        data.append('name', document.getElementById('name').value);
+        data.append('composition', document.getElementById('composition').value);
+        data.append('manufacturer', document.getElementById('manufacturer').value);
+        data.append('description', document.getElementById('description').value);
+        data.append('product_unit', document.getElementById('product_unit').value);
+        let categories = [1,2];
+        data.append('categories_item', JSON.stringify(categories));
+        fetch('/api/management/products/items', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: data
+        });
+    }
+</script>

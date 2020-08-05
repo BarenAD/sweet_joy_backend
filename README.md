@@ -5,6 +5,7 @@
 - Composer
 - PHP >= 5.6.4
 - PDO расширение для PHP (для версии 5.1+)
+- GD расширение для PHP
 - MCrypt расширение для PHP (для версии 5.0)
 - OpenSSL (расширение для PHP)
 - Mbstring (расширение для PHP)
@@ -25,6 +26,7 @@
 - Установить все зависимости `composer install`
 - Сгенерировать ключ приложения `php artisan key:generate`
 - Выполнить `composer dump-autoload`
+- Создать ссылку для хранилища `php artisan storage:link`
 - Накатить миграции `php artisan migrate`
 - Заполнить базу `php artisan db:seed`
 - Готово. Можно запускать проект `php artisan serve`
