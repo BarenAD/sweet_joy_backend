@@ -34,6 +34,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('roles', 'AdminRolesController@createRole');
             Route::put('roles', 'AdminRolesController@changeRole');
             Route::delete('roles', 'AdminRolesController@deleteRole');
+
+            Route::get('admins', 'AdminInformationController@getAdmins');
+            Route::post('admins', 'AdminInformationController@createAdmin');
+//            Route::put('admins', '');
+            Route::delete('admins', 'AdminInformationController@deleteAdmin');
         });
 
         Route::prefix('points_of_sale')->group(function () {
@@ -71,11 +76,4 @@ Route::prefix('management')->group(function () {
     Route::get('users', '');
     Route::put('users', '');
     Route::delete('users', '');
-
-    Route::prefix('admins')->group(function () {
-        Route::get('admins_information', '');
-        Route::post('admins_information', '');
-        Route::put('admins_information', '');
-        Route::delete('admins_information', '');
-    });
 });

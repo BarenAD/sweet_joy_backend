@@ -301,7 +301,7 @@ paths:
         200:
           description: "Ok"
 
-  /management/admins/admins_information:
+  /management/admins/admins:
     get:
       security:
         - ApiKey: []
@@ -316,7 +316,7 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - name: "id_user"
+        - name: "id_u"
           in: "query"
           description: "ID user"
           required: false
