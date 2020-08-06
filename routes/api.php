@@ -51,6 +51,11 @@ Route::prefix('management')->group(function () {
         Route::post('items', 'ProductItemsController@createItem');
         Route::put('items', 'ProductItemsController@changeItem'); //поставить POST и будет всё ок
         Route::delete('items', 'ProductItemsController@deleteItem');
+
+        Route::get('products_information', 'ProductInformationController@getProductsInfo');
+        Route::post('products_information', 'ProductInformationController@createProductInfo');
+        Route::put('products_information', 'ProductInformationController@changeProductInfo');
+        Route::delete('products_information', 'ProductInformationController@deleteProductInfo');
     });
 });
 /*
@@ -64,13 +69,5 @@ Route::prefix('management')->group(function () {
         Route::post('admins_information', '');
         Route::put('admins_information', '');
         Route::delete('admins_information', '');
-    });
-
-    Route::prefix('products')->group(function () {
-
-        Route::get('products_information', '');
-        Route::post('products_information', '');
-        Route::put('products_information', '');
-        Route::delete('products_information', '');
     });
 });

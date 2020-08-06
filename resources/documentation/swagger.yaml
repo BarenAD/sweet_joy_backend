@@ -827,9 +827,9 @@ paths:
           schema:
               type: object
               properties:
-                id_item:
+                id_i:
                   type: integer
-                id_point_of_sale:
+                id_pos:
                   type: integer
                 price:
                   type: integer
@@ -870,9 +870,9 @@ paths:
               properties:
                 id:
                   type: integer
-                id_item:
+                id_i:
                   type: integer
-                id_point_of_sale:
+                id_pos:
                   type: integer
                 price:
                   type: integer
