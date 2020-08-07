@@ -37,7 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Route::get('admins', 'AdminInformationController@getAdmins');
             Route::post('admins', 'AdminInformationController@createAdmin');
-//            Route::put('admins', '');
+            Route::put('admins', 'AdminInformationController@changeAdmin');
             Route::delete('admins', 'AdminInformationController@deleteAdmin');
         });
 

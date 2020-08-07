@@ -23,6 +23,10 @@ class AdminInformationController extends Controller
         return response($this->adminInformationRepository->createAdmin($request->get('id_u'), $request->get('ids_pos')), 200);
     }
 
+    public function changeAdmin(ChangeOrCreateAdminInfo $request) {
+        return response($this->adminInformationRepository->changeAdmin($request->get('id_u'), $request->get('ids_pos')), 200);
+    }
+
     public function deleteAdmin(Request $request) {
         return response($this->adminInformationRepository->deleteAdmin($request->get('id_u')), 200);
     }

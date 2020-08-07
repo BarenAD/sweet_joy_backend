@@ -325,9 +325,15 @@ paths:
         200:
           description: "Ok"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/GetAdminInfo"
+            type: "object"
+            properties:
+              id_u:
+                type: "object"
+                $ref: "#/definitions/GetAdminInfo"
+        201:
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/GetAdminInfo"
 
     post:
       security:
@@ -351,18 +357,16 @@ paths:
               type: "object"
               properties:
                 id_user:
-                  type: integer
+                  type: "integer"
                   example: 12
-                id_admin_role:
-                  type: "array"
-                  items:
-                    type: "integer"
-                    example: [0, 1]
-                id_point_of_sale:
-                  type: "array"
-                  items:
-                    type: "integer"
-                    example: [0, 1]
+                ids_pos:
+                  type: "object"
+                  properties:
+                    id_pos:
+                      type: "array"
+                      items:
+                        type: "integer"
+                  example: {4: [0, 1]}
       responses:
         200:
           description: "Ok"
@@ -396,16 +400,17 @@ paths:
           schema:
               type: "object"
               properties:
-                id_admin_role:
-                  type: "array"
-                  items:
-                    type: "integer"
-                    example: [0, 1]
-                id_point_of_sale:
-                  type: "array"
-                  items:
-                    type: "integer"
-                    example: [0, 1]
+                id_user:
+                  type: "integer"
+                  example: 12
+                ids_pos:
+                  type: "object"
+                  properties:
+                    id_pos:
+                      type: "array"
+                      items:
+                        type: "integer"
+                  example: {4: [0, 1]}
       responses:
         200:
           description: "Ok"
@@ -1082,22 +1087,36 @@ definitions:
         type: "string"
         example: "Позволит выдавать права администратора пользователям"
 
+  AdminInfoDTO:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        example: 12
+      id_ar:
+        type: "integer"
+        example: 1
+      id_pos:
+        type: "integer"
+        example: 4
+      id_u:
+        type: "integer"
+        example: 12
+      created_at:
+        type: "string"
+        example: "2020-08-07T03:44:13.000000Z"
+      updated_at:
+        type: "string"
+        example: "2020-08-07T03:44:13.000000Z"
+
   GetAdminInfo:
     type: "object"
     properties:
-      id_user:
-        type: "integer"
-        example: 12
-      id_roles:
+      id_pos:
         type: "array"
         items:
-          type: "integer"
-        example: [0, 1]
-      id_points_of_sale:
-        type: "array"
-        items:
-          type: "integer"
-          example: [0, 1]
+          type: "object"
+          $ref: '#/definitions/AdminInfoDTO'
 
   User:
     type: "object"

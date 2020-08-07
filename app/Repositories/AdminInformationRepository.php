@@ -11,10 +11,11 @@ class AdminInformationRepository
 {
     public function getAdmins(int $id_u = null) {
         if (isset($id_u)) {
-            $admins = AdminInformation::where('id_u', $id_u)->get()->toArray();
+            $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
             if (count($admins) === 0) {
                 throw new \Exception("no found");
             }
+            return $admins;
         } else {
             $admins = AdminInformation::all()->toArray();
         }
@@ -40,18 +41,63 @@ class AdminInformationRepository
             throw new \Exception("admin is already exist. Use PUT method for change!");
         }
         return DB::transaction(function () use ($id_u, $ids_pos) {
-            foreach ($ids_pos as $key => $roles) {
+            $result = [];
+            foreach ($ids_pos as $id_pos => $roles) {
+                if (!isset($result[$id_pos])) {
+                    $result[$id_pos] = [];
+                }
                 foreach ($roles as $role) {
-                    AdminInformation::create([
+                    array_push($result[$id_pos], AdminInformation::create([
                         'id_ar' => $role,
-                        'id_pos' => $key,
+                        'id_pos' => $id_pos,
                         'id_u' => $id_u
-                    ]);
+                    ]));
                 }
             }
             DB::commit();
+            return $result;
+        });
+    }
+
+    public function changeAdmin(
+        int $id_u,
+        array $ids_pos
+    ) {
+        return DB::transaction(function () use ($id_u, $ids_pos) {
+            $admins = $this->getAdmins($id_u);
             $result = [];
-            $result[$id_u] = $ids_pos;
+            foreach ($admins as $id_pos => $admin_roles) {
+                $keyPos = array_search($id_pos, $ids_pos);
+                foreach ($admin_roles as $admin_role) {
+                    if ($keyPos === false) {
+                        $admin_role->delete();
+                    } else {
+                        $keyAr = array_search($admin_role->id_ar, $ids_pos[$id_pos]);
+                        if ($keyAr === false) {
+                            $admin_role->delete();
+                        } else {
+                            unset($ids_pos[$id_pos][$keyAr]);
+                            if (!isset($result[$id_pos])) {
+                                $result[$id_pos] = [];
+                            }
+                            array_push($result[$id_pos], $admin_role);
+                        }
+                    }
+                }
+            }
+            foreach ($ids_pos as $id_pos => $ids_admin_roles) {
+                foreach ($ids_admin_roles as $id_ar) {
+                    if (!isset($result[$id_pos])) {
+                        $result[$id_pos] = [];
+                    }
+                    array_push($result[$id_pos], AdminInformation::create([
+                        'id_ar' => $id_ar,
+                        'id_pos' => $id_pos,
+                        'id_u' => $id_u
+                    ]));
+                }
+            }
+            DB::commit();
             return $result;
         });
     }
