@@ -26,6 +26,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::prefix('management')->group(function () {
+        Route::get('users', 'UsersController@getUsers');
+        Route::put('users', 'UsersController@changeUser');
+        Route::delete('users', 'UsersController@deleteUser');
 
         Route::prefix('admins')->group(function () {
             Route::get('actions', 'AdminActionsController@getActions');
@@ -70,10 +73,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::delete('products_information', 'ProductInformationController@deleteProductInfo');
         });
     });
-});
-/*
-Route::prefix('management')->group(function () {
-    Route::get('users', '');
-    Route::put('users', '');
-    Route::delete('users', '');
 });
