@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 class CacheRepository
 {
-    public function cacheAdminGrants(int $idUser, string $action, $value = null) {
+    public static function cacheAdminGrants(int $idUser, string $action, $value = null) {
         $cacheTimeout = 30;
         $tags = ['adminGrants'];
         if (!isset($idUser)) {

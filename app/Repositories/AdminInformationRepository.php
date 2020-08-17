@@ -3,9 +3,8 @@
 
 namespace App\Repositories;
 
-
-use App\Exceptions\InsufficientAdministrationRights;
 use App\Models\AdminInformation;
+use App\Models\User;
 use App\Policies\AdminInformationPolicy;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +17,7 @@ class AdminInformationRepository
         $this->adminInformationPolicy = $adminInformationPolicy;
     }
 
-    public function getAdmins(int $id_u = null) {
+    public static function getAdmins(int $id_u = null) {
         if (isset($id_u)) {
             $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
             if (count($admins) === 0) {
@@ -42,13 +41,13 @@ class AdminInformationRepository
     }
 
     public function createAdmin(
-        $user,
+        User $user,
         int $id_u,
         array $ids_pos
     ) {
         $admins = AdminInformation::where('id_u', $id_u)->get();
         if (count($admins) > 0) {
-            throw new \Exception("admin is already exist. Use PUT method for change!");
+            abort(409,"admin is already exist. Use PUT method for change!");
         }
         return DB::transaction(function () use ($user, $id_u, $ids_pos) {
             $result = [];
@@ -57,37 +56,47 @@ class AdminInformationRepository
                     $result[$id_pos] = [];
                 }
                 foreach ($roles as $role) {
-                    if (!$this->adminInformationPolicy->canCreate($user, $id_pos)) {
-                        throw new InsufficientAdministrationRights();
+                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
+                        array_push($result[$id_pos], AdminInformation::create([
+                            'id_ar' => $role,
+                            'id_pos' => $id_pos,
+                            'id_u' => $id_u
+                        ]));
                     }
-                    array_push($result[$id_pos], AdminInformation::create([
-                        'id_ar' => $role,
-                        'id_pos' => $id_pos,
-                        'id_u' => $id_u
-                    ]));
+                }
+                if (count($result[$id_pos]) === 0) {
+                    unset($result[$id_pos]);
                 }
             }
             DB::commit();
+            if (count($result) === 0) {
+                abort(403,"Недостаточно прав администрирования!");
+            }
             return $result;
         });
     }
 
     public function changeAdmin(
+        User $user,
         int $id_u,
         array $ids_pos
     ) {
-        return DB::transaction(function () use ($id_u, $ids_pos) {
+        return DB::transaction(function () use ($user, $id_u, $ids_pos) {
             $admins = $this->getAdmins($id_u);
             $result = [];
             foreach ($admins as $id_pos => $admin_roles) {
                 $keyPos = in_array($id_pos, array_keys($ids_pos));
                 foreach ($admin_roles as $admin_role) {
                     if ($keyPos === false) {
-                        $admin_role->delete();
+                        if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
+                            $admin_role->delete();
+                        }
                     } else {
                         $keyAr = array_search($admin_role->id_ar, $ids_pos[$id_pos]);
                         if ($keyAr === false) {
-                            $admin_role->delete();
+                            if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
+                                $admin_role->delete();
+                            }
                         } else {
                             unset($ids_pos[$id_pos][$keyAr]);
                             if (!isset($result[$id_pos])) {
@@ -103,22 +112,32 @@ class AdminInformationRepository
                     if (!isset($result[$id_pos])) {
                         $result[$id_pos] = [];
                     }
-                    array_push($result[$id_pos], AdminInformation::create([
-                        'id_ar' => $id_ar,
-                        'id_pos' => $id_pos,
-                        'id_u' => $id_u
-                    ]));
+                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
+                        array_push($result[$id_pos], AdminInformation::create([
+                            'id_ar' => $id_ar,
+                            'id_pos' => $id_pos,
+                            'id_u' => $id_u
+                        ]));
+                    }
                 }
             }
             DB::commit();
-            return $result;
+            CacheRepository::cacheAdminGrants($id_u, 'delete');
+            return $admins;
         });
     }
 
-    public function deleteAdmin(int $id_u) {
-        return DB::transaction(function () use ($id_u) {
-            $result =  AdminInformation::where('id_u', $id_u)->delete();
+    public function deleteAdmin(User $user, int $id_u) {
+        return DB::transaction(function () use ($user, $id_u) {
+            $admins = AdminInformation::where('id_u', $id_u)->get();
+            $result = 0;
+            foreach ($admins as $admin) {
+                if ($this->adminInformationPolicy->canDelete($user, $admin)) {
+                    $result += $admin->delete();
+                }
+            }
             DB::commit();
+            CacheRepository::cacheAdminGrants($id_u, 'delete');
             return $result;
         });
     }

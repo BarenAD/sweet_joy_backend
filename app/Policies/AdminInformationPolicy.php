@@ -20,7 +20,7 @@ class AdminInformationPolicy
         //
     }
 
-    public function canCreate($user, int $id_pos)
+    public function canCreate(User $user, int $id_pos)
     {
         $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
         if (isset($adminActions)) {
@@ -31,13 +31,14 @@ class AdminInformationPolicy
         return false;
     }
 
-    public function update(User $user, AdminInformation $adminInformation)
+    public function canDelete(User $user, AdminInformation $adminInformation)
     {
-        //
-    }
-
-    public function delete(User $user, AdminInformation $adminInformation)
-    {
-        //
+        $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
+        if (isset($adminActions)) {
+            if (isset($adminActions[$adminInformation['id_pos']])) {
+                return in_array(1, $adminActions[$adminInformation['id_pos']]);
+            }
+        }
+        return false;
     }
 }

@@ -10,29 +10,23 @@ use App\Repositories\CacheRepository;
 
 class AdminGrantsService
 {
-    private $adminInformationRepository;
     private $adminRolesRepository;
-    private $cacheRepository;
 
     public function __construct(
-        AdminRolesRepository $adminRolesRepository,
-        AdminInformationRepository $adminInformationRepository,
-        CacheRepository $cacheRepository
+        AdminRolesRepository $adminRolesRepository
     )
     {
         $this->adminRolesRepository = $adminRolesRepository;
-        $this->adminInformationRepository = $adminInformationRepository;
-        $this->cacheRepository = $cacheRepository;
     }
 
     public function getAdminsGrants(int $idUser) {
-        $result = $this->cacheRepository->cacheAdminGrants($idUser, 'get');
+        $result = CacheRepository::cacheAdminGrants($idUser, 'get');
         if (isset($result)) {
             return $result;
         } else {
             $result = [];
             try {
-                $adminInfo = $this->adminInformationRepository->getAdmins($idUser)->toArray();
+                $adminInfo = AdminInformationRepository::getAdmins($idUser)->toArray();
                 $adminRoles = $this->adminRolesRepository->getRolesActions();
 
                 foreach ($adminInfo as $id_point_of_sale => $arrayRoles) {
@@ -42,7 +36,7 @@ class AdminGrantsService
                     }
                     $result[$id_point_of_sale] = array_unique($result[$id_point_of_sale]);
                 }
-                $this->cacheRepository->cacheAdminGrants($idUser, 'create', $result);
+                CacheRepository::cacheAdminGrants($idUser, 'create', $result);
                 return $result;
             } catch (\Exception $e) {
                 return null;

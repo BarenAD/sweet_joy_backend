@@ -16,7 +16,7 @@ class AdminInformationController extends Controller
     }
 
     public function getAdmins(Request $request) {
-        return response($this->adminInformationRepository->getAdmins($request->get('id_u')), 200);
+        return response(AdminInformationRepository::getAdmins($request->get('id_u')), 200);
     }
 
     public function createAdmin(ChangeOrCreateAdminInfo $request) {
@@ -28,10 +28,17 @@ class AdminInformationController extends Controller
     }
 
     public function changeAdmin(ChangeOrCreateAdminInfo $request) {
-        return response($this->adminInformationRepository->changeAdmin($request->get('id_u'), $request->get('ids_pos')), 200);
+        return response($this->adminInformationRepository->changeAdmin(
+            $request->user(),
+            $request->get('id_u'),
+            $request->get('ids_pos')
+        ), 200);
     }
 
     public function deleteAdmin(Request $request) {
-        return response($this->adminInformationRepository->deleteAdmin($request->get('id_u')), 200);
+        return response($this->adminInformationRepository->deleteAdmin(
+            $request->user(),
+            $request->get('id_u')
+        ), 200);
     }
 }
