@@ -4,11 +4,20 @@
 namespace App\Repositories;
 
 
+use App\Exceptions\InsufficientAdministrationRights;
 use App\Models\AdminInformation;
+use App\Policies\AdminInformationPolicy;
 use Illuminate\Support\Facades\DB;
 
 class AdminInformationRepository
 {
+    private $adminInformationPolicy;
+
+    public function __construct(AdminInformationPolicy $adminInformationPolicy)
+    {
+        $this->adminInformationPolicy = $adminInformationPolicy;
+    }
+
     public function getAdmins(int $id_u = null) {
         if (isset($id_u)) {
             $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
@@ -33,6 +42,7 @@ class AdminInformationRepository
     }
 
     public function createAdmin(
+        $user,
         int $id_u,
         array $ids_pos
     ) {
@@ -40,13 +50,16 @@ class AdminInformationRepository
         if (count($admins) > 0) {
             throw new \Exception("admin is already exist. Use PUT method for change!");
         }
-        return DB::transaction(function () use ($id_u, $ids_pos) {
+        return DB::transaction(function () use ($user, $id_u, $ids_pos) {
             $result = [];
             foreach ($ids_pos as $id_pos => $roles) {
                 if (!isset($result[$id_pos])) {
                     $result[$id_pos] = [];
                 }
                 foreach ($roles as $role) {
+                    if (!$this->adminInformationPolicy->canCreate($user, $id_pos)) {
+                        throw new InsufficientAdministrationRights();
+                    }
                     array_push($result[$id_pos], AdminInformation::create([
                         'id_ar' => $role,
                         'id_pos' => $id_pos,
@@ -67,7 +80,7 @@ class AdminInformationRepository
             $admins = $this->getAdmins($id_u);
             $result = [];
             foreach ($admins as $id_pos => $admin_roles) {
-                $keyPos = array_search($id_pos, $ids_pos);
+                $keyPos = in_array($id_pos, array_keys($ids_pos));
                 foreach ($admin_roles as $admin_role) {
                     if ($keyPos === false) {
                         $admin_role->delete();

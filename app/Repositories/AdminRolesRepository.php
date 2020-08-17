@@ -20,6 +20,16 @@ class AdminRolesRepository
         return $resultArray;
     }
 
+    public function getRolesActions() {
+        $adminRoles = AdminRole::all();
+        $adminsActions = AdminGrant::all()->groupBy('id_ar');
+        $resultArray = [];
+        foreach ($adminRoles as $role) {
+            $resultArray[$role->id] = $this->extractIdsFromAdminActions($adminsActions[$role->id]);
+        }
+        return $resultArray;
+    }
+
     public function getRoles(int $id = null) {
         if (isset($id)) {
             $role = AdminRole::findOrFail($id);
