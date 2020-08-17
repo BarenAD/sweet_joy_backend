@@ -119,11 +119,14 @@ class AdminInformationRepository
                             'id_u' => $id_u
                         ]));
                     }
+                    if (count($result[$id_pos]) === 0) {
+                        unset($result[$id_pos]);
+                    }
                 }
             }
             DB::commit();
             CacheRepository::cacheAdminGrants($id_u, 'delete');
-            return $admins;
+            return $result;
         });
     }
 
