@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Cache;
 class CacheRepository
 {
     public static function cacheAdminGrants(int $idUser, string $action, $value = null) {
-        $cacheTimeout = 30;
+        $cacheTimeout = 1800;
         $tags = ['adminGrants'];
-        if (!isset($idUser)) {
+        if (isset($idUser)) {
             $cacheKey = 'cache_admin_grants_user_' . $idUser;
             switch ($action) {
                 case 'get':

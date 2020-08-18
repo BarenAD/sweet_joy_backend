@@ -24,7 +24,9 @@ class AdminInformationPolicy
     {
         $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
         if (isset($adminActions)) {
-            if (isset($adminActions[$id_pos])) {
+            if ($adminActions === "is_super_admin") {
+                return true;
+            } else if (isset($adminActions[$id_pos])) {
                 return in_array(1, $adminActions[$id_pos]);
             }
         }
@@ -35,7 +37,9 @@ class AdminInformationPolicy
     {
         $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
         if (isset($adminActions)) {
-            if (isset($adminActions[$adminInformation['id_pos']])) {
+            if ($adminActions === "is_super_admin") {
+                return true;
+            } else if (isset($adminActions[$adminInformation['id_pos']])) {
                 return in_array(1, $adminActions[$adminInformation['id_pos']]);
             }
         }

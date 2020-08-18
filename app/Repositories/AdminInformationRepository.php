@@ -21,7 +21,7 @@ class AdminInformationRepository
         if (isset($id_u)) {
             $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
             if (count($admins) === 0) {
-                throw new \Exception("no found");
+                abort(404, 'Ничего не найдено');
             }
             return $admins;
         } else {
