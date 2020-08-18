@@ -25,7 +25,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('allLogout', 'AuthController@allLogout');
     });
 
-    Route::prefix('management')->group(function () {
+    Route::middleware(['checkAllowToManagement'])->prefix('management')->group(function () {
         Route::get('users', 'UsersController@getUsers');
         Route::put('users', 'UsersController@changeUser');
         Route::delete('users', 'UsersController@deleteUser');
