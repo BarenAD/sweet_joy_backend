@@ -17,4 +17,8 @@ class GeneratedAborting
     public static function adminAlreadyExist() {
         abort(409, 'Данный администратор уже существует. Используйте PUT метод.');
     }
+
+    public static function youAreNotAdmin() {
+        abort(403, 'Вы не являетесь администратором.');
+    }
 }

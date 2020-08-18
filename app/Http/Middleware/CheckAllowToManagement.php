@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\services\AdminGrantsService;
+use App\Http\services\GeneratedAborting;
 use Closure;
 
 class CheckAllowToManagement
@@ -18,7 +19,7 @@ class CheckAllowToManagement
     {
         $adminGrants = AdminGrantsService::getAdminsGrants($request->user()->id);
         if (!isset($adminGrants)) {
-            abort(403, 'Вы не являетесь администратором.');
+            GeneratedAborting::youAreNotAdmin();
         }
         return $next($request);
     }
