@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class PointsOfSaleController extends Controller
 {
-    private $pointOfSaleRepository;
-
-    public function __construct(PointOfSaleRepository $pointOfSaleRepository)
-    {
-        $this->pointOfSaleRepository = $pointOfSaleRepository;
-    }
-
     public function getPoints(Request $request) {
-        return response($this->pointOfSaleRepository->getPointsOfSale($request->get('id')), 200);
+        return response(PointOfSaleRepository::getPointsOfSale($request->get('id')), 200);
     }
 
     public function createPoints(ChangeOrCreatePointOfSale $request) {
         return response(
-            $this->pointOfSaleRepository->createPointOfSale(
+            PointOfSaleRepository::createPointOfSale(
+                $request->user(),
                 $request->get('id_s'),
                 $request->get('address'),
                 $request->get('phone')
@@ -32,7 +26,8 @@ class PointsOfSaleController extends Controller
 
     public function changePoints(ChangeOrCreatePointOfSale $request) {
         return response(
-            $this->pointOfSaleRepository->changePointOfSale(
+            PointOfSaleRepository::changePointOfSale(
+                $request->user(),
                 $request->get('id'),
                 $request->get('id_s'),
                 $request->get('address'),
@@ -43,6 +38,6 @@ class PointsOfSaleController extends Controller
     }
 
     public function deletePoints(Request $request) {
-        return response($this->pointOfSaleRepository->deletePointOfSale($request->get('id')), 200);
+        return response(PointOfSaleRepository::deletePointOfSale($request->user(), $request->get('id')), 200);
     }
 }
