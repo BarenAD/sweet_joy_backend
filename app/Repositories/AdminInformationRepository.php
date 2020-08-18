@@ -10,13 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class AdminInformationRepository
 {
-    private $adminInformationPolicy;
-
-    public function __construct(AdminInformationPolicy $adminInformationPolicy)
-    {
-        $this->adminInformationPolicy = $adminInformationPolicy;
-    }
-
     public static function getAdmins(int $id_u = null) {
         if (isset($id_u)) {
             $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
@@ -40,7 +33,7 @@ class AdminInformationRepository
         return $resultAdmins;
     }
 
-    public function createAdmin(
+    public static function createAdmin(
         User $user,
         int $id_u,
         array $ids_pos
@@ -56,7 +49,7 @@ class AdminInformationRepository
                     $result[$id_pos] = [];
                 }
                 foreach ($roles as $role) {
-                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
+                    if (AdminInformationPolicy::canCreate($user, $id_pos)) {
                         array_push($result[$id_pos], AdminInformation::create([
                             'id_ar' => $role,
                             'id_pos' => $id_pos,
@@ -76,7 +69,7 @@ class AdminInformationRepository
         });
     }
 
-    public function changeAdmin(
+    public static function changeAdmin(
         User $user,
         int $id_u,
         array $ids_pos
@@ -88,13 +81,13 @@ class AdminInformationRepository
                 $keyPos = in_array($id_pos, array_keys($ids_pos));
                 foreach ($admin_roles as $admin_role) {
                     if ($keyPos === false) {
-                        if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
+                        if (AdminInformationPolicy::canDelete($user, $admin_role)) {
                             $admin_role->delete();
                         }
                     } else {
                         $keyAr = array_search($admin_role->id_ar, $ids_pos[$id_pos]);
                         if ($keyAr === false) {
-                            if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
+                            if (AdminInformationPolicy::canDelete($user, $admin_role)) {
                                 $admin_role->delete();
                             }
                         } else {
@@ -112,7 +105,7 @@ class AdminInformationRepository
                     if (!isset($result[$id_pos])) {
                         $result[$id_pos] = [];
                     }
-                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
+                    if (AdminInformationPolicy::canCreate($user, $id_pos)) {
                         array_push($result[$id_pos], AdminInformation::create([
                             'id_ar' => $id_ar,
                             'id_pos' => $id_pos,
@@ -130,12 +123,12 @@ class AdminInformationRepository
         });
     }
 
-    public function deleteAdmin(User $user, int $id_u) {
+    public static function deleteAdmin(User $user, int $id_u) {
         return DB::transaction(function () use ($user, $id_u) {
             $admins = AdminInformation::where('id_u', $id_u)->get();
             $result = 0;
             foreach ($admins as $admin) {
-                if ($this->adminInformationPolicy->canDelete($user, $admin)) {
+                if (AdminInformationPolicy::canDelete($user, $admin)) {
                     $result += $admin->delete();
                 }
             }

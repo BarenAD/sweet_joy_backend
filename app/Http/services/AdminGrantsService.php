@@ -11,16 +11,7 @@ use App\Repositories\CacheRepository;
 
 class AdminGrantsService
 {
-    private $adminRolesRepository;
-
-    public function __construct(
-        AdminRolesRepository $adminRolesRepository
-    )
-    {
-        $this->adminRolesRepository = $adminRolesRepository;
-    }
-
-    public function getAdminsGrants(int $idUser) {
+    public static function getAdminsGrants(int $idUser) {
         $result = CacheRepository::cacheAdminGrants($idUser, 'get');
         if (isset($result)) {
             return $result;
@@ -32,7 +23,7 @@ class AdminGrantsService
                     $result = "is_super_admin";
                 } else {
                     $adminInfo = AdminInformationRepository::getAdmins($idUser)->toArray();
-                    $adminRoles = $this->adminRolesRepository->getRolesActions();
+                    $adminRoles = AdminRolesRepository::getRolesActions();
 
                     foreach ($adminInfo as $id_point_of_sale => $arrayRoles) {
                         $result[$id_point_of_sale] = [];

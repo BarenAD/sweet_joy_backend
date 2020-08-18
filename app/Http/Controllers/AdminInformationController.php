@@ -3,24 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateAdminInfo;
+use App\Http\services\AdminGrantsService;
+use App\Policies\AdminInformationPolicy;
 use App\Repositories\AdminInformationRepository;
 use Illuminate\Http\Request;
 
 class AdminInformationController extends Controller
 {
-    private $adminInformationRepository;
-
-    public function __construct(AdminInformationRepository $adminInformationRepository)
-    {
-        $this->adminInformationRepository = $adminInformationRepository;
-    }
-
     public function getAdmins(Request $request) {
+        $actions = AdminInformationPolicy::canViewAny($request->user());
+        if (!isset($actions)) {
+            abort(403, 'Недостаточно прав администрирования');
+        }
         return response(AdminInformationRepository::getAdmins($request->get('id_u')), 200);
     }
 
     public function createAdmin(ChangeOrCreateAdminInfo $request) {
-        return response($this->adminInformationRepository->createAdmin(
+        return response(AdminInformationRepository::createAdmin(
             $request->user(),
             $request->get('id_u'),
             $request->get('ids_pos')
@@ -28,7 +27,7 @@ class AdminInformationController extends Controller
     }
 
     public function changeAdmin(ChangeOrCreateAdminInfo $request) {
-        return response($this->adminInformationRepository->changeAdmin(
+        return response(AdminInformationRepository::changeAdmin(
             $request->user(),
             $request->get('id_u'),
             $request->get('ids_pos')
@@ -36,7 +35,7 @@ class AdminInformationController extends Controller
     }
 
     public function deleteAdmin(Request $request) {
-        return response($this->adminInformationRepository->deleteAdmin(
+        return response(AdminInformationRepository::deleteAdmin(
             $request->user(),
             $request->get('id_u')
         ), 200);

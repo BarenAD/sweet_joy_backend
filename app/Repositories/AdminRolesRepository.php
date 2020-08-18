@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminRolesRepository
 {
-    private function extractIdsFromAdminActions($adminActions) {
+    private static function extractIdsFromAdminActions($adminActions) {
         $resultArray = [];
         if (isset($adminActions)) {
             foreach ($adminActions as $action) {
@@ -20,12 +20,12 @@ class AdminRolesRepository
         return $resultArray;
     }
 
-    public function getRolesActions() {
+    public static function getRolesActions() {
         $adminRoles = AdminRole::all();
         $adminsActions = AdminGrant::all()->groupBy('id_ar');
         $resultArray = [];
         foreach ($adminRoles as $role) {
-            $resultArray[$role->id] = $this->extractIdsFromAdminActions($adminsActions[$role->id]);
+            $resultArray[$role->id] = AdminRolesRepository::extractIdsFromAdminActions($adminsActions[$role->id]);
         }
         return $resultArray;
     }
@@ -36,7 +36,7 @@ class AdminRolesRepository
             $adminActions = AdminGrant::where('id_ar', $id)->get();
             return [
                 'role' => $role,
-                'actions' => $this->extractIdsFromAdminActions($adminActions)
+                'actions' => AdminRolesRepository::extractIdsFromAdminActions($adminActions)
             ];
         }
         $adminRoles = AdminRole::all();
@@ -45,7 +45,7 @@ class AdminRolesRepository
         foreach ($adminRoles as $role) {
             array_push($resultArray, [
                 'role' => $role,
-                'actions' => $this->extractIdsFromAdminActions($adminsActions[$role->id])
+                'actions' => AdminRolesRepository::extractIdsFromAdminActions($adminsActions[$role->id])
             ]);
         }
         return $resultArray;

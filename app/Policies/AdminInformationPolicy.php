@@ -8,21 +8,15 @@ use App\Models\User;
 
 class AdminInformationPolicy
 {
-    private $adminGrantsService;
-
-    public function __construct(AdminGrantsService $adminGrantsService)
+    public static function canViewAny($user)
     {
-        $this->adminGrantsService = $adminGrantsService;
+        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        return isset($adminActions);
     }
 
-    public function viewAny($user)
+    public static function canCreate(User $user, int $id_pos)
     {
-        //
-    }
-
-    public function canCreate(User $user, int $id_pos)
-    {
-        $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
+        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -33,9 +27,9 @@ class AdminInformationPolicy
         return false;
     }
 
-    public function canDelete(User $user, AdminInformation $adminInformation)
+    public static function canDelete(User $user, AdminInformation $adminInformation)
     {
-        $adminActions = $this->adminGrantsService->getAdminsGrants($user->id);
+        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
