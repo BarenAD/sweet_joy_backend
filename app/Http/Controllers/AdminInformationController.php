@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateAdminInfo;
-use App\Http\services\AdminGrantsService;
 use App\Policies\AdminInformationPolicy;
 use App\Repositories\AdminInformationRepository;
 use Illuminate\Http\Request;

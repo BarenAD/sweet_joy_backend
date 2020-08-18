@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class ProductInformationController extends Controller
 {
-    private $productInformationRepository;
-
-    public function __construct(ProductInformationRepository $productInformationRepository)
-    {
-        $this->productInformationRepository = $productInformationRepository;
-    }
-
     public function getProductsInfo(Request $request) {
-        return response($this->productInformationRepository->getProductsInfo($request->get('id')), 200);
+        return response(ProductInformationRepository::getProductsInfo($request->get('id')), 200);
     }
 
     public function createProductInfo(ChangeOrCreateProductInfo $request) {
         return response(
-            $this->productInformationRepository->createProductInfo(
+            ProductInformationRepository::createProductInfo(
+                $request->user(),
                 $request->get('id_i'),
                 $request->get('id_pos'),
                 $request->get('price'),
@@ -33,7 +27,8 @@ class ProductInformationController extends Controller
 
     public function changeProductInfo(ChangeOrCreateProductInfo $request) {
         return response(
-            $this->productInformationRepository->changeProductInfo(
+            ProductInformationRepository::changeProductInfo(
+                $request->user(),
                 (int) $request->get('id'),
                 $request->get('id_i'),
                 $request->get('id_pos'),
@@ -45,6 +40,9 @@ class ProductInformationController extends Controller
     }
 
     public function deleteProductInfo(Request $request) {
-        return response($this->productInformationRepository->deleteProductInfo((int) $request->get('id')), 200);
+        return response(ProductInformationRepository::deleteProductInfo(
+            $request->user(),
+            (int) $request->get('id')
+        ), 200);
     }
 }
