@@ -3,6 +3,7 @@
 
 namespace App\Repositories;
 
+use App\Http\services\GeneratedAborting;
 use App\Models\AdminInformation;
 use App\Models\User;
 use App\Policies\AdminInformationPolicy;
@@ -14,7 +15,7 @@ class AdminInformationRepository
         if (isset($id_u)) {
             $admins = AdminInformation::where('id_u', $id_u)->get()->groupBy('id_pos');
             if (count($admins) === 0) {
-                abort(404, 'Ничего не найдено');
+                GeneratedAborting::notFound();
             }
             return $admins;
         } else {
@@ -40,7 +41,7 @@ class AdminInformationRepository
     ) {
         $admins = AdminInformation::where('id_u', $id_u)->get();
         if (count($admins) > 0) {
-            abort(409,"admin is already exist. Use PUT method for change!");
+            GeneratedAborting::adminAlreadyExist();
         }
         return DB::transaction(function () use ($user, $id_u, $ids_pos) {
             $result = [];
@@ -63,7 +64,7 @@ class AdminInformationRepository
             }
             DB::commit();
             if (count($result) === 0) {
-                abort(403,"Недостаточно прав администрирования!");
+                GeneratedAborting::accessDeniedGrandsAdmin();
             }
             return $result;
         });

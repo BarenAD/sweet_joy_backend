@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\Http\services\GeneratedAborting;
 use App\Models\PointOfSale;
 use App\Models\User;
 use App\Policies\PointOfSalePolicy;
@@ -26,7 +27,7 @@ class PointOfSaleRepository
                 'phone' => $phone,
             ]);
         } else {
-            abort(403, 'Недостаточно прав администрирования');
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
     }
 
@@ -39,7 +40,7 @@ class PointOfSaleRepository
                 'phone' => $phone,
             ])->save();
         } else {
-            abort(403, 'Недостаточно прав администрирования');
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
         return $pointOfSale;
     }
@@ -49,7 +50,7 @@ class PointOfSaleRepository
         if (PointOfSalePolicy::canDelete($user)) {
             return $pointOfSale->delete();
         } else {
-            abort(403, 'Недостаточно прав администрирования');
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
     }
 }

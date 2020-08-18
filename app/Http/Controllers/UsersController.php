@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
-    private $userRepository;
-
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
-
     public function getUsers(Request $request) {
-        return response($this->userRepository->getUsers($request->get('id')), 200);
+        return response(UserRepository::getUsers($request->get('id')), 200);
     }
 
     public function changeUser(ChangeUser $request) {
         return response(
-            $this->userRepository->changeUser(
+            UserRepository::changeUser(
+                $request->user(),
                 $request->get('id'),
                 $request->get('fio'),
                 $request->get('login'),
@@ -36,6 +30,6 @@ class UsersController extends Controller
     }
 
     public function deleteUser(Request $request) {
-        return response($this->userRepository->deleteUser($request->get('id')), 200);
+        return response(UserRepository::deleteUser($request->user(), $request->get('id')), 200);
     }
 }

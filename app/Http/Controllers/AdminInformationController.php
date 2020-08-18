@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateAdminInfo;
+use App\Http\services\GeneratedAborting;
 use App\Policies\AdminInformationPolicy;
 use App\Repositories\AdminInformationRepository;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class AdminInformationController extends Controller
     public function getAdmins(Request $request) {
         $actions = AdminInformationPolicy::canViewAny($request->user());
         if (!isset($actions)) {
-            abort(403, 'Недостаточно прав администрирования');
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
         return response(AdminInformationRepository::getAdmins($request->get('id_u')), 200);
     }

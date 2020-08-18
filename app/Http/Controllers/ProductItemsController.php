@@ -8,21 +8,15 @@ use Illuminate\Http\Request;
 
 class ProductItemsController extends Controller
 {
-    private $itemRepository;
-
-    public function __construct(ItemsRepository $itemRepository)
-    {
-        $this->itemRepository = $itemRepository;
-    }
-
     public function getItems(Request $request) {
-        return response($this->itemRepository->getItems($request->get('id')), 200);
+        return response(ItemsRepository::getItems($request->get('id')), 200);
     }
 
     public function createItem(ChangeOrCreateItem $request) {
         if ($request->hasFile('picture')) {
             return response(
-                $this->itemRepository->createItem(
+                ItemsRepository::createItem(
+                    $request->user(),
                     $request->file('picture'),
                     $request->input('name'),
                     $request->input('composition'),
@@ -39,7 +33,8 @@ class ProductItemsController extends Controller
 
     public function changeItem(ChangeOrCreateItem $request) {
         return response(
-            $this->itemRepository->changeItem(
+            ItemsRepository::changeItem(
+                $request->user(),
                 $request->get('id'),
                 $request->input('name'),
                 $request->input('composition'),
@@ -54,6 +49,6 @@ class ProductItemsController extends Controller
     }
 
     public function deleteItem(Request $request) {
-        return response($this->itemRepository->deleteItem($request->get('id')), 200);
+        return response(ItemsRepository::deleteItem($request->user(), $request->get('id')), 200);
     }
 }

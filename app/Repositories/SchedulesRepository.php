@@ -3,11 +3,14 @@
 
 namespace App\Repositories;
 
+use App\Http\services\GeneratedAborting;
 use App\Models\Schedule;
+use App\Models\User;
+use App\Policies\SchedulesPolicy;
 
 class SchedulesRepository
 {
-    public function getSchedules(int $id = null)
+    public static function getSchedules(int $id = null)
     {
         if (isset($id)) {
             return Schedule::findOrFail($id);
@@ -15,7 +18,8 @@ class SchedulesRepository
         return Schedule::all();
     }
 
-    public function createSchedule(
+    public static function createSchedule(
+        User $user,
         string $name,
         string $monday,
         string $tuesday,
@@ -28,21 +32,26 @@ class SchedulesRepository
         string $particular
     )
     {
-        return Schedule::create([
-            'name' => $name,
-            'monday' => $monday,
-            'tuesday' => $tuesday,
-            'wednesday' => $wednesday,
-            'thursday' => $thursday,
-            'friday' => $friday,
-            'saturday' => $saturday,
-            'sunday' => $sunday,
-            'holiday' => $holiday,
-            'particular' => $particular
-        ]);
+        if (SchedulesPolicy::canCreate($user)) {
+            return Schedule::create([
+                'name' => $name,
+                'monday' => $monday,
+                'tuesday' => $tuesday,
+                'wednesday' => $wednesday,
+                'thursday' => $thursday,
+                'friday' => $friday,
+                'saturday' => $saturday,
+                'sunday' => $sunday,
+                'holiday' => $holiday,
+                'particular' => $particular
+            ]);
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 
-    public function changeSchedule(
+    public static function changeSchedule(
+        User $user,
         int $id,
         string $name,
         string $monday,
@@ -56,24 +65,32 @@ class SchedulesRepository
         string $particular
     )
     {
-        $schedule = Schedule::findOrFail($id);
-        $schedule->fill([
-            'name' => $name,
-            'monday' => $monday,
-            'tuesday' => $tuesday,
-            'wednesday' => $wednesday,
-            'thursday' => $thursday,
-            'friday' => $friday,
-            'saturday' => $saturday,
-            'sunday' => $sunday,
-            'holiday' => $holiday,
-            'particular' => $particular
-        ])->save();
-        return $schedule;
+        if (SchedulesPolicy::canUpdate($user)) {
+            $schedule = Schedule::findOrFail($id);
+            $schedule->fill([
+                'name' => $name,
+                'monday' => $monday,
+                'tuesday' => $tuesday,
+                'wednesday' => $wednesday,
+                'thursday' => $thursday,
+                'friday' => $friday,
+                'saturday' => $saturday,
+                'sunday' => $sunday,
+                'holiday' => $holiday,
+                'particular' => $particular
+            ])->save();
+            return $schedule;
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 
-    public function deleteSchedules(int $id)
+    public static function deleteSchedules(User $user, int $id)
     {
-        return Schedule::findOrFail($id)->delete();
+        if (SchedulesPolicy::canDelete($user)) {
+            return Schedule::findOrFail($id)->delete();
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 }

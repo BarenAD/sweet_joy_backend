@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\Http\services\GeneratedAborting;
 use App\Models\ProductInformation;
 use App\Models\User;
 use App\Policies\ProductInformationPolicy;
@@ -31,8 +32,9 @@ class ProductInformationRepository
                 'id_i' =>  $id_i,
                 'id_pos' => $id_pos,
             ]);
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
-        abort(403, 'Недостаточно прав администрирования');
     }
 
     public static function changeProductInfo(
@@ -52,15 +54,17 @@ class ProductInformationRepository
                 'id_pos' => $id_pos,
             ])->save();
             return $productInformation;
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
-        abort(403, 'Недостаточно прав администрирования');
     }
 
     public static function deleteProductInfo(User $user, int $id) {
         $productInformation = ProductInformation::findOrFail($id);
         if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
             return $productInformation->delete();
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
         }
-        abort(403, 'Недостаточно прав администрирования');
     }
 }

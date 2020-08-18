@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class PointsOfSaleSchedulesController extends Controller
 {
-    private $schedulesRepository;
-
-    public function __construct(SchedulesRepository $schedulesRepository)
-    {
-        $this->schedulesRepository = $schedulesRepository;
-    }
-
     public function getSchedules(Request $request) {
-        return response($this->schedulesRepository->getSchedules($request->get('id')), 200);
+        return response(SchedulesRepository::getSchedules($request->get('id')), 200);
     }
 
     public function createSchedule(ChangeOrCreateSchedule $request) {
         return response(
-            $this->schedulesRepository->createSchedule(
+            SchedulesRepository::createSchedule(
+                $request->user(),
                 $request->get('name'),
                 $request->get('monday'),
                 $request->get('tuesday'),
@@ -39,7 +33,8 @@ class PointsOfSaleSchedulesController extends Controller
 
     public function changeSchedule(ChangeOrCreateSchedule $request) {
         return response(
-            $this->schedulesRepository->changeSchedule(
+            SchedulesRepository::changeSchedule(
+                $request->user(),
                 (int) $request->get('id'),
                 $request->get('name'),
                 $request->get('monday'),
@@ -57,6 +52,6 @@ class PointsOfSaleSchedulesController extends Controller
     }
 
     public function deleteSchedules(Request $request) {
-        return response($this->schedulesRepository->deleteSchedules($request->get('id')), 200);
+        return response(SchedulesRepository::deleteSchedules($request->user(), $request->get('id')), 200);
     }
 }

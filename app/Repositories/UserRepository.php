@@ -4,11 +4,13 @@
 namespace App\Repositories;
 
 
+use App\Http\services\GeneratedAborting;
 use App\Models\User;
+use App\Policies\UsersPolicy;
 
 class UserRepository
 {
-    public function getUsers(int $id = null) {
+    public static function getUsers(int $id = null) {
         if (isset($id)) {
             return User::findOrFail($id);
         }
@@ -16,7 +18,8 @@ class UserRepository
         return $users;
     }
 
-    public function changeUser(
+    public static function changeUser(
+        User $user,
         int $id,
         string $fio = null,
         string $login = null,
@@ -26,19 +29,41 @@ class UserRepository
         string $phone = null,
         string $note = null
     ) {
-        $user = User::findOrFail($id);
-        if (isset($fio)) {$user->fill(['fio' => $fio]);}
-        if (isset($login)) {$user->fill(['login' => $login]);}
-        if (isset($password)) {$user->fill(['password' => bcrypt($password)]);}
-        if (isset($email)) {$user->fill(['email' => $email]);}
-        if (isset($email_verified_at)) {$user->fill(['email_verified_at' => $email_verified_at]);}
-        if (isset($phone)) {$user->fill(['phone' => $phone]);}
-        if (isset($note)) {$user->fill(['note' => $note]);}
-        $user->save();
-        return $user;
+        if (UsersPolicy::canUpdate($user)) {
+            $user = User::findOrFail($id);
+            if (isset($fio)) {
+                $user->fill(['fio' => $fio]);
+            }
+            if (isset($login)) {
+                $user->fill(['login' => $login]);
+            }
+            if (isset($password)) {
+                $user->fill(['password' => bcrypt($password)]);
+            }
+            if (isset($email)) {
+                $user->fill(['email' => $email]);
+            }
+            if (isset($email_verified_at)) {
+                $user->fill(['email_verified_at' => $email_verified_at]);
+            }
+            if (isset($phone)) {
+                $user->fill(['phone' => $phone]);
+            }
+            if (isset($note)) {
+                $user->fill(['note' => $note]);
+            }
+            $user->save();
+            return $user;
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 
-    public function deleteUser(int $id) {
-        return User::findOrFail($id)->delete();
+    public static function deleteUser(User $user, int $id) {
+        if (UsersPolicy::canDelete($user)) {
+            return User::findOrFail($id)->delete();
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 }

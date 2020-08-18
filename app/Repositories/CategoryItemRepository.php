@@ -4,32 +4,47 @@
 namespace App\Repositories;
 
 
+use App\Http\services\GeneratedAborting;
 use App\Models\CategoryItem;
+use App\Models\User;
+use App\Policies\CategoryItemPolicy;
 
 class CategoryItemRepository
 {
-    public function getCategories(int $id = null) {
+    public static function getCategories(int $id = null) {
         if (isset($id)) {
             return CategoryItem::findOrFail($id);
         }
         return CategoryItem::all();
     }
 
-    public function createCategory(string $name) {
-        return CategoryItem::create([
-            'name' => $name
-        ]);
+    public static function createCategory(User $user, string $name) {
+        if (CategoryItemPolicy::canCreate($user)) {
+            return CategoryItem::create([
+                'name' => $name
+            ]);
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 
-    public function changeCategory(int $id, string $name) {
-        $category = CategoryItem::findOrFail($id);
-        $category->fill([
-            'name' => $name
-        ])->save();
-        return $category;
+    public static function changeCategory(User $user, int $id, string $name) {
+        if (CategoryItemPolicy::canUpdate($user)) {
+            $category = CategoryItem::findOrFail($id);
+            $category->fill([
+                'name' => $name
+            ])->save();
+            return $category;
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 
-    public function deleteCategory(int $id) {
-        return CategoryItem::findOrFail($id)->delete();
+    public static function deleteCategory(User $user, int $id) {
+        if (CategoryItemPolicy::canDelete($user)) {
+            return CategoryItem::findOrFail($id)->delete();
+        } else {
+            GeneratedAborting::accessDeniedGrandsAdmin();
+        }
     }
 }
