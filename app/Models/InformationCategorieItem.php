@@ -11,4 +11,8 @@ class InformationCategorieItem extends Model
     protected $fillable = [
         'id_i', 'id_ci'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

@@ -11,4 +11,8 @@ class PointOfSale extends Model
     protected $fillable = [
         'address', 'phone', 'id_s'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

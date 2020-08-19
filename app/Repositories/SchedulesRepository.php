@@ -33,6 +33,7 @@ class SchedulesRepository
     )
     {
         if (SchedulesPolicy::canCreate($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'schedules');
             return Schedule::create([
                 'name' => $name,
                 'monday' => $monday,
@@ -79,6 +80,7 @@ class SchedulesRepository
                 'holiday' => $holiday,
                 'particular' => $particular
             ])->save();
+            CacheRepository::cacheProductsInfo('delete', 'schedules');
             return $schedule;
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
@@ -88,6 +90,7 @@ class SchedulesRepository
     public static function deleteSchedules(User $user, int $id)
     {
         if (SchedulesPolicy::canDelete($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'schedules');
             return Schedule::findOrFail($id)->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

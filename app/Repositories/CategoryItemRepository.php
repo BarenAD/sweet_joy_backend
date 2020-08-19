@@ -20,6 +20,7 @@ class CategoryItemRepository
 
     public static function createCategory(User $user, string $name) {
         if (CategoryItemPolicy::canCreate($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'categories');
             return CategoryItem::create([
                 'name' => $name
             ]);
@@ -34,6 +35,7 @@ class CategoryItemRepository
             $category->fill([
                 'name' => $name
             ])->save();
+            CacheRepository::cacheProductsInfo('delete', 'categories');
             return $category;
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
@@ -42,6 +44,7 @@ class CategoryItemRepository
 
     public static function deleteCategory(User $user, int $id) {
         if (CategoryItemPolicy::canDelete($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'categories');
             return CategoryItem::findOrFail($id)->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

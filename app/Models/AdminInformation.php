@@ -11,4 +11,8 @@ class AdminInformation extends Model
     protected $fillable = [
         'id_ar', 'id_pos', 'id_u'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

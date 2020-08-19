@@ -90,6 +90,7 @@ class ItemsRepository
                         ])->id_ci);
                     }
                     DB::commit();
+                    CacheRepository::cacheProductsInfo('delete', 'items');
                     return [
                         'item' => $newItem,
                         'categories' => $resultCategories
@@ -170,6 +171,7 @@ class ItemsRepository
                         $PicturesItemsRepository->deletePictureForItem($oldNamePicture);
                     }
                     DB::commit();
+                    CacheRepository::cacheProductsInfo('delete', 'items');
                     return [
                         'item' => $item,
                         'categories' => $resultCategories
@@ -191,6 +193,7 @@ class ItemsRepository
             $PicturesItemsRepository = new PicturesItemsRepository();
             $item = Item::findOrFail($id);
             $PicturesItemsRepository->deletePictureForItem(ItemsRepository::extractNamePictureFromPath($item->picture));
+            CacheRepository::cacheProductsInfo('delete', 'items');
             return Item::findOrFail($id)->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

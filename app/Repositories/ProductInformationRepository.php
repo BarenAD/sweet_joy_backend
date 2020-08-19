@@ -26,6 +26,7 @@ class ProductInformationRepository
         int $count
     ) {
         if (ProductInformationPolicy::canCreate($user, $id_pos)) {
+            CacheRepository::cacheProductsInfo('delete', 'products');
             return ProductInformation::create([
                 'price' => $price,
                 'count' => $count,
@@ -53,6 +54,7 @@ class ProductInformationRepository
                 'id_i' => $id_i,
                 'id_pos' => $id_pos,
             ])->save();
+            CacheRepository::cacheProductsInfo('delete', 'products');
             return $productInformation;
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
@@ -62,6 +64,7 @@ class ProductInformationRepository
     public static function deleteProductInfo(User $user, int $id) {
         $productInformation = ProductInformation::findOrFail($id);
         if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
+            CacheRepository::cacheProductsInfo('delete', 'products');
             return $productInformation->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

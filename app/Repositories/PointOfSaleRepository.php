@@ -21,6 +21,7 @@ class PointOfSaleRepository
 
     public static function createPointOfSale(User $user, int $id_s, string $address, string $phone) {
         if (PointOfSalePolicy::canCreate($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
             return PointOfSale::create([
                 'id_s' => $id_s,
                 'address' => $address,
@@ -39,6 +40,7 @@ class PointOfSaleRepository
                 'address' => $address,
                 'phone' => $phone,
             ])->save();
+            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
         }
@@ -48,6 +50,7 @@ class PointOfSaleRepository
     public static function deletePointOfSale(User $user, int $id) {
         $pointOfSale = PointOfSale::findOrFail($id);
         if (PointOfSalePolicy::canDelete($user)) {
+            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
             return $pointOfSale->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

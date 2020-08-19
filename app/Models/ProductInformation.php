@@ -11,4 +11,8 @@ class ProductInformation extends Model
     protected $fillable = [
         'price', 'count', 'id_i', 'id_pos'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

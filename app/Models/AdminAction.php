@@ -11,4 +11,8 @@ class AdminAction extends Model
     protected $fillable = [
         'id', 'name', 'description', 'created_at', 'updated_at'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

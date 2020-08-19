@@ -11,4 +11,8 @@ class AdminGrant extends Model
     protected $fillable = [
         'id_ar', 'id_aa'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

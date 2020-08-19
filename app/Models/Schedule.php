@@ -11,4 +11,8 @@ class Schedule extends Model
     protected $fillable = [
         'name', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday', 'particular'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

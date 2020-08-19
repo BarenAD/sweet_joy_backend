@@ -11,4 +11,8 @@ class SuperAdmin extends Model
     protected $fillable = [
         'id_u'
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 }

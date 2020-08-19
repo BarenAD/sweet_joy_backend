@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('products_for_users', 'ProductInformationController@getProductsForUsers');
+
 Route::prefix('authentication')->group(function () {
     Route::post('register', 'AuthController@register');
     Route::post('login', 'AuthController@login');

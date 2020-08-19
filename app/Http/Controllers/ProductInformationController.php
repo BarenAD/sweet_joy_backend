@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateProductInfo;
+use App\Http\services\ProductsForUserService;
 use App\Repositories\ProductInformationRepository;
 use Illuminate\Http\Request;
 
 class ProductInformationController extends Controller
 {
+    public function getProductsForUsers(Request $request) {
+        return response(ProductsForUserService::getProductsForUsers(), 200);
+    }
+
     public function getProductsInfo(Request $request) {
         return response(ProductInformationRepository::getProductsInfo($request->get('id')), 200);
     }
