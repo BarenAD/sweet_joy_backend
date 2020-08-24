@@ -22,7 +22,15 @@ class ProductsForUserService
             'categories' => CacheRepository::cacheProductsInfo('get', 'categories'),
         ];
         if (!isset($result['products'])) {
-            $result['products'] = ProductInformationRepository::getProductsInfo();
+            $tempProducts = ProductInformationRepository::getProductsInfo();
+            $preparedProducts = [];
+            foreach ($tempProducts as $product) {
+                if (!isset($preparedProducts[$product['id_i']])) {
+                    $preparedProducts[$product['id_i']] = [];
+                }
+                array_push($preparedProducts[$product['id_i']], $product);
+            }
+            $result['products'] = $preparedProducts;
             CacheRepository::cacheProductsInfo('create', 'products', $result['products']);
         }
         if (!isset($result['points_of_sale'])) {
