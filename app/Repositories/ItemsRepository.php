@@ -24,7 +24,7 @@ class ItemsRepository
         return $resultArray;
     }
 
-    private static function extractNamePictureFromPath($path) {
+    public static function extractNamePictureFromPath($path) {
         $explode = explode("/", $path);
         return end($explode);
     }
@@ -136,7 +136,7 @@ class ItemsRepository
                     $PicturesItemsRepository
                 ) {
                     $item = Item::findOrFail($id);
-                    $oldNamePicture = $this->extractNamePictureFromPath($item->picture);
+                    $oldNamePicture = ItemsRepository::extractNamePictureFromPath($item->picture);
                     if (isset($newImage)) {
                         $item->fill([
                             'picture' => $newImage['fullPathForPicture'],
