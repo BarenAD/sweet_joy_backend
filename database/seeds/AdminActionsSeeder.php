@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use App\AdminAction;
+use App\Models\AdminAction;
 
 class AdminActionsSeeder extends Seeder
 {
