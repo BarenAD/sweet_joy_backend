@@ -65,7 +65,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Route::get('items', 'ProductItemsController@getItems');
             Route::post('items', 'ProductItemsController@createItem');
-            Route::put('items', 'ProductItemsController@changeItem'); //поставить POST и будет всё ок
+            Route::post('items/change', 'ProductItemsController@changeItem'); //поставить POST и будет всё ок
             Route::delete('items', 'ProductItemsController@deleteItem');
 
             Route::get('products_information', 'ProductInformationController@getProductsInfo');
