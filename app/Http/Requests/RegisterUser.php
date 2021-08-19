@@ -2,10 +2,31 @@
 
 namespace App\Http\Requests;
 
+use App\Http\services\RequestMessageGenerator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterUser extends FormRequest
 {
+    private $arrayRules;
+    private $requestMessageGenerator;
+
+    /**
+     * ChangeOrCreateAdminInfo constructor.
+     * @param RequestMessageGenerator $messageGen
+     */
+    public function __construct(RequestMessageGenerator $messageGen)
+    {
+        parent::__construct();
+        $this->arrayRules = [
+            'fio' => 'required|string|max:255',
+            'login' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'phone' => 'required|regex:/^[7]\d{10}$/',
+        ];
+        $this->requestMessageGenerator = $messageGen;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -23,12 +44,14 @@ class RegisterUser extends FormRequest
      */
     public function rules()
     {
-        return [
-            'fio' => 'required|string|max:255',
-            'login' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
-            'password' => 'required|string|max:255',
-            'phone' => 'required|regex:/^[7]\d{10}$/',
-        ];
+        return $this->arrayRules;
+    }
+
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return $this->requestMessageGenerator->generatedMessages($this->arrayRules);
     }
 }

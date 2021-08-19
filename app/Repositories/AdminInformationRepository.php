@@ -76,7 +76,7 @@ class AdminInformationRepository
         array $ids_pos
     ) {
         return DB::transaction(function () use ($user, $id_u, $ids_pos) {
-            $admins = $this->getAdmins($id_u);
+            $admins = AdminInformationRepository::getAdmins($id_u);
             $result = [];
             foreach ($admins as $id_pos => $admin_roles) {
                 $keyPos = in_array($id_pos, array_keys($ids_pos));

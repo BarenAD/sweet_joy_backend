@@ -2,10 +2,28 @@
 
 namespace App\Http\Requests;
 
+use App\Http\services\RequestMessageGenerator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ChangeOrCreateCategoryItem extends FormRequest
 {
+    private $arrayRules;
+    private $requestMessageGenerator;
+
+    /**
+     * ChangeOrCreateAdminInfo constructor.
+     * @param RequestMessageGenerator $messageGen
+     */
+    public function __construct(RequestMessageGenerator $messageGen)
+    {
+        parent::__construct();
+        $this->arrayRules = [
+            'id' => 'numeric',
+            'name' => 'required|string|max:255',
+        ];
+        $this->requestMessageGenerator = $messageGen;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -23,9 +41,14 @@ class ChangeOrCreateCategoryItem extends FormRequest
      */
     public function rules()
     {
-        return [
-            'id' => 'numeric',
-            'name' => 'required|string|max:255',
-        ];
+        return $this->arrayRules;
+    }
+
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return $this->requestMessageGenerator->generatedMessages($this->arrayRules);
     }
 }

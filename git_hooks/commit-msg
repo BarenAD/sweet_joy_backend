@@ -1,0 +1,8 @@
+BRANCH=`git rev-parse --abbrev-ref HEAD`;
+
+if [[ $(cat $1) == $BRANCH* ]];
+then
+    echo "No hook changes in commit message!"
+else
+    echo "$BRANCH: $(cat $1)" > "$1"
+fi

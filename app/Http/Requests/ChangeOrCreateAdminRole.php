@@ -2,12 +2,30 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
+use App\Http\services\RequestMessageGenerator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ChangeOrCreateAdminRole extends FormRequest
 {
+    private $arrayRules;
+    private $requestMessageGenerator;
+
+    /**
+     * ChangeOrCreateAdminInfo constructor.
+     * @param RequestMessageGenerator $messageGen
+     */
+    public function __construct(RequestMessageGenerator $messageGen)
+    {
+        parent::__construct();
+        $this->arrayRules = [
+            'id' => 'numeric',
+            'name' => 'required|string|max:255',
+            'actions' => 'required|array',
+            'actions.*' => 'numeric'
+        ];
+        $this->requestMessageGenerator = $messageGen;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,11 +43,14 @@ class ChangeOrCreateAdminRole extends FormRequest
      */
     public function rules()
     {
-        return [
-            'id' => 'numeric',
-            'name' => 'required|string|max:255',
-            'actions' => 'required|array',
-            'actions.*' => 'numeric'
-        ];
+        return $this->arrayRules;
+    }
+
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return $this->requestMessageGenerator->generatedMessages($this->arrayRules);
     }
 }
