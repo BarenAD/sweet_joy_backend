@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\services\AdminGrantsService;
-use App\Http\services\GeneratedAborting;
+use App\Http\Services\AdminGrantsService;
+use App\Http\Services\GeneratedAborting;
 use Closure;
 
 class CheckAllowToManagement

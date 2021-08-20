@@ -4,7 +4,7 @@
 namespace App\Repositories;
 
 
-use App\Http\services\GeneratedAborting;
+use App\Http\Services\GeneratedAborting;
 use App\Models\AdminGrant;
 use App\Models\AdminRole;
 use App\Models\User;

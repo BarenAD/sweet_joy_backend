@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateProductInfo;
-use App\Http\services\ProductsForUserService;
+use App\Http\Services\ProductsForUserService;
 use App\Repositories\ProductInformationRepository;
 use Illuminate\Http\Request;
 

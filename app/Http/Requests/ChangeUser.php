@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\services\RequestMessageGenerator;
+use App\Http\Services\RequestMessageGenerator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ChangeUser extends FormRequest

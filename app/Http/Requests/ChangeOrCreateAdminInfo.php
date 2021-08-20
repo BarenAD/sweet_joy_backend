@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\services\RequestMessageGenerator;
+use App\Http\Services\RequestMessageGenerator;
 use App\Rules\NumericKeysArray;
 use Illuminate\Foundation\Http\FormRequest;
 

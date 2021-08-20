@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Http\services\AdminGrantsService;
+use App\Http\Services\AdminGrantsService;
 use App\Models\PointOfSale;
 use App\Models\ProductInformation;
 use App\Models\User;

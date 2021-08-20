@@ -5,7 +5,7 @@ namespace App\Repositories;
 
 
 
-use App\Http\services\GeneratedAborting;
+use App\Http\Services\GeneratedAborting;
 use App\Models\InformationCategorieItem;
 use App\Models\Item;
 use App\Models\User;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateAdminInfo;
-use App\Http\services\GeneratedAborting;
+use App\Http\Services\GeneratedAborting;
 use App\Policies\AdminInformationPolicy;
 use App\Repositories\AdminInformationRepository;
 use Illuminate\Http\Request;

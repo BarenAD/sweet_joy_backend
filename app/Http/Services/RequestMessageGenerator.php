@@ -6,7 +6,7 @@
  * Time: 10:33
  */
 
-namespace App\Http\services;
+namespace App\Http\Services;
 
 /**
  * Class RequestMessageGenerator

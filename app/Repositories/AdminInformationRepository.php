@@ -3,7 +3,7 @@
 
 namespace App\Repositories;
 
-use App\Http\services\GeneratedAborting;
+use App\Http\Services\GeneratedAborting;
 use App\Models\AdminInformation;
 use App\Models\User;
 use App\Policies\AdminInformationPolicy;
