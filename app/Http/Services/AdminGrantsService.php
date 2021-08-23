@@ -7,12 +7,11 @@ namespace App\Http\Services;
 use App\Models\SuperAdmin;
 use App\Repositories\AdminInformationRepository;
 use App\Repositories\AdminRolesRepository;
-use App\Repositories\CacheRepository;
 
 class AdminGrantsService
 {
     public static function getAdminsGrants(int $idUser) {
-        $result = CacheRepository::cacheAdminGrants($idUser, 'get');
+        $result = CacheService::cacheAdminGrants($idUser, 'get');
         if (isset($result)) {
             return $result;
         } else {
@@ -37,7 +36,7 @@ class AdminGrantsService
                         }
                     }
                 }
-                CacheRepository::cacheAdminGrants($idUser, 'create', $result);
+                CacheService::cacheAdminGrants($idUser, 'create', $result);
                 return $result;
             } catch (\Exception $e) {
                 return null;

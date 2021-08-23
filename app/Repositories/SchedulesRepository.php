@@ -3,23 +3,51 @@
 
 namespace App\Repositories;
 
-use App\Http\Services\GeneratedAborting;
 use App\Models\Schedule;
-use App\Models\User;
-use App\Policies\SchedulesPolicy;
 
+/**
+ * Class SchedulesRepository
+ * @package App\Repositories
+ */
 class SchedulesRepository
 {
-    public static function getSchedules(int $id = null)
+    private $model;
+
+    /**
+     * SchedulesRepository constructor.
+     * @param Schedule $schedule
+     */
+    public function __construct(Schedule $schedule)
+    {
+        $this->model = $schedule;
+    }
+
+    /**
+     * @param int|null $id
+     * @return Schedule[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getSchedules(int $id = null)
     {
         if (isset($id)) {
-            return Schedule::findOrFail($id);
+            return $this->model::findOrFail($id);
         }
-        return Schedule::all();
+        return $this->model::all();
     }
 
-    public static function createSchedule(
-        User $user,
+    /**
+     * @param string $name
+     * @param string $monday
+     * @param string $tuesday
+     * @param string $wednesday
+     * @param string $thursday
+     * @param string $friday
+     * @param string $saturday
+     * @param string $sunday
+     * @param string $holiday
+     * @param string $particular
+     * @return mixed
+     */
+    public function create(
         string $name,
         string $monday,
         string $tuesday,
@@ -32,68 +60,17 @@ class SchedulesRepository
         string $particular
     )
     {
-        if (SchedulesPolicy::canCreate($user)) {
-            CacheRepository::cacheProductsInfo('delete', 'schedules');
-            return Schedule::create([
-                'name' => $name,
-                'monday' => $monday,
-                'tuesday' => $tuesday,
-                'wednesday' => $wednesday,
-                'thursday' => $thursday,
-                'friday' => $friday,
-                'saturday' => $saturday,
-                'sunday' => $sunday,
-                'holiday' => $holiday,
-                'particular' => $particular
-            ]);
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public static function changeSchedule(
-        User $user,
-        int $id,
-        string $name,
-        string $monday,
-        string $tuesday,
-        string $wednesday,
-        string $thursday,
-        string $friday,
-        string $saturday,
-        string $sunday,
-        string $holiday,
-        string $particular
-    )
-    {
-        if (SchedulesPolicy::canUpdate($user)) {
-            $schedule = Schedule::findOrFail($id);
-            $schedule->fill([
-                'name' => $name,
-                'monday' => $monday,
-                'tuesday' => $tuesday,
-                'wednesday' => $wednesday,
-                'thursday' => $thursday,
-                'friday' => $friday,
-                'saturday' => $saturday,
-                'sunday' => $sunday,
-                'holiday' => $holiday,
-                'particular' => $particular
-            ])->save();
-            CacheRepository::cacheProductsInfo('delete', 'schedules');
-            return $schedule;
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public static function deleteSchedules(User $user, int $id)
-    {
-        if (SchedulesPolicy::canDelete($user)) {
-            CacheRepository::cacheProductsInfo('delete', 'schedules');
-            return Schedule::findOrFail($id)->delete();
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
+        return $this->model::create([
+            'name' => $name,
+            'monday' => $monday,
+            'tuesday' => $tuesday,
+            'wednesday' => $wednesday,
+            'thursday' => $thursday,
+            'friday' => $friday,
+            'saturday' => $saturday,
+            'sunday' => $sunday,
+            'holiday' => $holiday,
+            'particular' => $particular
+        ]);
     }
 }

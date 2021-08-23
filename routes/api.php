@@ -46,10 +46,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
 
         Route::prefix('points_of_sale')->group(function () {
-            Route::get('schedules', 'PointsOfSaleSchedulesController@getSchedules');
-            Route::post('schedules', 'PointsOfSaleSchedulesController@createSchedule');
-            Route::put('schedules', 'PointsOfSaleSchedulesController@changeSchedule');
-            Route::delete('schedules', 'PointsOfSaleSchedulesController@deleteSchedules');
+            Route::get('schedules', 'SchedulesController@getSchedules');
+            Route::post('schedules', 'SchedulesController@createSchedule');
+            Route::put('schedules', 'SchedulesController@changeSchedule');
+            Route::delete('schedules', 'SchedulesController@deleteSchedules');
 
             Route::get('points_of_sale', 'PointsOfSaleController@getPoints');
             Route::post('points_of_sale', 'PointsOfSaleController@createPoints');

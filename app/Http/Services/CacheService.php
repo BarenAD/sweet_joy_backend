@@ -1,21 +1,21 @@
 <?php
 
 
-namespace App\Repositories;
+namespace App\Http\Services;
 
 
 use Illuminate\Support\Facades\Cache;
 
-class CacheRepository
+class CacheService
 {
     public static function cacheAdminGrants(int $idUser, string $action, $value = null) {
         $cacheTimeout = 1800;
         $tags = ['adminGrants'];
         if (isset($idUser)) {
             $cacheKey = 'cache_admin_grants_user_' . $idUser;
-            return CacheRepository::_PrivateAlgorithmCache($action, $tags, $cacheKey, $cacheTimeout, $value);
+            return CacheService::_PrivateAlgorithmCache($action, $tags, $cacheKey, $cacheTimeout, $value);
         } elseif ($action === 'flush') {
-            return CacheRepository::_PrivateAlgorithmCache($action, $tags, null, null, null);
+            return CacheService::_PrivateAlgorithmCache($action, $tags, null, null, null);
         }
         return null;
     }
@@ -24,7 +24,7 @@ class CacheRepository
         $tags = ['cache_products_info'];
         $cacheKey = 'cache_products_info_' . $subKey;
         $cacheTimeout = 21600;
-        return CacheRepository::_PrivateAlgorithmCache($action, $tags, $cacheKey, $cacheTimeout, $value);
+        return CacheService::_PrivateAlgorithmCache($action, $tags, $cacheKey, $cacheTimeout, $value);
     }
 
     public static function _PrivateAlgorithmCache(

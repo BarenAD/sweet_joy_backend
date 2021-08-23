@@ -3,18 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeOrCreateSchedule;
-use App\Repositories\SchedulesRepository;
+use App\Http\Services\SchedulesService;
 use Illuminate\Http\Request;
 
-class PointsOfSaleSchedulesController extends Controller
+/**
+ * Class SchedulesController
+ * @package App\Http\Controllers
+ */
+class SchedulesController extends Controller
 {
-    public function getSchedules(Request $request) {
-        return response(SchedulesRepository::getSchedules($request->get('id')), 200);
+    private $schedulesService;
+
+    /**
+     * SchedulesController constructor.
+     * @param SchedulesService $schedulesService
+     */
+    public function __construct(SchedulesService $schedulesService)
+    {
+        $this->schedulesService = $schedulesService;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function getSchedules(Request $request) {
+        return response($this->schedulesService->getSchedules($request->get('id')), 200);
+    }
+
+    /**
+     * @param ChangeOrCreateSchedule $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function createSchedule(ChangeOrCreateSchedule $request) {
         return response(
-            SchedulesRepository::createSchedule(
+            $this->schedulesService->createSchedule(
                 $request->user(),
                 $request->get('name'),
                 $request->get('monday'),
@@ -31,9 +54,13 @@ class PointsOfSaleSchedulesController extends Controller
         );
     }
 
+    /**
+     * @param ChangeOrCreateSchedule $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function changeSchedule(ChangeOrCreateSchedule $request) {
         return response(
-            SchedulesRepository::changeSchedule(
+            $this->schedulesService->changeSchedule(
                 $request->user(),
                 (int) $request->get('id'),
                 $request->get('name'),
@@ -51,7 +78,11 @@ class PointsOfSaleSchedulesController extends Controller
         );
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function deleteSchedules(Request $request) {
-        return response(SchedulesRepository::deleteSchedules($request->user(), $request->get('id')), 200);
+        return response($this->schedulesService->deleteSchedules($request->user(), $request->get('id')), 200);
     }
 }

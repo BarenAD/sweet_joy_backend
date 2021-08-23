@@ -3,18 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeUser;
+use App\Http\Services\UserService;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
+/**
+ * Class UsersController
+ * @package App\Http\Controllers
+ */
 class UsersController extends Controller
 {
-    public function getUsers(Request $request) {
-        return response(UserRepository::getUsers($request->get('id')), 200);
+    private $userService;
+
+    /**
+     * UsersController constructor.
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function getUsers(Request $request) {
+        return response($this->userService->getUsers($request->get('id')), 200);
+    }
+
+    /**
+     * @param ChangeUser $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function changeUser(ChangeUser $request) {
         return response(
-            UserRepository::changeUser(
+            $this->userService->changeUser(
                 $request->user(),
                 $request->get('id'),
                 $request->get('fio'),
@@ -29,7 +53,11 @@ class UsersController extends Controller
         );
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function deleteUser(Request $request) {
-        return response(UserRepository::deleteUser($request->user(), $request->get('id')), 200);
+        return response($this->userService->deleteUser($request->user(), $request->get('id')), 200);
     }
 }

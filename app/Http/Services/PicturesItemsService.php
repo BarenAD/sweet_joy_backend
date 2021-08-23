@@ -1,20 +1,29 @@
 <?php
 
 
-namespace App\Repositories;
+namespace App\Http\Services;
 
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
-class PicturesItemsRepository
+/**
+ * Class PicturesItemsService
+ * @package App\Http\Services
+ */
+class PicturesItemsService
 {
     private $pathForPictures = 'item_images/';
     private $pathForMiniPictures = 'item_images/mini/';
     private $pathPublicToStorage = 'storage/';
     private $pathForStorageToRootImages = 'public/';
 
+    /**
+     * @param $nameItem
+     * @param $picture
+     * @return array
+     */
     public function savePictureForItem($nameItem, $picture) {
         $newNameForFile = md5($nameItem . '.' . Str::random(5)) . '.jpg';
         $fullPathForPicture = $this->pathPublicToStorage . $this->pathForPictures . $newNameForFile;
@@ -33,6 +42,10 @@ class PicturesItemsRepository
         ];
     }
 
+    /**
+     * @param $namePicture
+     * @return bool
+     */
     public function deletePictureForItem($namePicture) {
         return Storage::delete([
             $this->pathForStorageToRootImages . $this->pathForPictures .  $namePicture,

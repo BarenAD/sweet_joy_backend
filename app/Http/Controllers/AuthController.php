@@ -26,7 +26,7 @@ class AuthController extends Controller
         $user = User::where('login', $request->login)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
+            return response()->json(['error' => 'Логин или пароль неверные.'], 401);
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;

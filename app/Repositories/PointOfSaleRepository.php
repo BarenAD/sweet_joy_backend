@@ -4,56 +4,49 @@
 namespace App\Repositories;
 
 
-use App\Http\Services\GeneratedAborting;
 use App\Models\PointOfSale;
-use App\Models\User;
-use App\Policies\PointOfSalePolicy;
 
+/**
+ * Class PointOfSaleRepository
+ * @package App\Repositories
+ */
 class PointOfSaleRepository
 {
+    private $model;
 
-    public static function getPointsOfSale(int $id = null) {
+    /**
+     * PointOfSaleRepository constructor.
+     * @param PointOfSale $pointOfSale
+     */
+    public function __construct(PointOfSale $pointOfSale)
+    {
+        $this->model = $pointOfSale;
+    }
+
+    /**
+     * @param int|null $id
+     * @return PointOfSale[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getPointsOfSale(int $id = null)
+    {
         if (isset($id)) {
-            return PointOfSale::findOrFail($id);
+            return $this->model::findOrFail($id);
         }
-        return PointOfSale::all();
+        return $this->model::all();
     }
 
-    public static function createPointOfSale(User $user, int $id_s, string $address, string $phone) {
-        if (PointOfSalePolicy::canCreate($user)) {
-            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
-            return PointOfSale::create([
-                'id_s' => $id_s,
-                'address' => $address,
-                'phone' => $phone,
-            ]);
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public static function changePointOfSale(User $user, int $id, int $id_s, string $address, string $phone) {
-        $pointOfSale = PointOfSale::findOrFail($id);
-        if (PointOfSalePolicy::canUpdate($user, $pointOfSale)) {
-            $pointOfSale->fill([
-                'id_s' => $id_s,
-                'address' => $address,
-                'phone' => $phone,
-            ])->save();
-            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-        return $pointOfSale;
-    }
-
-    public static function deletePointOfSale(User $user, int $id) {
-        $pointOfSale = PointOfSale::findOrFail($id);
-        if (PointOfSalePolicy::canDelete($user)) {
-            CacheRepository::cacheProductsInfo('delete', 'points_of_sale');
-            return $pointOfSale->delete();
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
+    /**
+     * @param int $id_schedule
+     * @param string $address
+     * @param string $phone
+     * @return mixed
+     */
+    public function create(int $id_schedule, string $address, string $phone)
+    {
+        return $this->model::create([
+            'id_s' => $id_schedule,
+            'address' => $address,
+            'phone' => $phone,
+        ]);
     }
 }
