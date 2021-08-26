@@ -4,9 +4,9 @@
 namespace App\Http\Services;
 
 
+use App\Models\AdminInformation;
+use App\Models\AdminRole;
 use App\Models\SuperAdmin;
-use App\Repositories\AdminInformationRepository;
-use App\Repositories\AdminRolesRepository;
 
 class AdminGrantsService
 {
@@ -21,11 +21,11 @@ class AdminGrantsService
                 if (isset($isSuperAdmin)) {
                     $result = "is_super_admin";
                 } else {
-                    $adminInfo = AdminInformationRepository::getAdmins($idUser)->toArray();
+                    $adminInfo = AdminInformation::where('id_u', $idUser)->get()->toArray();
                     if (count($adminInfo) === 0) {
                         $result = null;
                     } else {
-                        $adminRoles = AdminRolesRepository::getRolesActions();
+                        $adminRoles = AdminRole::all();
 
                         foreach ($adminInfo as $id_point_of_sale => $arrayRoles) {
                             $result[$id_point_of_sale] = [];
