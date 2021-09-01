@@ -1,17 +1,23 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
-     *
-     * @return void
+     * @throws Exception
      */
     public function run()
     {
-        // $this->call(UserSeeder::class);
-        $this->call(AdminActionsSeeder::class);
+        try {
+            DB::transaction(function () {
+                $this->call(DemoDBSeeder::class);
+                $this->call(AdminActionsSeeder::class);
+                DB::commit();
+            });
+        } catch (\Exception $error) {
+            throw new \Exception($error);
+        }
     }
 }

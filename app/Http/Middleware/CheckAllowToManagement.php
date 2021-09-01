@@ -6,6 +6,10 @@ use App\Http\Services\AdminGrantsService;
 use App\Http\Services\GeneratedAborting;
 use Closure;
 
+/**
+ * Class CheckAllowToManagement
+ * @package App\Http\Middleware
+ */
 class CheckAllowToManagement
 {
     /**
