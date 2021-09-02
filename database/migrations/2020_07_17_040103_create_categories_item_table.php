@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePointsOfSaleTable extends Migration
+class CreateCategoriesItemTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,9 @@ class CreatePointsOfSaleTable extends Migration
      */
     public function up()
     {
-        Schema::create('points_of_sale', function (Blueprint $table) {
+        Schema::create('categories_item', function (Blueprint $table) {
             $table->id();
-            $table->string('address');
-            $table->string('phone');
-            $table->longText('map_integration')->nullable();
-            $table->unsignedBigInteger('id_s');
-            $table->foreign('id_s')->references('id')->on('schedules');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ class CreatePointsOfSaleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('points_of_sale');
+        Schema::dropIfExists('categories_item');
     }
 }

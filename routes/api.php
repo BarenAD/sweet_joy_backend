@@ -31,6 +31,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('users', 'UsersController@changeUser');
         Route::delete('users', 'UsersController@deleteUser');
 
+        Route::prefix('configurations')->group(function () {
+            Route::get('site', 'SiteConfigurationsController@getSiteConfigurations');
+            Route::put('site', 'SiteConfigurationsController@changeSiteConfigurations');
+        });
+
         Route::prefix('admins')->group(function () {
             Route::get('actions', 'AdminActionsController@getActions');
 
@@ -72,6 +77,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('products_information', 'ProductInformationController@createProductInfo');
             Route::put('products_information', 'ProductInformationController@changeProductInfo');
             Route::delete('products_information', 'ProductInformationController@deleteProductInfo');
+        });
+
+        Route::prefix('documents')->group(function () {
+            Route::get('locations', 'LocationsDocumentsController@getLocationsDocuments');
+            Route::put('locations', 'LocationsDocumentsController@changeLocationsDocuments');
+
+            Route::get('documents', 'DocumentsController@getDocuments');
+            Route::post('documents', 'DocumentsController@createDocument');
+            Route::put('documents', 'DocumentsController@changeDocument');
+            Route::delete('documents', 'DocumentsController@deleteDocument');
         });
     });
 });

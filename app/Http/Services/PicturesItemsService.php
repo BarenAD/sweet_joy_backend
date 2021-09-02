@@ -14,10 +14,18 @@ use Intervention\Image\Facades\Image;
  */
 class PicturesItemsService
 {
-    private $pathForPictures = 'item_images/';
-    private $pathForMiniPictures = 'item_images/mini/';
-    private $pathPublicToStorage = 'storage/';
-    private $pathForStorageToRootImages = 'public/';
+    private $pathForPictures;
+    private $pathForMiniPictures;
+    private $pathPublicToStorage;
+    private $pathForStorageToRootImages;
+
+    public function __construct()
+    {
+        $this->pathForPictures = config('storage.path_for_pictures');
+        $this->pathForMiniPictures = config('storage.path_for_mini_pictures');
+        $this->pathPublicToStorage = config('storage.path_for_storage');
+        $this->pathForStorageToRootImages = config('storage.path_for_storage_for_storage_service');
+    }
 
     /**
      * @param $nameItem

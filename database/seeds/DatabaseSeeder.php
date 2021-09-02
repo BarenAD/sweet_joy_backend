@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
     {
         try {
             DB::transaction(function () {
+                $this->call(LocationsDocumentsSeeder::class);
+                $this->call(SiteConfigurationsSeeder::class);
                 $this->call(DemoDBSeeder::class);
                 $this->call(AdminActionsSeeder::class);
                 DB::commit();
