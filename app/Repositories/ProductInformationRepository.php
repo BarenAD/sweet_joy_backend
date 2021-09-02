@@ -42,8 +42,12 @@ class ProductInformationRepository
      * @param int $id_point_of_Sale
      * @return mixed
      */
-    public function create(int $price, int $count, int $id_item, int $id_point_of_Sale)
-    {
+    public function create(
+        int $id_item,
+        int $id_point_of_Sale,
+        int $price = null,
+        int $count = null
+    ){
         return $this->model::create([
             'price' => $price,
             'count' => $count,

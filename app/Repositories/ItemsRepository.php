@@ -50,10 +50,10 @@ class ItemsRepository
         string $picture,
         string $miniature_picture,
         string $name,
-        string $composition,
-        string $manufacturer,
-        string $description,
-        string $product_unit
+        string $composition = null,
+        string $manufacturer = null,
+        string $description = null,
+        string $product_unit = null
     ){
         return $this->model::create([
             'picture' => $picture,

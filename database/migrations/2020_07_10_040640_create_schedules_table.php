@@ -23,8 +23,8 @@ class CreateSchedulesTable extends Migration
             $table->string('friday');
             $table->string('saturday');
             $table->string('sunday');
-            $table->string('holiday');
-            $table->string('particular');
+            $table->string('holiday')->nullable();
+            $table->string('particular')->nullable();
             $table->timestamps();
         });
     }

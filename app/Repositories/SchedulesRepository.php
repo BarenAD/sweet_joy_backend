@@ -56,8 +56,8 @@ class SchedulesRepository
         string $friday,
         string $saturday,
         string $sunday,
-        string $holiday,
-        string $particular
+        string $holiday = null,
+        string $particular = null
     )
     {
         return $this->model::create([

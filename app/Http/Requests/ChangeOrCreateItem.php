@@ -27,11 +27,11 @@ class ChangeOrCreateItem extends FormRequest
             'id' => 'numeric',
             'picture' => 'image|mimes:jpeg,jpg,png|max:2000',
             'name' => 'required|string|max:255',
-            'composition' => 'required|string|max:255',
-            'manufacturer' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'product_unit' => 'required|string|max:255',
-            'categories_item' => 'required|array',
+            'composition' => 'string|max:255',
+            'manufacturer' => 'string|max:255',
+            'description' => 'string|max:255',
+            'product_unit' => 'string|max:255',
+            'categories_item' => 'array',
             'categories_item.*' => 'numeric'
         ];
     }

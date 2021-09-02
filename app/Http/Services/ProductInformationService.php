@@ -50,12 +50,12 @@ class ProductInformationService
         User $user,
         int $id_item,
         int $id_point_of_Sale,
-        int $price,
-        int $count
+        int $price = null,
+        int $count = null
     ) {
         if (ProductInformationPolicy::canCreate($user, $id_point_of_Sale)) {
             CacheService::cacheProductsInfo('delete', 'products');
-            return $this->productInformationRepository->create($price, $count, $id_item, $id_point_of_Sale);
+            return $this->productInformationRepository->create($id_item, $id_point_of_Sale, $price, $count);
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
         }
@@ -75,8 +75,8 @@ class ProductInformationService
         int $id,
         int $id_i,
         int $id_pos,
-        int $price,
-        int $count
+        int $price = null,
+        int $count = null
     ) {
         $productInformation = $this->productInformationRepository->getProductsInformation($id);
         if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {

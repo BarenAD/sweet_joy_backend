@@ -63,8 +63,8 @@ class SchedulesService
         string $friday,
         string $saturday,
         string $sunday,
-        string $holiday,
-        string $particular
+        string $holiday = null,
+        string $particular = null
     )
     {
         if (SchedulesPolicy::canCreate($user)) {
@@ -112,8 +112,8 @@ class SchedulesService
         string $friday,
         string $saturday,
         string $sunday,
-        string $holiday,
-        string $particular
+        string $holiday = null,
+        string $particular = null
     )
     {
         if (SchedulesPolicy::canUpdate($user)) {

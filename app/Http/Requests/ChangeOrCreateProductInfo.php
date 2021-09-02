@@ -27,8 +27,8 @@ class ChangeOrCreateProductInfo extends FormRequest
             'id' => 'numeric',
             'id_i' => 'required|numeric',
             'id_pos' => 'required|numeric',
-            'price' => 'required|numeric',
-            'count' => 'required|numeric',
+            'price' => 'numeric',
+            'count' => 'numeric',
         ];
     }
 }

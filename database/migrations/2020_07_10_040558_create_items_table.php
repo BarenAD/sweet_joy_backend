@@ -18,10 +18,10 @@ class CreateItemsTable extends Migration
             $table->string('picture');
             $table->string('miniature_picture');
             $table->string('name');
-            $table->string('composition');
-            $table->string('manufacturer');
-            $table->string('description');
-            $table->string('product_unit');
+            $table->string('composition')->nullable();
+            $table->string('manufacturer')->nullable();
+            $table->string('description')->nullable();
+            $table->string('product_unit')->nullable();
             $table->timestamps();
         });
     }

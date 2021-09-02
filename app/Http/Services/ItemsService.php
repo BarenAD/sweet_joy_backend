@@ -101,11 +101,11 @@ class ItemsService
         User $user,
         $picture,
         string $name,
-        string $composition,
-        string $manufacturer,
-        string $description,
-        string $product_unit,
-        array $categories_item
+        string $composition = null,
+        string $manufacturer = null,
+        string $description = null,
+        string $product_unit = null,
+        array $categories_item = []
     ) {
         if (ItemPolicy::canCreate($user)) {
             $PicturesItemsService = new PicturesItemsService();
@@ -166,11 +166,11 @@ class ItemsService
         User $user,
         int $id,
         string $name,
-        string $composition,
-        string $manufacturer,
-        string $description,
-        string $product_unit,
-        array $categories_item,
+        string $composition = null,
+        string $manufacturer = null,
+        string $description = null,
+        string $product_unit = null,
+        array $categories_item = [],
         $picture = null
     ) {
         if (ItemPolicy::canUpdate($user)) {
