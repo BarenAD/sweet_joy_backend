@@ -28,6 +28,7 @@ class ChangeOrCreatePointOfSale extends FormRequest
             'id_s' => 'required|numeric',
             'address' => 'required|string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',
+            'map_integration' => 'string',
         ];
     }
 }

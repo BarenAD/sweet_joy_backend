@@ -39,14 +39,20 @@ class PointOfSaleRepository
      * @param int $id_schedule
      * @param string $address
      * @param string $phone
+     * @param string|null $map_integration
      * @return mixed
      */
-    public function create(int $id_schedule, string $address, string $phone)
-    {
+    public function create(
+        int $id_schedule,
+        string $address,
+        string $phone,
+        string $map_integration = null
+    ) {
         return $this->model::create([
             'id_s' => $id_schedule,
             'address' => $address,
             'phone' => $phone,
+            'map_integration' => $map_integration,
         ]);
     }
 }

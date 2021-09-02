@@ -42,7 +42,8 @@ class PointsOfSaleController extends Controller
                 $request->user(),
                 $request->get('id_s'),
                 $request->get('address'),
-                $request->get('phone')
+                $request->get('phone'),
+                $request->get('map_integration')
             ),
             200
         );
@@ -59,7 +60,8 @@ class PointsOfSaleController extends Controller
                 $request->get('id'),
                 $request->get('id_s'),
                 $request->get('address'),
-                $request->get('phone')
+                $request->get('phone'),
+                $request->get('map_integration')
             ),
             200
         );

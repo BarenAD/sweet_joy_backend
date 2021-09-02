@@ -43,12 +43,19 @@ class PointsOfSaleService
      * @param int $id_schedule
      * @param string $address
      * @param string $phone
+     * @param string|null $map_integration
      * @return mixed
      */
-    public function createPointOfSale(User $user, int $id_schedule, string $address, string $phone) {
+    public function createPointOfSale(
+        User $user,
+        int $id_schedule,
+        string $address,
+        string $phone,
+        string $map_integration = null
+    ) {
         if (PointOfSalePolicy::canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'points_of_sale');
-            return $this->pointOfSaleRepository->create($id_schedule, $address, $phone);
+            return $this->pointOfSaleRepository->create($id_schedule, $address, $phone, $map_integration);
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
         }
@@ -60,15 +67,24 @@ class PointsOfSaleService
      * @param int $id_schedule
      * @param string $address
      * @param string $phone
+     * @param string|null $map_integration
      * @return PointOfSaleRepository[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function changePointOfSale(User $user, int $id, int $id_schedule, string $address, string $phone) {
+    public function changePointOfSale(
+        User $user,
+        int $id,
+        int $id_schedule,
+        string $address,
+        string $phone,
+        string $map_integration = null
+    ) {
         $pointOfSale = $this->pointOfSaleRepository->getPointsOfSale($id);
         if (PointOfSalePolicy::canUpdate($user, $pointOfSale)) {
             $pointOfSale->fill([
                 'id_s' => $id_schedule,
                 'address' => $address,
                 'phone' => $phone,
+                'map_integration' => $map_integration,
             ])->save();
             CacheService::cacheProductsInfo('delete', 'points_of_sale');
         } else {
