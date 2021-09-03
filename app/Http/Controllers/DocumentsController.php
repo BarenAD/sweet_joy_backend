@@ -26,11 +26,12 @@ class DocumentsController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getDocuments(Request $request)
+    public function getDocuments(Request $request, int $id = null)
     {
-        return response($this->documentsService->getDocuments($request->get('id')), 200);
+        return response($this->documentsService->getDocuments($id), 200);
     }
 
     /**
@@ -49,26 +50,28 @@ class DocumentsController extends Controller
 
     /**
      * @param ChangeDocuments $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeDocument(ChangeDocuments $request)
+    public function changeDocument(ChangeDocuments $request, int $id)
     {
         return response($this->documentsService->changeDocument(
             $request->user(),
-            (int) $request->get('id'),
+            $id,
             $request->get('name')
         ), 200);
     }
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteDocument(Request $request)
+    public function deleteDocument(Request $request, int $id)
     {
         return response($this->documentsService->deleteDocument(
             $request->user(),
-            (int) $request->get('id')
+            $id
         ), 200);
     }
 

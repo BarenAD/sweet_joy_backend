@@ -26,11 +26,12 @@ class PointsOfSaleController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getPoints(Request $request)
+    public function getPoints(Request $request, int $id = null)
     {
-        return response($this->pointsOfSaleService->getPointsOfSale($request->get('id')), 200);
+        return response($this->pointsOfSaleService->getPointsOfSale($id), 200);
     }
 
     /**
@@ -53,14 +54,15 @@ class PointsOfSaleController extends Controller
 
     /**
      * @param ChangeOrCreatePointOfSale $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changePoints(ChangeOrCreatePointOfSale $request)
+    public function changePoints(ChangeOrCreatePointOfSale $request, int $id)
     {
         return response(
             $this->pointsOfSaleService->changePointOfSale(
                 $request->user(),
-                $request->get('id'),
+                $id,
                 $request->get('id_s'),
                 $request->get('address'),
                 $request->get('phone'),
@@ -72,10 +74,11 @@ class PointsOfSaleController extends Controller
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deletePoints(Request $request)
+    public function deletePoints(Request $request, int $id)
     {
-        return response($this->pointsOfSaleService->deletePointOfSale($request->user(), $request->get('id')), 200);
+        return response($this->pointsOfSaleService->deletePointOfSale($request->user(), $id), 200);
     }
 }

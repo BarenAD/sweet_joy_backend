@@ -24,7 +24,6 @@ class ChangeSiteConfiguration extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|numeric',
             'value' => 'string',
         ];
     }

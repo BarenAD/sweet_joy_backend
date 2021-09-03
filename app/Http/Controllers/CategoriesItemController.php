@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
  * Class ProductCategoriesItemController
  * @package App\Http\Controllers
  */
-class ProductCategoriesItemController extends Controller
+class CategoriesItemController extends Controller
 {
     private $categoriesItemService;
 
@@ -25,11 +25,12 @@ class ProductCategoriesItemController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getCategories(Request $request)
+    public function getCategories(Request $request, int $id = null)
     {
-        return response($this->categoriesItemService->getCategories($request->get('id')), 200);
+        return response($this->categoriesItemService->getCategories($id), 200);
     }
 
     /**
@@ -43,19 +44,21 @@ class ProductCategoriesItemController extends Controller
 
     /**
      * @param ChangeOrCreateCategoryItem $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeCategory(ChangeOrCreateCategoryItem $request)
+    public function changeCategory(ChangeOrCreateCategoryItem $request, int $id)
     {
-        return response($this->categoriesItemService->changeCategory($request->user(), (int) $request->get('id'), $request->get('name')), 200);
+        return response($this->categoriesItemService->changeCategory($request->user(), $id, $request->get('name')), 200);
     }
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteCategory(Request $request)
+    public function deleteCategory(Request $request, int $id)
     {
-        return response($this->categoriesItemService->deleteCategory($request->user(), $request->get('id')), 200);
+        return response($this->categoriesItemService->deleteCategory($request->user(), $id), 200);
     }
 }

@@ -25,11 +25,12 @@ class SchedulesController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getSchedules(Request $request)
+    public function getSchedules(Request $request, int $id = null)
     {
-        return response($this->schedulesService->getSchedules($request->get('id')), 200);
+        return response($this->schedulesService->getSchedules($id), 200);
     }
 
     /**
@@ -58,14 +59,15 @@ class SchedulesController extends Controller
 
     /**
      * @param ChangeOrCreateSchedule $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeSchedule(ChangeOrCreateSchedule $request)
+    public function changeSchedule(ChangeOrCreateSchedule $request, int $id)
     {
         return response(
             $this->schedulesService->changeSchedule(
                 $request->user(),
-                (int) $request->get('id'),
+                $id,
                 $request->get('name'),
                 $request->get('monday'),
                 $request->get('tuesday'),
@@ -83,10 +85,11 @@ class SchedulesController extends Controller
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteSchedules(Request $request)
+    public function deleteSchedules(Request $request, int $id)
     {
-        return response($this->schedulesService->deleteSchedules($request->user(), $request->get('id')), 200);
+        return response($this->schedulesService->deleteSchedules($request->user(), $id), 200);
     }
 }

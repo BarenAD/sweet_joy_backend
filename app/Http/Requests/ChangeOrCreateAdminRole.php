@@ -24,7 +24,6 @@ class ChangeOrCreateAdminRole extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'name' => 'required|string|max:255',
             'actions' => 'required|array',
             'actions.*' => 'numeric'

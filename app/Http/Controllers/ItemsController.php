@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ChangeOrCreateItem;
+use App\Http\Requests\ChangeItem;
+use App\Http\Requests\CreateItem;
 use App\Http\Services\ItemsService;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
  * Class ProductItemsController
  * @package App\Http\Controllers
  */
-class ProductItemsController extends Controller
+class ItemsController extends Controller
 {
     private $itemsService;
 
@@ -25,18 +26,19 @@ class ProductItemsController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getItems(Request $request)
+    public function getItems(Request $request, int $id = null)
     {
-        return response($this->itemsService->getItems($request->get('id')), 200);
+        return response($this->itemsService->getItems($id), 200);
     }
 
     /**
-     * @param ChangeOrCreateItem $request
+     * @param CreateItem $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createItem(ChangeOrCreateItem $request)
+    public function createItem(CreateItem $request)
     {
         if ($request->hasFile('picture')) {
             try {
@@ -60,16 +62,17 @@ class ProductItemsController extends Controller
     }
 
     /**
-     * @param ChangeOrCreateItem $request
+     * @param ChangeItem $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeItem(ChangeOrCreateItem $request)
+    public function changeItem(ChangeItem $request, int $id)
     {
         try {
             return response(
                 $this->itemsService->changeItem(
                     $request->user(),
-                    $request->get('id'),
+                    $id,
                     $request->input('name'),
                     $request->input('composition'),
                     $request->input('manufacturer'),
@@ -86,10 +89,11 @@ class ProductItemsController extends Controller
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteItem(Request $request)
+    public function deleteItem(Request $request, int $id)
     {
-        return response($this->itemsService->deleteItem($request->user(), $request->get('id')), 200);
+        return response($this->itemsService->deleteItem($request->user(), $id), 200);
     }
 }

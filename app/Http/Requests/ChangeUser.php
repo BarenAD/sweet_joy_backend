@@ -24,7 +24,6 @@ class ChangeUser extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'fio' => 'string|min:1|max:255',
             'login' => 'string|min:1|max:255',
             'password' => 'string|min:1|max:255',

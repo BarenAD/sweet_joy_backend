@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeOrCreateItem extends FormRequest
+class ChangeItem extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class ChangeOrCreateItem extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'picture' => 'image|mimes:jpeg,jpg,png|max:2000',
             'name' => 'required|string|max:255',
             'composition' => 'string|max:255',

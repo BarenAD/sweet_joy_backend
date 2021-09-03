@@ -40,11 +40,12 @@ class ProductInformationController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getProductsInfo(Request $request)
+    public function getProductsInfo(Request $request, int $id = null)
     {
-        return response($this->productInformationService->getProductsInfo($request->get('id')), 200);
+        return response($this->productInformationService->getProductsInfo($id), 200);
     }
 
     /**
@@ -67,14 +68,15 @@ class ProductInformationController extends Controller
 
     /**
      * @param ChangeOrCreateProductInfo $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeProductInfo(ChangeOrCreateProductInfo $request)
+    public function changeProductInfo(ChangeOrCreateProductInfo $request, int $id)
     {
         return response(
             $this->productInformationService->changeProductInfo(
                 $request->user(),
-                (int) $request->get('id'),
+                $id,
                 $request->get('id_i'),
                 $request->get('id_pos'),
                 $request->get('price'),
@@ -86,13 +88,14 @@ class ProductInformationController extends Controller
 
     /**
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteProductInfo(Request $request)
+    public function deleteProductInfo(Request $request, int $id)
     {
         return response($this->productInformationService->deleteProductInfo(
             $request->user(),
-            (int) $request->get('id')
+            $id
         ), 200);
     }
 }

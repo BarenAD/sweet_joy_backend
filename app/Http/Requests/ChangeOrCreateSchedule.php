@@ -24,7 +24,6 @@ class ChangeOrCreateSchedule extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'name' => 'required|string|max:255',
             'monday' => 'required|string|max:255',
             'tuesday' => 'required|string|max:255',

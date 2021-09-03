@@ -24,7 +24,6 @@ class ChangeLocationsDocuments extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|numeric',
             'id_d' => 'required|numeric',
         ];
     }

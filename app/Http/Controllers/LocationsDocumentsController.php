@@ -25,22 +25,24 @@ class LocationsDocumentsController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getLocationsDocuments(Request $request)
+    public function getLocationsDocuments(Request $request, int $id = null)
     {
-        return response($this->locationsDocumentsService->getLocationsDocuments($request->get('id')), 200);
+        return response($this->locationsDocumentsService->getLocationsDocuments($id), 200);
     }
 
     /**
      * @param ChangeLocationsDocuments $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeLocationsDocuments(ChangeLocationsDocuments $request)
+    public function changeLocationsDocuments(ChangeLocationsDocuments $request, int $id)
     {
         return response($this->locationsDocumentsService->changeLocationsDocuments(
             $request->user(),
-            (int) $request->get('id'),
+            $id,
             (int) $request->get('id_d')
         ), 200);
     }

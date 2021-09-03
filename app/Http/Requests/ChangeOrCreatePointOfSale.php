@@ -24,7 +24,6 @@ class ChangeOrCreatePointOfSale extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'id_s' => 'required|numeric',
             'address' => 'required|string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',

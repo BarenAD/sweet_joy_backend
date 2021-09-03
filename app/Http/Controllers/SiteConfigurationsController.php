@@ -25,22 +25,24 @@ class SiteConfigurationsController extends Controller
 
     /**
      * @param Request $request
+     * @param int|null $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getSiteConfigurations(Request $request)
+    public function getSiteConfigurations(Request $request, int $id = null)
     {
-        return response($this->siteConfigurationsService->getSiteConfigurations($request->get('id')), 200);
+        return response($this->siteConfigurationsService->getSiteConfigurations($id), 200);
     }
 
     /**
      * @param ChangeSiteConfiguration $request
+     * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeSiteConfigurations(ChangeSiteConfiguration $request)
+    public function changeSiteConfigurations(ChangeSiteConfiguration $request, int $id)
     {
         return response($this->siteConfigurationsService->changeSiteConfigurations(
             $request->user(),
-            (int) $request->get('id'),
+            $id,
             $request->get('value')
         ), 200);
     }
