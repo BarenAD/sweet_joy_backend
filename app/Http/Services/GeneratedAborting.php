@@ -8,25 +8,29 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class GeneratedAborting
 {
-    public static function notFound() {
+    public static function notFound()
+    {
         GeneratedAborting::_generatedHttpException([
             'Ничего не найдено'
         ], 404);
     }
 
-    public static function accessDeniedGrandsAdmin() {
+    public static function accessDeniedGrandsAdmin()
+    {
         GeneratedAborting::_generatedHttpException([
             'Недостаточно прав администрирования.'
         ], 403);
     }
 
-    public static function adminAlreadyExist() {
+    public static function adminAlreadyExist()
+    {
         GeneratedAborting::_generatedHttpException([
             'Данный администратор уже существует. Используйте PUT метод.'
         ], 409);
     }
 
-    public static function youAreNotAdmin() {
+    public static function youAreNotAdmin()
+    {
         GeneratedAborting::_generatedHttpException([
             'Вы не являетесь администратором.'
         ], 403);

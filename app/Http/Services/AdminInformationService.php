@@ -35,7 +35,8 @@ class AdminInformationService
      * @param int|null $id_u
      * @return \App\Models\AdminInformation[]|array|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAdmins(int $id_u = null) {
+    public function getAdmins(int $id_u = null)
+    {
         if (isset($id_u)) {
             $admins = $this->adminInformationRepository->getAdminsInfo($id_u)->groupBy('id_pos');
             if (count($admins) === 0) {
@@ -157,7 +158,8 @@ class AdminInformationService
      * @param int $id_u
      * @return mixed
      */
-    public function deleteAdmin(User $user, int $id_u) {
+    public function deleteAdmin(User $user, int $id_u)
+    {
         return DB::transaction(function () use ($user, $id_u) {
             $admins = $this->adminInformationRepository->getAdminsInfo($id_u);
             $result = 0;

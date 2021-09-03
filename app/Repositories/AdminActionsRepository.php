@@ -22,7 +22,8 @@ class AdminActionsRepository
     /**
      * @return AdminAction[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getAllActions() {
+    public function getAllActions()
+    {
         return $this->model::all();
     }
 }

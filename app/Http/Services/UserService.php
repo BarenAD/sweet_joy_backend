@@ -97,7 +97,8 @@ class UserService
      * @param int $id
      * @return mixed
      */
-    public function deleteUser(User $user, int $id) {
+    public function deleteUser(User $user, int $id)
+    {
         if (UsersPolicy::canDelete($user)) {
             return $this->userRepository->getUsers($id)->delete();
         } else {

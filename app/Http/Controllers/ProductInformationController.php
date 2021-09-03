@@ -33,7 +33,8 @@ class ProductInformationController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getProductsForUsers(Request $request) {
+    public function getProductsForUsers(Request $request)
+    {
         return response($this->productsForUserService->getProductsForUsers(), 200);
     }
 
@@ -41,7 +42,8 @@ class ProductInformationController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getProductsInfo(Request $request) {
+    public function getProductsInfo(Request $request)
+    {
         return response($this->productInformationService->getProductsInfo($request->get('id')), 200);
     }
 
@@ -49,7 +51,8 @@ class ProductInformationController extends Controller
      * @param ChangeOrCreateProductInfo $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createProductInfo(ChangeOrCreateProductInfo $request) {
+    public function createProductInfo(ChangeOrCreateProductInfo $request)
+    {
         return response(
             $this->productInformationService->createProductInfo(
                 $request->user(),
@@ -66,7 +69,8 @@ class ProductInformationController extends Controller
      * @param ChangeOrCreateProductInfo $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeProductInfo(ChangeOrCreateProductInfo $request) {
+    public function changeProductInfo(ChangeOrCreateProductInfo $request)
+    {
         return response(
             $this->productInformationService->changeProductInfo(
                 $request->user(),
@@ -84,7 +88,8 @@ class ProductInformationController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteProductInfo(Request $request) {
+    public function deleteProductInfo(Request $request)
+    {
         return response($this->productInformationService->deleteProductInfo(
             $request->user(),
             (int) $request->get('id')

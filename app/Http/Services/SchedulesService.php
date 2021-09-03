@@ -65,8 +65,7 @@ class SchedulesService
         string $sunday,
         string $holiday = null,
         string $particular = null
-    )
-    {
+    ){
         if (SchedulesPolicy::canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'schedules');
             return $this->schedulesRepository->create(
@@ -114,8 +113,7 @@ class SchedulesService
         string $sunday,
         string $holiday = null,
         string $particular = null
-    )
-    {
+    ){
         if (SchedulesPolicy::canUpdate($user)) {
             $schedule = $this->schedulesRepository->getSchedules($id);
             $schedule->fill([

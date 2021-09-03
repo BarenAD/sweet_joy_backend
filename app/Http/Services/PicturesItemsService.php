@@ -32,7 +32,8 @@ class PicturesItemsService
      * @param $picture
      * @return array
      */
-    public function savePictureForItem($nameItem, $picture) {
+    public function savePictureForItem($nameItem, $picture)
+    {
         $newNameForFile = md5($nameItem . '.' . Str::random(5)) . '.jpg';
         $fullPathForPicture = $this->pathPublicToStorage . $this->pathForPictures . $newNameForFile;
         $fullPathForMiniPicture = $this->pathPublicToStorage . $this->pathForMiniPictures . $newNameForFile;
@@ -54,7 +55,8 @@ class PicturesItemsService
      * @param $namePicture
      * @return bool
      */
-    public function deletePictureForItem($namePicture) {
+    public function deletePictureForItem($namePicture)
+    {
         return Storage::delete([
             $this->pathForStorageToRootImages . $this->pathForPictures .  $namePicture,
             $this->pathForStorageToRootImages . $this->pathForMiniPictures . $namePicture,

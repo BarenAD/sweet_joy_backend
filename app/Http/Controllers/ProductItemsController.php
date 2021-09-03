@@ -27,7 +27,8 @@ class ProductItemsController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getItems(Request $request) {
+    public function getItems(Request $request)
+    {
         return response($this->itemsService->getItems($request->get('id')), 200);
     }
 
@@ -35,7 +36,8 @@ class ProductItemsController extends Controller
      * @param ChangeOrCreateItem $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createItem(ChangeOrCreateItem $request) {
+    public function createItem(ChangeOrCreateItem $request)
+    {
         if ($request->hasFile('picture')) {
             try {
                 return response(
@@ -61,7 +63,8 @@ class ProductItemsController extends Controller
      * @param ChangeOrCreateItem $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeItem(ChangeOrCreateItem $request) {
+    public function changeItem(ChangeOrCreateItem $request)
+    {
         try {
             return response(
                 $this->itemsService->changeItem(
@@ -85,7 +88,8 @@ class ProductItemsController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteItem(Request $request) {
+    public function deleteItem(Request $request)
+    {
         return response($this->itemsService->deleteItem($request->user(), $request->get('id')), 200);
     }
 }

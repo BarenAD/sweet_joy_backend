@@ -32,7 +32,8 @@ class DocumentsService
      * @param $path
      * @return mixed
      */
-    private function extractNameFromPath($path) {
+    private function extractNameFromPath($path)
+    {
         $explode = explode("/", $path);
         return end($explode);
     }

@@ -28,7 +28,8 @@ class PointsOfSaleController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getPoints(Request $request) {
+    public function getPoints(Request $request)
+    {
         return response($this->pointsOfSaleService->getPointsOfSale($request->get('id')), 200);
     }
 
@@ -36,7 +37,8 @@ class PointsOfSaleController extends Controller
      * @param ChangeOrCreatePointOfSale $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createPoints(ChangeOrCreatePointOfSale $request) {
+    public function createPoints(ChangeOrCreatePointOfSale $request)
+    {
         return response(
             $this->pointsOfSaleService->createPointOfSale(
                 $request->user(),
@@ -53,7 +55,8 @@ class PointsOfSaleController extends Controller
      * @param ChangeOrCreatePointOfSale $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changePoints(ChangeOrCreatePointOfSale $request) {
+    public function changePoints(ChangeOrCreatePointOfSale $request)
+    {
         return response(
             $this->pointsOfSaleService->changePointOfSale(
                 $request->user(),
@@ -71,7 +74,8 @@ class PointsOfSaleController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deletePoints(Request $request) {
+    public function deletePoints(Request $request)
+    {
         return response($this->pointsOfSaleService->deletePointOfSale($request->user(), $request->get('id')), 200);
     }
 }

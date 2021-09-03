@@ -34,7 +34,8 @@ class SiteConfigurationsService
      * @param int|null $id
      * @return \App\Models\SiteConfigurations[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getSiteConfigurations(int $id = null) {
+    public function getSiteConfigurations(int $id = null)
+    {
         return $this->siteConfigurationsRepository->getSiteConfigurations($id);
     }
 

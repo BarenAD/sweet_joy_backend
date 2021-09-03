@@ -34,7 +34,8 @@ class ProductInformationService
      * @param int|null $id
      * @return ProductInformationRepository[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getProductsInfo(int $id = null) {
+    public function getProductsInfo(int $id = null)
+    {
         return $this->productInformationRepository->getProductsInformation($id);
     }
 
@@ -98,7 +99,8 @@ class ProductInformationService
      * @param int $id
      * @return mixed
      */
-    public function deleteProductInfo(User $user, int $id) {
+    public function deleteProductInfo(User $user, int $id)
+    {
         $productInformation = $this->productInformationRepository->getProductsInformation($id);
         if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
             CacheService::cacheProductsInfo('delete', 'products');

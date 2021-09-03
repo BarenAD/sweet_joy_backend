@@ -34,7 +34,8 @@ class CategoriesItemService
      * @param int|null $id
      * @return CategoriesItemRepository[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getCategories(int $id = null) {
+    public function getCategories(int $id = null)
+    {
         return $this->categoriesItemService->getCategoriesItem($id);
     }
 
@@ -43,7 +44,8 @@ class CategoriesItemService
      * @param string $name
      * @return mixed
      */
-    public function createCategory(User $user, string $name) {
+    public function createCategory(User $user, string $name)
+    {
         if (CategoryItemPolicy::canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'categories');
             return $this->categoriesItemService->create($name);
@@ -58,7 +60,8 @@ class CategoriesItemService
      * @param string $name
      * @return CategoriesItemRepository[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function changeCategory(User $user, int $id, string $name) {
+    public function changeCategory(User $user, int $id, string $name)
+    {
         if (CategoryItemPolicy::canUpdate($user)) {
             $category = $this->categoriesItemService->getCategoriesItem($id);
             $category->fill([
@@ -76,7 +79,8 @@ class CategoriesItemService
      * @param int $id
      * @return mixed
      */
-    public function deleteCategory(User $user, int $id) {
+    public function deleteCategory(User $user, int $id)
+    {
         if (CategoryItemPolicy::canDelete($user)) {
             CacheService::cacheProductsInfo('delete', 'categories');
             return $this->categoriesItemService->getCategoriesItem($id)->delete();

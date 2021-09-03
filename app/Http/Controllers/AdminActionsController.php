@@ -25,7 +25,8 @@ class AdminActionsController extends Controller
     /**
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getActions() {
+    public function getActions()
+    {
         return response($this->actionsRepository->getAllActions(), 200);
     }
 }

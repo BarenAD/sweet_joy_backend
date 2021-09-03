@@ -41,7 +41,8 @@ class ItemsService
      * @param $itemCategories
      * @return array
      */
-    private function extractIdsFromCategoriesItem($itemCategories) {
+    private function extractIdsFromCategoriesItem($itemCategories)
+    {
         $resultArray = [];
         if (isset($itemCategories)) {
             foreach ($itemCategories as $category) {
@@ -55,7 +56,8 @@ class ItemsService
      * @param $path
      * @return mixed
      */
-    private function extractNamePictureFromPath($path) {
+    private function extractNamePictureFromPath($path)
+    {
         $explode = explode("/", $path);
         return end($explode);
     }
@@ -64,7 +66,8 @@ class ItemsService
      * @param int|null $id
      * @return array
      */
-    public function getItems(int $id = null) {
+    public function getItems(int $id = null)
+    {
         if (isset($id)) {
             $item = $this->itemsRepository->getItems($id);
             $itemCategories = $this->informationCategoriesItemRepository->getInfoCategoriesOnIDItem($id);
@@ -247,7 +250,8 @@ class ItemsService
      * @param int $id
      * @return mixed
      */
-    public function deleteItem(User $user, int $id) {
+    public function deleteItem(User $user, int $id)
+    {
         if (ItemPolicy::canDelete($user)) {
             $PicturesItemsService = new PicturesItemsService();
             $item = $this->itemsRepository->getItems($id);

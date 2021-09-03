@@ -35,7 +35,8 @@ class LocationsDocumentsService
      * @param int|null $id
      * @return \App\LocationsDocuments[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getLocationsDocuments(int $id = null) {
+    public function getLocationsDocuments(int $id = null)
+    {
         return $this->locationsDocumentsRepository->getLocationsDocuments($id);
     }
 

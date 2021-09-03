@@ -36,7 +36,8 @@ class SiteConfigurationsController extends Controller
      * @param ChangeSiteConfiguration $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeSiteConfigurations(ChangeSiteConfiguration $request) {
+    public function changeSiteConfigurations(ChangeSiteConfiguration $request)
+    {
         return response($this->siteConfigurationsService->changeSiteConfigurations(
             $request->user(),
             (int) $request->get('id'),

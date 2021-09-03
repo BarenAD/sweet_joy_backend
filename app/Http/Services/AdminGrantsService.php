@@ -10,7 +10,8 @@ use App\Models\SuperAdmin;
 
 class AdminGrantsService
 {
-    public static function getAdminsGrants(int $idUser) {
+    public static function getAdminsGrants(int $idUser)
+    {
         $result = CacheService::cacheAdminGrants($idUser, 'get');
         if (isset($result)) {
             return $result;

@@ -27,7 +27,8 @@ class ProductCategoriesItemController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getCategories(Request $request) {
+    public function getCategories(Request $request)
+    {
         return response($this->categoriesItemService->getCategories($request->get('id')), 200);
     }
 
@@ -35,7 +36,8 @@ class ProductCategoriesItemController extends Controller
      * @param ChangeOrCreateCategoryItem $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createCategory(ChangeOrCreateCategoryItem $request) {
+    public function createCategory(ChangeOrCreateCategoryItem $request)
+    {
         return response($this->categoriesItemService->createCategory($request->user(), $request->get('name')), 200);
     }
 
@@ -43,7 +45,8 @@ class ProductCategoriesItemController extends Controller
      * @param ChangeOrCreateCategoryItem $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeCategory(ChangeOrCreateCategoryItem $request) {
+    public function changeCategory(ChangeOrCreateCategoryItem $request)
+    {
         return response($this->categoriesItemService->changeCategory($request->user(), (int) $request->get('id'), $request->get('name')), 200);
     }
 
@@ -51,7 +54,8 @@ class ProductCategoriesItemController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteCategory(Request $request) {
+    public function deleteCategory(Request $request)
+    {
         return response($this->categoriesItemService->deleteCategory($request->user(), $request->get('id')), 200);
     }
 }

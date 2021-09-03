@@ -34,7 +34,8 @@ class PointsOfSaleService
      * @param int|null $id
      * @return PointOfSaleRepository[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getPointsOfSale(int $id = null) {
+    public function getPointsOfSale(int $id = null)
+    {
         return $this->pointOfSaleRepository->getPointsOfSale($id);
     }
 
@@ -98,7 +99,8 @@ class PointsOfSaleService
      * @param int $id
      * @return mixed
      */
-    public function deletePointOfSale(User $user, int $id) {
+    public function deletePointOfSale(User $user, int $id)
+    {
         $pointOfSale = $this->pointOfSaleRepository->getPointsOfSale($id);
         if (PointOfSalePolicy::canDelete($user)) {
             CacheService::cacheProductsInfo('delete', 'points_of_sale');

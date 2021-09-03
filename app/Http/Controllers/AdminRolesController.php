@@ -28,7 +28,8 @@ class AdminRolesController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getRoles(Request $request) {
+    public function getRoles(Request $request)
+    {
         return response($this->adminRolesService->getRoles($request->get('id')), 200);
     }
 
@@ -36,7 +37,8 @@ class AdminRolesController extends Controller
      * @param ChangeOrCreateAdminRole $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createRole(ChangeOrCreateAdminRole $request) {
+    public function createRole(ChangeOrCreateAdminRole $request)
+    {
         return response(
             $this->adminRolesService->createRole(
                 $request->user(),
@@ -51,7 +53,8 @@ class AdminRolesController extends Controller
      * @param ChangeOrCreateAdminRole $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeRole(ChangeOrCreateAdminRole $request) {
+    public function changeRole(ChangeOrCreateAdminRole $request)
+    {
         return response(
             $this->adminRolesService->changeRole(
                 $request->user(),
@@ -67,7 +70,8 @@ class AdminRolesController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteRole(Request $request) {
+    public function deleteRole(Request $request)
+    {
         return response($this->adminRolesService->deleteRole($request->user(), (int) $request->get('id')), 200);
     }
 }

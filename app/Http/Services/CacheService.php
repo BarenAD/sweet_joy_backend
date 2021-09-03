@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Cache;
 
 class CacheService
 {
-    public static function cacheAdminGrants(int $idUser, string $action, $value = null) {
+    public static function cacheAdminGrants(int $idUser, string $action, $value = null)
+    {
         $cacheTimeout = 1800;
         $tags = ['adminGrants'];
         if (isset($idUser)) {
@@ -20,7 +21,8 @@ class CacheService
         return null;
     }
 
-    public static function cacheProductsInfo(string $action, string $subKey = null, $value = null) {
+    public static function cacheProductsInfo(string $action, string $subKey = null, $value = null)
+    {
         $tags = ['cache_products_info'];
         $cacheKey = 'cache_products_info_' . $subKey;
         $cacheTimeout = 21600;

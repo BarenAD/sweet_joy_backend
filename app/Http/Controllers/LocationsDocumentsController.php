@@ -36,7 +36,8 @@ class LocationsDocumentsController extends Controller
      * @param ChangeLocationsDocuments $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeLocationsDocuments(ChangeLocationsDocuments $request) {
+    public function changeLocationsDocuments(ChangeLocationsDocuments $request)
+    {
         return response($this->locationsDocumentsService->changeLocationsDocuments(
             $request->user(),
             (int) $request->get('id'),

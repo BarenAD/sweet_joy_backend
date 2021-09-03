@@ -28,7 +28,8 @@ class UsersController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getUsers(Request $request) {
+    public function getUsers(Request $request)
+    {
         return response($this->userService->getUsers($request->get('id')), 200);
     }
 
@@ -36,7 +37,8 @@ class UsersController extends Controller
      * @param ChangeUser $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeUser(ChangeUser $request) {
+    public function changeUser(ChangeUser $request)
+    {
         return response(
             $this->userService->changeUser(
                 $request->user(),
@@ -57,7 +59,8 @@ class UsersController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteUser(Request $request) {
+    public function deleteUser(Request $request)
+    {
         return response($this->userService->deleteUser($request->user(), $request->get('id')), 200);
     }
 }

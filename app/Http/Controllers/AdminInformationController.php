@@ -29,7 +29,8 @@ class AdminInformationController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getAdmins(Request $request) {
+    public function getAdmins(Request $request)
+    {
         $actions = AdminInformationPolicy::canViewAny($request->user());
         if (!isset($actions)) {
             GeneratedAborting::accessDeniedGrandsAdmin();
@@ -41,7 +42,8 @@ class AdminInformationController extends Controller
      * @param ChangeOrCreateAdminInfo $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createAdmin(ChangeOrCreateAdminInfo $request) {
+    public function createAdmin(ChangeOrCreateAdminInfo $request)
+    {
         return response($this->adminInformationService->createAdmin(
             $request->user(),
             $request->get('id_u'),
@@ -53,7 +55,8 @@ class AdminInformationController extends Controller
      * @param ChangeOrCreateAdminInfo $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeAdmin(ChangeOrCreateAdminInfo $request) {
+    public function changeAdmin(ChangeOrCreateAdminInfo $request)
+    {
         return response($this->adminInformationService->changeAdmin(
             $request->user(),
             $request->get('id_u'),
@@ -65,7 +68,8 @@ class AdminInformationController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function deleteAdmin(Request $request) {
+    public function deleteAdmin(Request $request)
+    {
         return response($this->adminInformationService->deleteAdmin(
             $request->user(),
             $request->get('id_u')

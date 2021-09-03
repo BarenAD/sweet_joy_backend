@@ -39,7 +39,8 @@ class AdminRolesService
      * @param $adminActions
      * @return array
      */
-    private function extractIdsFromAdminActions($adminActions) {
+    private function extractIdsFromAdminActions($adminActions)
+    {
         $resultArray = [];
         if (isset($adminActions)) {
             foreach ($adminActions as $action) {
@@ -52,7 +53,8 @@ class AdminRolesService
     /**
      * @return array
      */
-    public function getRolesActions() {
+    public function getRolesActions()
+    {
         $adminRoles = $this->adminRolesRepository->getAdminRoles();
         $adminsActions = $this->adminGrantsRepository->getAdminGrants()->groupBy('id_ar');
         $resultArray = [];
@@ -66,7 +68,8 @@ class AdminRolesService
      * @param int|null $id
      * @return array
      */
-    public function getRoles(int $id = null) {
+    public function getRoles(int $id = null)
+    {
         if (isset($id)) {
             $role = $this->adminRolesRepository->getAdminRoles($id);
             $adminActions = $this->adminGrantsRepository->getAdminGrantsOnRole($id);
@@ -93,7 +96,8 @@ class AdminRolesService
      * @param array $actions
      * @return mixed
      */
-    public function createRole(User $user, string $name, array $actions) {
+    public function createRole(User $user, string $name, array $actions)
+    {
         if (RolesPolicy::canCreate($user)) {
             return DB::transaction(function () use ($name, $actions) {
                 $resultRole = $this->adminRolesRepository->create($name);
@@ -119,7 +123,8 @@ class AdminRolesService
      * @param array $actions
      * @return mixed
      */
-    public function changeRole(User $user, int $id, string $name, array $actions) {
+    public function changeRole(User $user, int $id, string $name, array $actions)
+    {
         if (RolesPolicy::canUpdate($user)) {
             return DB::transaction(function () use ($id, $name, $actions) {
                 $adminRole = $this->adminRolesRepository->getAdminRoles($id);
@@ -154,7 +159,8 @@ class AdminRolesService
      * @param int $id
      * @return mixed
      */
-    public function deleteRole(User $user, int $id) {
+    public function deleteRole(User $user, int $id)
+    {
         if (RolesPolicy::canDelete($user)) {
             return $this->adminRolesRepository->getAdminRoles($id)->delete();
         } else {

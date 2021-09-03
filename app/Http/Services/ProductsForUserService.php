@@ -40,7 +40,8 @@ class ProductsForUserService
     /**
      * @return array
      */
-    public function getProductsForUsers() {
+    public function getProductsForUsers()
+    {
         $result = [
             'products' => CacheService::cacheProductsInfo('get', 'products'),
             'points_of_sale' => CacheService::cacheProductsInfo('get', 'points_of_sale'),
