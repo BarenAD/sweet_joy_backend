@@ -4,21 +4,57 @@
 namespace App\Http\Services;
 
 
+use Illuminate\Http\Exceptions\HttpResponseException;
+
 class GeneratedAborting
 {
     public static function notFound() {
-        abort(404, 'Ничего не найдено');
+        GeneratedAborting::_generatedHttpException([
+            'Ничего не найдено'
+        ], 404);
     }
 
     public static function accessDeniedGrandsAdmin() {
-        abort(403, 'Недостаточно прав администрирования.');
+        GeneratedAborting::_generatedHttpException([
+            'Недостаточно прав администрирования.'
+        ], 403);
     }
 
     public static function adminAlreadyExist() {
-        abort(409, 'Данный администратор уже существует. Используйте PUT метод.');
+        GeneratedAborting::_generatedHttpException([
+            'Данный администратор уже существует. Используйте PUT метод.'
+        ], 409);
     }
 
     public static function youAreNotAdmin() {
-        abort(403, 'Вы не являетесь администратором.');
+        GeneratedAborting::_generatedHttpException([
+            'Вы не являетесь администратором.'
+        ], 403);
+    }
+
+    public static function internalServerErrorCustomMessage(string $string)
+    {
+        GeneratedAborting::_generatedHttpException([
+            $string
+        ], 500);
+    }
+
+    public static function internalServerError(\Exception $exception)
+    {
+        GeneratedAborting::_generatedHttpException([
+            $exception->getMessage() . '  CODE::' . $exception->getCode()
+        ], 500);
+    }
+
+    public static function _generatedHttpException($errors = [], $code)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                    'errors' => $errors
+                ]
+                ,
+                $code
+            )
+        );
     }
 }

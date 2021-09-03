@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Documents;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeOrCreateDocuments extends FormRequest
+class CreateDocuments extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,7 @@ class ChangeOrCreateDocuments extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
-            'document' => 'mimes:pdf|max:20000',
+            'document' => 'required|mimes:pdf|max:20000',
             'name' => 'required|string|max:255',
         ];
     }

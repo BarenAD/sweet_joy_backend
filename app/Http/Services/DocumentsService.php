@@ -13,6 +13,7 @@ namespace App\Http\Services;
 use App\Models\User;
 use App\Policies\DocumentsPolicy;
 use App\Repositories\DocumentsRepository;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -67,16 +68,15 @@ class DocumentsService
     public function createDocument(User $user, string $name, $document)
     {
         if (DocumentsPolicy::canCreate($user)) {
-                $newNameForFile = md5($name . '.' . Str::random(5)) . '.pdf';
-                $pathForStorage = $this->pathForStorage . $this->pathForDocuments . $newNameForFile;
-                $pathForUri = $this->pathPublicToStorage . $this->pathForDocuments . $newNameForFile;
-                Storage::put($pathForStorage, $document);
+                $pathForStorage = $this->pathForStorage . $this->pathForDocuments;
+                $pathFileInStorage = Storage::put($pathForStorage, $document);
+                $pathForUri = $this->pathPublicToStorage . $this->pathForDocuments . $this->extractNameFromPath($pathFileInStorage);;
             try {
                 CacheService::cacheProductsInfo('delete', 'documents');
                 return $this->documentsRepository->create($name, $pathForUri);
-            } catch (\Exception $error) {
-                Storage::delete($pathForStorage);
-                throw new \Exception($error);
+            } catch (\Exception $exception) {
+                Storage::delete($pathFileInStorage);
+                GeneratedAborting::internalServerError($exception);
             }
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
@@ -92,11 +92,15 @@ class DocumentsService
     public function changeDocument(User $user, int $id, string $name)
     {
         if (DocumentsPolicy::canUpdate($user)) {
-            $document = $this->documentsRepository->getDocuments($id);
-            $document->fill([
-                'name' => $name
-            ]);
-            return $document;
+            try {
+                $document = $this->documentsRepository->getDocuments($id);
+                $document->fill([
+                    'name' => $name
+                ])->save();
+                return $document;
+            } catch (\Exception $exception) {
+                GeneratedAborting::internalServerErrorCustomMessage('Документ с таким именем уже существует');
+            }
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();
         }

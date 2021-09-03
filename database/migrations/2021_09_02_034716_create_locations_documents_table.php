@@ -19,6 +19,7 @@ class CreateLocationsDocumentsTable extends Migration
             $table->string('identify')->unique();
             $table->unsignedBigInteger('id_d')->nullable();
             $table->foreign('id_d')->references('id')->on('documents')->onDelete('set null');
+            $table->timestamps();
         });
     }
 

@@ -18,6 +18,7 @@ class CreateSiteConfigurationsTable extends Migration
             $table->string('name')->unique();
             $table->string('identify')->unique();
             $table->longText('value')->nullable();
+            $table->timestamps();
         });
     }
 

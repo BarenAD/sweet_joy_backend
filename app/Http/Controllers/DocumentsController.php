@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ChangeOrCreateDocuments;
+use App\Http\Requests\Documents\ChangeDocuments;
+use App\Http\Requests\Documents\CreateDocuments;
 use App\Http\Services\DocumentsService;
 use Illuminate\Http\Request;
 
@@ -33,26 +34,24 @@ class DocumentsController extends Controller
     }
 
     /**
-     * @param ChangeOrCreateDocuments $request
+     * @param CreateDocuments $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Exception
      */
-    public  function createDocument(ChangeOrCreateDocuments $request)
+    public  function createDocument(CreateDocuments $request)
     {
-        try {
-            return response($this->documentsService->createDocument(
-                $request->user(),
-                $request->get('name'),
-                $request->file('document')
-            ), 200);
-        } catch (\Exception $e) {
-        }
+        return response($this->documentsService->createDocument(
+            $request->user(),
+            $request->get('name'),
+            $request->file('document')
+        ), 200);
     }
 
     /**
-     * @param ChangeOrCreateDocuments $request
+     * @param ChangeDocuments $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changeDocument(ChangeOrCreateDocuments $request)
+    public function changeDocument(ChangeDocuments $request)
     {
         return response($this->documentsService->changeDocument(
             $request->user(),

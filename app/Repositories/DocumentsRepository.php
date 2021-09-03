@@ -44,9 +44,14 @@ class DocumentsRepository
         string $name,
         string $uri
     ) {
-        return $this->model::create([
-            'name' => $name,
-            'uri' => $uri
-        ]);
+        try {
+            return $this->model::create([
+                'name' => $name,
+                'uri' => $uri
+            ]);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorInfo = $exception->errorInfo;
+            throw new \Exception($errorInfo[2], $errorInfo[1]);
+        }
     }
 }

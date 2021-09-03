@@ -40,7 +40,7 @@ class SiteConfigurationsController extends Controller
         return response($this->siteConfigurationsService->changeSiteConfigurations(
             $request->user(),
             (int) $request->get('id'),
-            (int) $request->get('value')
+            $request->get('value')
         ), 200);
     }
 }
