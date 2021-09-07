@@ -14,6 +14,9 @@ class ProductsForUserService
     private $schedulesService;
     private $itemsService;
     private $categoriesItemService;
+    private $documentsService;
+    private $locationsDocumentsService;
+    private $siteConfigurationsService;
 
     /**
      * ProductsForUserService constructor.
@@ -22,19 +25,28 @@ class ProductsForUserService
      * @param SchedulesService $schedulesService
      * @param ItemsService $itemsService
      * @param CategoriesItemService $categoriesItemService
+     * @param DocumentsService $documentsService
+     * @param LocationsDocumentsService $locationsDocumentsService
+     * @param SiteConfigurationsService $siteConfigurationsService
      */
     public function __construct(
         ProductInformationService $productInformationService,
         PointsOfSaleService $pointsOfSaleService,
         SchedulesService $schedulesService,
         ItemsService $itemsService,
-        CategoriesItemService $categoriesItemService
+        CategoriesItemService $categoriesItemService,
+        DocumentsService $documentsService,
+        LocationsDocumentsService $locationsDocumentsService,
+        SiteConfigurationsService $siteConfigurationsService
     ){
         $this->productInformationService = $productInformationService;
         $this->pointsOfSaleService = $pointsOfSaleService;
         $this->schedulesService= $schedulesService;
         $this->itemsService = $itemsService;
         $this->categoriesItemService = $categoriesItemService;
+        $this->documentsService = $documentsService;
+        $this->locationsDocumentsService = $locationsDocumentsService;
+        $this->siteConfigurationsService = $siteConfigurationsService;
     }
 
     /**
@@ -48,6 +60,9 @@ class ProductsForUserService
             'schedules' => CacheService::cacheProductsInfo('get', 'schedules'),
             'items' => CacheService::cacheProductsInfo('get', 'items'),
             'categories' => CacheService::cacheProductsInfo('get', 'categories'),
+            'documents' => CacheService::cacheProductsInfo('get', 'documents'),
+            'locations_documents' => CacheService::cacheProductsInfo('get', 'locations_documents'),
+            'site_configurations' => CacheService::cacheProductsInfo('get', 'site_configurations'),
         ];
         if (!isset($result['products'])) {
             $tempProducts = $this->productInformationService->getProductsInfo();
@@ -76,6 +91,18 @@ class ProductsForUserService
         if (!isset($result['categories'])) {
             $result['categories'] = $this->categoriesItemService->getCategories();
             CacheService::cacheProductsInfo('create', 'categories', $result['categories']);
+        }
+        if (!isset($result['documents'])) {
+            $result['documents'] = $this->documentsService->getDocuments();
+            CacheService::cacheProductsInfo('create', 'documents', $result['documents']);
+        }
+        if (!isset($result['locations_documents'])) {
+            $result['locations_documents'] = $this->locationsDocumentsService->getLocationsDocuments();
+            CacheService::cacheProductsInfo('create', 'locations_documents', $result['locations_documents']);
+        }
+        if (!isset($result['site_configurations'])) {
+            $result['site_configurations'] = $this->siteConfigurationsService->getSiteConfigurations();
+            CacheService::cacheProductsInfo('create', 'site_configurations', $result['site_configurations']);
         }
         return $result;
     }
