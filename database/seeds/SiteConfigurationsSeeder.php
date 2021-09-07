@@ -26,10 +26,6 @@ class SiteConfigurationsSeeder extends Seeder
                 'identify' => 'footer_third',
             ],
             [
-                'name' => 'Футер четвёртый блок слева',
-                'identify' => 'footer_fourth',
-            ],
-            [
                 'name' => 'Шапка первый блок справа (преимущества)',
                 'identify' => 'header_last',
             ],
