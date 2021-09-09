@@ -17,6 +17,7 @@ class CreatePointsOfSaleTable extends Migration
             $table->id();
             $table->string('address');
             $table->string('phone');
+            $table->longText('map_integration')->nullable();
             $table->unsignedBigInteger('id_s');
             $table->foreign('id_s')->references('id')->on('schedules');
             $table->timestamps();

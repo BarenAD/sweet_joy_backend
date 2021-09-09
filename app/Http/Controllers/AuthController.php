@@ -26,7 +26,7 @@ class AuthController extends Controller
         $user = User::where('login', $request->login)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
+            return response()->json(['error' => 'Логин или пароль неверные.'], 401);
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
@@ -34,11 +34,13 @@ class AuthController extends Controller
         return response()->json($result, 200);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
     }
 
-    public function allLogout(Request $request) {
+    public function allLogout(Request $request)
+    {
         $request->user()->tokens()->delete();
     }
 }

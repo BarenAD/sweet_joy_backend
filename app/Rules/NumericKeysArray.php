@@ -6,14 +6,16 @@ use Illuminate\Contracts\Validation\Rule;
 
 class NumericKeysArray implements Rule
 {
+    private $nameObject;
+
     /**
      * Create a new rule instance.
      *
-     * @return void
+     * @param string $nameObject
      */
-    public function __construct()
+    public function __construct(string $nameObject = 'object')
     {
-        //
+        $this->nameObject = $nameObject;
     }
 
     /**
@@ -40,6 +42,6 @@ class NumericKeysArray implements Rule
      */
     public function message()
     {
-        return 'keys object.* must be a number.';
+        return 'Ключи "'.$this->nameObject.'.*" должны быть целочисленными значениеми.';
     }
 }

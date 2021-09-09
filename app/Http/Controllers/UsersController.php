@@ -3,20 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeUser;
+use App\Http\Services\UserService;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
+/**
+ * Class UsersController
+ * @package App\Http\Controllers
+ */
 class UsersController extends Controller
 {
-    public function getUsers(Request $request) {
-        return response(UserRepository::getUsers($request->get('id')), 200);
+    private $userService;
+
+    /**
+     * UsersController constructor.
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
     }
 
-    public function changeUser(ChangeUser $request) {
+    /**
+     * @param Request $request
+     * @param int|null $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function getUsers(Request $request, int $id = null)
+    {
+        return response($this->userService->getUsers($id), 200);
+    }
+
+    /**
+     * @param ChangeUser $request
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function changeUser(ChangeUser $request, int $id)
+    {
         return response(
-            UserRepository::changeUser(
+            $this->userService->changeUser(
                 $request->user(),
-                $request->get('id'),
+                $id,
                 $request->get('fio'),
                 $request->get('login'),
                 $request->get('password'),
@@ -29,7 +57,13 @@ class UsersController extends Controller
         );
     }
 
-    public function deleteUser(Request $request) {
-        return response(UserRepository::deleteUser($request->user(), $request->get('id')), 200);
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function deleteUser(Request $request, int $id)
+    {
+        return response($this->userService->deleteUser($request->user(), $id), 200);
     }
 }

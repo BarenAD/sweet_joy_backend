@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ChangeOrCreateAdminRole extends FormRequest
 {
@@ -26,7 +24,6 @@ class ChangeOrCreateAdminRole extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'name' => 'required|string|max:255',
             'actions' => 'required|array',
             'actions.*' => 'numeric'

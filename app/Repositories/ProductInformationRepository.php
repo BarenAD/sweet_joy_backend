@@ -4,70 +4,55 @@
 namespace App\Repositories;
 
 
-use App\Http\services\GeneratedAborting;
 use App\Models\ProductInformation;
-use App\Models\User;
-use App\Policies\ProductInformationPolicy;
 
+/**
+ * Class ProductInformationRepository
+ * @package App\Repositories
+ */
 class ProductInformationRepository
 {
-    public static function getProductsInfo(int $id = null) {
+    private $model;
+
+    /**
+     * ProductInformationRepository constructor.
+     * @param ProductInformation $productInformation
+     */
+    public function __construct(ProductInformation $productInformation)
+    {
+        $this->model = $productInformation;
+    }
+
+    /**
+     * @param int|null $id
+     * @return ProductInformation[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getProductsInformation(int $id = null)
+    {
         if (isset($id)) {
-            return ProductInformation::findOrFail($id);
+            return $this->model::findOrFail($id);
         }
-        return ProductInformation::all();
+        return $this->model::all();
     }
 
-    public static function createProductInfo(
-        User $user,
-        int $id_i,
-        int $id_pos,
-        int $price,
-        int $count
-    ) {
-        if (ProductInformationPolicy::canCreate($user, $id_pos)) {
-            CacheRepository::cacheProductsInfo('delete', 'products');
-            return ProductInformation::create([
-                'price' => $price,
-                'count' => $count,
-                'id_i' =>  $id_i,
-                'id_pos' => $id_pos,
-            ]);
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public static function changeProductInfo(
-        User $user,
-        int $id,
-        int $id_i,
-        int $id_pos,
-        int $price,
-        int $count
-    ) {
-        $productInformation = ProductInformation::findOrFail($id);
-        if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
-            $productInformation->fill([
-                'price' => $price,
-                'count' => $count,
-                'id_i' => $id_i,
-                'id_pos' => $id_pos,
-            ])->save();
-            CacheRepository::cacheProductsInfo('delete', 'products');
-            return $productInformation;
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public static function deleteProductInfo(User $user, int $id) {
-        $productInformation = ProductInformation::findOrFail($id);
-        if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
-            CacheRepository::cacheProductsInfo('delete', 'products');
-            return $productInformation->delete();
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
+    /**
+     * @param int $price
+     * @param int $count
+     * @param int $id_item
+     * @param int $id_point_of_Sale
+     * @return mixed
+     */
+    public function create(
+        int $id_item,
+        int $id_point_of_Sale,
+        int $price = null,
+        int $count = null
+    ){
+        return $this->model::create([
+            'price' => $price,
+            'count' => $count,
+            'id_i' =>  $id_item,
+            'id_pos' => $id_point_of_Sale,
+        ]);
     }
 }

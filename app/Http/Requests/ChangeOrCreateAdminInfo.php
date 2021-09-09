@@ -25,8 +25,7 @@ class ChangeOrCreateAdminInfo extends FormRequest
     public function rules()
     {
         return [
-            'id_u' => 'required|numeric',
-            'ids_pos' => new NumericKeysArray,
+            'ids_pos' => new NumericKeysArray('ids_pos'),
             'ids_pos.*.*' => 'numeric',
         ];
     }

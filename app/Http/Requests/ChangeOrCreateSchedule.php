@@ -24,7 +24,6 @@ class ChangeOrCreateSchedule extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'numeric',
             'name' => 'required|string|max:255',
             'monday' => 'required|string|max:255',
             'tuesday' => 'required|string|max:255',
@@ -33,8 +32,8 @@ class ChangeOrCreateSchedule extends FormRequest
             'friday' => 'required|string|max:255',
             'saturday' => 'required|string|max:255',
             'sunday' => 'required|string|max:255',
-            'holiday' => 'required|string|max:255',
-            'particular' => 'required|string|max:255',
+            'holiday' => 'string|max:255',
+            'particular' => 'string|max:255',
         ];
     }
 }
