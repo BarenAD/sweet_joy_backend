@@ -1,6 +1,6 @@
 <?php
 
-use App\LocationsDocuments;
+use App\Models\LocationsDocuments;
 use Illuminate\Database\Seeder;
 
 class LocationsDocumentsSeeder extends Seeder
