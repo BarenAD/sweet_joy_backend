@@ -14,8 +14,8 @@ class LocationsDocumentsSeeder extends Seeder
     {
         LocationsDocuments::insert([
             [
-                'name' => 'каталог продуктов на главной',
-                'identify' => 'main_product_catalog',
+                'name' => 'документ в верхнем баре на главной',
+                'identify' => 'main_top_bar_document',
             ],
         ]);
     }
