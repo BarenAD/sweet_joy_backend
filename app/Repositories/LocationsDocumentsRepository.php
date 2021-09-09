@@ -4,7 +4,7 @@
 namespace App\Repositories;
 
 
-use App\LocationsDocuments;
+use App\Models\LocationsDocuments;
 
 /**
  * Class LocationsDocumentsRepository
