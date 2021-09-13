@@ -55,6 +55,7 @@ class ProductsForUserService
     public function getProductsForUsers()
     {
         $result = [
+            'demo_mode' => env('APP_DEMO_MODE', false),
             'products' => CacheService::cacheProductsInfo('get', 'products'),
             'points_of_sale' => CacheService::cacheProductsInfo('get', 'points_of_sale'),
             'schedules' => CacheService::cacheProductsInfo('get', 'schedules'),
