@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ChangeItem;
-use App\Http\Requests\CreateItem;
+use App\Http\Requests\Items\ChangeItem;
+use App\Http\Requests\Items\CreateItem;
 use App\Http\Services\ItemsService;
 use Illuminate\Http\Request;
 
