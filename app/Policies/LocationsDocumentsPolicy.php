@@ -2,14 +2,22 @@
 
 namespace App\Policies;
 
-use App\Http\Services\AdminGrantsService;
+use App\Http\Utils\AdminGrantsUtil;
 use App\Models\User;
 
 class LocationsDocumentsPolicy
 {
-    public static function canUpdate(User $user)
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(
+        AdminGrantsUtil $adminGrantsUtil
+    ) {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
+    public function canUpdate(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;

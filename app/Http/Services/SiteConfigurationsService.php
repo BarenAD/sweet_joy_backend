@@ -19,39 +19,29 @@ use App\Repositories\SiteConfigurationsRepository;
  */
 class SiteConfigurationsService
 {
-    private $siteConfigurationsRepository;
+    private SiteConfigurationsRepository $siteConfigurationsRepository;
+    private SiteConfigurationsPolicy $siteConfigurationsPolicy;
 
-    /**
-     * SiteConfigurationsService constructor.
-     * @param SiteConfigurationsRepository $siteConfigurationsRepository
-     */
-    public function __construct(SiteConfigurationsRepository $siteConfigurationsRepository)
-    {
+    public function __construct(
+        SiteConfigurationsRepository $siteConfigurationsRepository,
+        SiteConfigurationsPolicy $siteConfigurationsPolicy
+    ){
         $this->siteConfigurationsRepository = $siteConfigurationsRepository;
+        $this->siteConfigurationsPolicy = $siteConfigurationsPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return \App\Models\SiteConfigurations[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getSiteConfigurations(int $id = null)
     {
         return $this->siteConfigurationsRepository->getSiteConfigurations($id);
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string|null $value
-     * @return \App\Models\SiteConfigurations[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeSiteConfigurations(
         User $user,
         int $id,
         string $value = null
     ) {
         $siteConfiguration = $this->siteConfigurationsRepository->getSiteConfigurations($id);
-        if (SiteConfigurationsPolicy::canUpdate($user)) {
+        if ($this->siteConfigurationsPolicy->canUpdate($user)) {
             $siteConfiguration->fill([
                 'value' => $value,
             ])->save();

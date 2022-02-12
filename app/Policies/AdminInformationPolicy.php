@@ -2,21 +2,29 @@
 
 namespace App\Policies;
 
-use App\Http\Services\AdminGrantsService;
+use App\Http\Utils\AdminGrantsUtil;
 use App\Models\AdminInformation;
 use App\Models\User;
 
 class AdminInformationPolicy
 {
-    public static function canViewAny($user)
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(
+        AdminGrantsUtil $adminGrantsUtil
+    ) {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
+    public function canViewAny($user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         return isset($adminActions);
     }
 
-    public static function canCreate(User $user, int $id_pos)
+    public function canCreate(User $user, int $id_pos)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -27,9 +35,9 @@ class AdminInformationPolicy
         return false;
     }
 
-    public static function canDelete(User $user, AdminInformation $adminInformation)
+    public function canDelete(User $user, AdminInformation $adminInformation)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;

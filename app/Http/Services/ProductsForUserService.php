@@ -9,26 +9,15 @@ namespace App\Http\Services;
  */
 class ProductsForUserService
 {
-    private $productInformationService;
-    private $pointsOfSaleService;
-    private $schedulesService;
-    private $itemsService;
-    private $categoriesItemService;
-    private $documentsService;
-    private $locationsDocumentsService;
-    private $siteConfigurationsService;
+    private ProductInformationService $productInformationService;
+    private PointsOfSaleService $pointsOfSaleService;
+    private SchedulesService $schedulesService;
+    private ItemsService $itemsService;
+    private CategoriesItemService $categoriesItemService;
+    private DocumentsService $documentsService;
+    private LocationsDocumentsService $locationsDocumentsService;
+    private SiteConfigurationsService $siteConfigurationsService;
 
-    /**
-     * ProductsForUserService constructor.
-     * @param ProductInformationService $productInformationService
-     * @param PointsOfSaleService $pointsOfSaleService
-     * @param SchedulesService $schedulesService
-     * @param ItemsService $itemsService
-     * @param CategoriesItemService $categoriesItemService
-     * @param DocumentsService $documentsService
-     * @param LocationsDocumentsService $locationsDocumentsService
-     * @param SiteConfigurationsService $siteConfigurationsService
-     */
     public function __construct(
         ProductInformationService $productInformationService,
         PointsOfSaleService $pointsOfSaleService,
@@ -49,9 +38,6 @@ class ProductsForUserService
         $this->siteConfigurationsService = $siteConfigurationsService;
     }
 
-    /**
-     * @return array
-     */
     public function getProductsForUsers()
     {
         $result = [

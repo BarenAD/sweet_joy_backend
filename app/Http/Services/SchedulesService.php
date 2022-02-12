@@ -19,40 +19,22 @@ use App\Repositories\SchedulesRepository;
  */
 class SchedulesService
 {
-    private $schedulesRepository;
+    private SchedulesRepository $schedulesRepository;
+    private SchedulesPolicy $schedulesPolicy;
 
-    /**
-     * SchedulesService constructor.
-     * @param SchedulesRepository $schedulesRepository
-     */
-    public function __construct(SchedulesRepository $schedulesRepository)
-    {
+    public function __construct(
+        SchedulesRepository $schedulesRepository,
+        SchedulesPolicy $schedulesPolicy
+    ) {
         $this->schedulesRepository = $schedulesRepository;
+        $this->schedulesPolicy = $schedulesPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return SchedulesRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getSchedules(int $id = null)
     {
         return $this->schedulesRepository->getSchedules($id);
     }
 
-    /**
-     * @param User $user
-     * @param string $name
-     * @param string $monday
-     * @param string $tuesday
-     * @param string $wednesday
-     * @param string $thursday
-     * @param string $friday
-     * @param string $saturday
-     * @param string $sunday
-     * @param string $holiday
-     * @param string $particular
-     * @return mixed
-     */
     public function createSchedule(
         User $user,
         string $name,
@@ -66,7 +48,7 @@ class SchedulesService
         string $holiday = null,
         string $particular = null
     ){
-        if (SchedulesPolicy::canCreate($user)) {
+        if ($this->schedulesPolicy->canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'schedules');
             return $this->schedulesRepository->create(
                  $name,
@@ -85,21 +67,6 @@ class SchedulesService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string $name
-     * @param string $monday
-     * @param string $tuesday
-     * @param string $wednesday
-     * @param string $thursday
-     * @param string $friday
-     * @param string $saturday
-     * @param string $sunday
-     * @param string $holiday
-     * @param string $particular
-     * @return SchedulesRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeSchedule(
         User $user,
         int $id,
@@ -114,7 +81,7 @@ class SchedulesService
         string $holiday = null,
         string $particular = null
     ){
-        if (SchedulesPolicy::canUpdate($user)) {
+        if ($this->schedulesPolicy->canUpdate($user)) {
             $schedule = $this->schedulesRepository->getSchedules($id);
             $schedule->fill([
                 'name' => $name,
@@ -135,14 +102,9 @@ class SchedulesService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteSchedules(User $user, int $id)
     {
-        if (SchedulesPolicy::canDelete($user)) {
+        if ($this->schedulesPolicy->canDelete($user)) {
             CacheService::cacheProductsInfo('delete', 'schedules');
             return $this->schedulesRepository->getSchedules($id)->delete();
         } else {

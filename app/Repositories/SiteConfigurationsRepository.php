@@ -12,21 +12,13 @@ use App\Models\SiteConfigurations;
  */
 class SiteConfigurationsRepository
 {
-    private $model;
+    private SiteConfigurations $model;
 
-    /**
-     * SiteConfigurationsRepository constructor.
-     * @param SiteConfigurations $siteConfigurations
-     */
     public function __construct(SiteConfigurations $siteConfigurations)
     {
         $this->model = $siteConfigurations;
     }
 
-    /**
-     * @param int|null $id
-     * @return SiteConfigurations[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getSiteConfigurations(int $id = null)
     {
         if ($id) {

@@ -19,34 +19,22 @@ use App\Repositories\PointOfSaleRepository;
  */
 class PointsOfSaleService
 {
-    private $pointOfSaleRepository;
+    private PointOfSaleRepository $pointOfSaleRepository;
+    private PointOfSalePolicy $pointOfSalePolicy;
 
-    /**
-     * PointsOfSaleService constructor.
-     * @param PointOfSaleRepository $pointOfSaleRepository
-     */
-    public function __construct(PointOfSaleRepository $pointOfSaleRepository)
-    {
+    public function __construct(
+        PointOfSaleRepository $pointOfSaleRepository,
+        PointOfSalePolicy $pointOfSalePolicy
+    ) {
         $this->pointOfSaleRepository = $pointOfSaleRepository;
+        $this->pointOfSalePolicy = $pointOfSalePolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return PointOfSaleRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getPointsOfSale(int $id = null)
     {
         return $this->pointOfSaleRepository->getPointsOfSale($id);
     }
 
-    /**
-     * @param User $user
-     * @param int $id_schedule
-     * @param string $address
-     * @param string $phone
-     * @param string|null $map_integration
-     * @return mixed
-     */
     public function createPointOfSale(
         User $user,
         int $id_schedule,
@@ -54,7 +42,7 @@ class PointsOfSaleService
         string $phone,
         string $map_integration = null
     ) {
-        if (PointOfSalePolicy::canCreate($user)) {
+        if ($this->pointOfSalePolicy->canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'points_of_sale');
             return $this->pointOfSaleRepository->create($id_schedule, $address, $phone, $map_integration);
         } else {
@@ -62,15 +50,6 @@ class PointsOfSaleService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param int $id_schedule
-     * @param string $address
-     * @param string $phone
-     * @param string|null $map_integration
-     * @return PointOfSaleRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changePointOfSale(
         User $user,
         int $id,
@@ -80,7 +59,7 @@ class PointsOfSaleService
         string $map_integration = null
     ) {
         $pointOfSale = $this->pointOfSaleRepository->getPointsOfSale($id);
-        if (PointOfSalePolicy::canUpdate($user, $pointOfSale)) {
+        if ($this->pointOfSalePolicy->canUpdate($user, $pointOfSale)) {
             $pointOfSale->fill([
                 'id_s' => $id_schedule,
                 'address' => $address,
@@ -94,15 +73,10 @@ class PointsOfSaleService
         return $pointOfSale;
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deletePointOfSale(User $user, int $id)
     {
         $pointOfSale = $this->pointOfSaleRepository->getPointsOfSale($id);
-        if (PointOfSalePolicy::canDelete($user)) {
+        if ($this->pointOfSalePolicy->canDelete($user)) {
             CacheService::cacheProductsInfo('delete', 'points_of_sale');
             return $pointOfSale->delete();
         } else {

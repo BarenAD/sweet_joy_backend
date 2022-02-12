@@ -13,21 +13,13 @@ use App\Models\Item;
  */
 class ItemsRepository
 {
-    private $model;
+    private Item $model;
 
-    /**
-     * ItemsRepository constructor.
-     * @param Item $item
-     */
     public function __construct(Item $item)
     {
         $this->model = $item;
     }
 
-    /**
-     * @param int|null $id
-     * @return Item[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getItems(int $id = null)
     {
         if (isset($id)) {
@@ -36,16 +28,6 @@ class ItemsRepository
         return $this->model::all();
     }
 
-    /**
-     * @param string $picture
-     * @param string $miniature_picture
-     * @param string $name
-     * @param string $composition
-     * @param string $manufacturer
-     * @param string $description
-     * @param string $product_unit
-     * @return mixed
-     */
     public function create(
         string $picture,
         string $miniature_picture,

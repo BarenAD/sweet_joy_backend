@@ -12,21 +12,13 @@ use App\LocationsDocuments;
  */
 class LocationsDocumentsRepository
 {
-    private $model;
+    private LocationsDocuments $model;
 
-    /**
-     * LocationsDocumentsRepository constructor.
-     * @param LocationsDocuments $locationsDocuments
-     */
     public function __construct(LocationsDocuments $locationsDocuments)
     {
         $this->model = $locationsDocuments;
     }
 
-    /**
-     * @param int|null $id
-     * @return LocationsDocuments[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getLocationsDocuments(int $id = null)
     {
         if ($id) {

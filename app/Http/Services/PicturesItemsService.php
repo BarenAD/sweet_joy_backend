@@ -14,10 +14,10 @@ use Intervention\Image\Facades\Image;
  */
 class PicturesItemsService
 {
-    private $pathForPictures;
-    private $pathForMiniPictures;
-    private $pathPublicToStorage;
-    private $pathForStorageToRootImages;
+    private string $pathForPictures;
+    private string $pathForMiniPictures;
+    private string $pathPublicToStorage;
+    private string $pathForStorageToRootImages;
 
     public function __construct()
     {
@@ -27,11 +27,6 @@ class PicturesItemsService
         $this->pathForStorageToRootImages = config('storage.path_for_storage_for_storage_service');
     }
 
-    /**
-     * @param $nameItem
-     * @param $picture
-     * @return array
-     */
     public function savePictureForItem($nameItem, $picture)
     {
         $newNameForFile = md5($nameItem . '.' . Str::random(5)) . '.jpg';
@@ -51,10 +46,6 @@ class PicturesItemsService
         ];
     }
 
-    /**
-     * @param $namePicture
-     * @return bool
-     */
     public function deletePictureForItem($namePicture)
     {
         return Storage::delete([

@@ -21,24 +21,20 @@ use Illuminate\Support\Facades\DB;
  */
 class AdminRolesService
 {
-    private $adminRolesRepository;
-    private $adminGrantsRepository;
+    private AdminRolesRepository $adminRolesRepository;
+    private AdminGrantsRepository $adminGrantsRepository;
+    private RolesPolicy $rolesPolicy;
 
-    /**
-     * AdminRolesService constructor.
-     * @param AdminRolesRepository $adminRolesRepository
-     * @param AdminGrantsRepository $adminGrantsRepository
-     */
-    public function __construct(AdminRolesRepository $adminRolesRepository, AdminGrantsRepository $adminGrantsRepository)
-    {
+    public function __construct(
+        AdminRolesRepository $adminRolesRepository,
+        AdminGrantsRepository $adminGrantsRepository,
+        RolesPolicy $rolesPolicy
+    ){
         $this->adminRolesRepository = $adminRolesRepository;
         $this->adminGrantsRepository = $adminGrantsRepository;
+        $this->rolesPolicy = $rolesPolicy;
     }
 
-    /**
-     * @param $adminActions
-     * @return array
-     */
     private function extractIdsFromAdminActions($adminActions)
     {
         $resultArray = [];
@@ -50,9 +46,6 @@ class AdminRolesService
         return $resultArray;
     }
 
-    /**
-     * @return array
-     */
     public function getRolesActions()
     {
         $adminRoles = $this->adminRolesRepository->getAdminRoles();
@@ -64,10 +57,6 @@ class AdminRolesService
         return $resultArray;
     }
 
-    /**
-     * @param int|null $id
-     * @return array
-     */
     public function getRoles(int $id = null)
     {
         if (isset($id)) {
@@ -90,15 +79,9 @@ class AdminRolesService
         return $resultArray;
     }
 
-    /**
-     * @param User $user
-     * @param string $name
-     * @param array $actions
-     * @return mixed
-     */
     public function createRole(User $user, string $name, array $actions)
     {
-        if (RolesPolicy::canCreate($user)) {
+        if ($this->rolesPolicy->canCreate($user)) {
             return DB::transaction(function () use ($name, $actions) {
                 $resultRole = $this->adminRolesRepository->create($name);
                 $resultActions = [];
@@ -116,16 +99,9 @@ class AdminRolesService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string $name
-     * @param array $actions
-     * @return mixed
-     */
     public function changeRole(User $user, int $id, string $name, array $actions)
     {
-        if (RolesPolicy::canUpdate($user)) {
+        if ($this->rolesPolicy->canUpdate($user)) {
             return DB::transaction(function () use ($id, $name, $actions) {
                 $adminRole = $this->adminRolesRepository->getAdminRoles($id);
                 $adminRole->fill(['name' => $name])->save();
@@ -154,14 +130,9 @@ class AdminRolesService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteRole(User $user, int $id)
     {
-        if (RolesPolicy::canDelete($user)) {
+        if ($this->rolesPolicy->canDelete($user)) {
             return $this->adminRolesRepository->getAdminRoles($id)->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

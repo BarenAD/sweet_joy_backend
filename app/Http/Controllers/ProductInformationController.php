@@ -13,14 +13,9 @@ use Illuminate\Http\Request;
  */
 class ProductInformationController extends Controller
 {
-    private $productInformationService;
-    private $productsForUserService;
+    private ProductInformationService $productInformationService;
+    private ProductsForUserService $productsForUserService;
 
-    /**
-     * ProductInformationController constructor.
-     * @param ProductInformationService $productInformationService
-     * @param ProductsForUserService $productsForUserService
-     */
     public function __construct(
         ProductInformationService $productInformationService,
         ProductsForUserService $productsForUserService
@@ -29,29 +24,16 @@ class ProductInformationController extends Controller
         $this->productsForUserService = $productsForUserService;
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getProductsForUsers(Request $request)
     {
         return response($this->productsForUserService->getProductsForUsers(), 200);
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getProductsInfo(Request $request, int $id = null)
     {
         return response($this->productInformationService->getProductsInfo($id), 200);
     }
 
-    /**
-     * @param ChangeOrCreateProductInfo $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function createProductInfo(ChangeOrCreateProductInfo $request)
     {
         return response(
@@ -66,11 +48,6 @@ class ProductInformationController extends Controller
         );
     }
 
-    /**
-     * @param ChangeOrCreateProductInfo $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changeProductInfo(ChangeOrCreateProductInfo $request, int $id)
     {
         return response(
@@ -86,11 +63,6 @@ class ProductInformationController extends Controller
         );
     }
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deleteProductInfo(Request $request, int $id)
     {
         return response($this->productInformationService->deleteProductInfo(

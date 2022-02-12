@@ -21,26 +21,20 @@ use Illuminate\Support\Facades\DB;
  */
 class ItemsService
 {
-    private $itemsRepository;
-    private $informationCategoriesItemRepository;
+    private ItemsRepository $itemsRepository;
+    private InformationCategoriesItemRepository $informationCategoriesItemRepository;
+    private ItemPolicy $itemPolicy;
 
-    /**
-     * ItemsService constructor.
-     * @param ItemsRepository $itemsRepository
-     * @param InformationCategoriesItemRepository $informationCategoriesItemRepository
-     */
     public function __construct(
         ItemsRepository $itemsRepository,
-        InformationCategoriesItemRepository $informationCategoriesItemRepository
+        InformationCategoriesItemRepository $informationCategoriesItemRepository,
+        ItemPolicy $itemPolicy
     ){
         $this->itemsRepository = $itemsRepository;
         $this->informationCategoriesItemRepository = $informationCategoriesItemRepository;
+        $this->itemPolicy = $itemPolicy;
     }
 
-    /**
-     * @param $itemCategories
-     * @return array
-     */
     private function extractIdsFromCategoriesItem($itemCategories)
     {
         $resultArray = [];
@@ -52,20 +46,12 @@ class ItemsService
         return $resultArray;
     }
 
-    /**
-     * @param $path
-     * @return mixed
-     */
     private function extractNamePictureFromPath($path)
     {
         $explode = explode("/", $path);
         return end($explode);
     }
 
-    /**
-     * @param int|null $id
-     * @return array
-     */
     public function getItems(int $id = null)
     {
         if (isset($id)) {
@@ -88,18 +74,6 @@ class ItemsService
         return $resultArray;
     }
 
-    /**
-     * @param User $user
-     * @param $picture
-     * @param string $name
-     * @param string $composition
-     * @param string $manufacturer
-     * @param string $description
-     * @param string $product_unit
-     * @param array $categories_item
-     * @return mixed
-     * @throws \Exception
-     */
     public function createItem(
         User $user,
         $picture,
@@ -110,7 +84,7 @@ class ItemsService
         string $product_unit = null,
         array $categories_item = []
     ) {
-        if (ItemPolicy::canCreate($user)) {
+        if ($this->itemPolicy->canCreate($user)) {
             $PicturesItemsService = new PicturesItemsService();
             $newImage = $PicturesItemsService->savePictureForItem($name, $picture);
             try {
@@ -152,19 +126,6 @@ class ItemsService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string $name
-     * @param string $composition
-     * @param string $manufacturer
-     * @param string $description
-     * @param string $product_unit
-     * @param array $categories_item
-     * @param null $picture
-     * @return mixed
-     * @throws \Exception
-     */
     public function changeItem(
         User $user,
         int $id,
@@ -176,7 +137,7 @@ class ItemsService
         array $categories_item = [],
         $picture = null
     ) {
-        if (ItemPolicy::canUpdate($user)) {
+        if ($this->itemPolicy->canUpdate($user)) {
             $newImage = null;
             $PicturesItemsService = null;
             if (isset($picture)) {
@@ -245,14 +206,9 @@ class ItemsService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteItem(User $user, int $id)
     {
-        if (ItemPolicy::canDelete($user)) {
+        if ($this->itemPolicy->canDelete($user)) {
             $PicturesItemsService = new PicturesItemsService();
             $item = $this->itemsRepository->getItems($id);
             $PicturesItemsService->deletePictureForItem($this->extractNamePictureFromPath($item->picture));

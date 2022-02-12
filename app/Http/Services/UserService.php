@@ -19,38 +19,22 @@ use App\Repositories\UserRepository;
  */
 class UserService
 {
-    private $userRepository;
+    private UserRepository $userRepository;
+    private UsersPolicy $usersPolicy;
 
-    /**
-     * UserService constructor.
-     * @param UserRepository $userRepository
-     */
-    public function __construct(UserRepository $userRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        UsersPolicy $usersPolicy
+    ){
         $this->userRepository = $userRepository;
+        $this->usersPolicy = $usersPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return UserRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getUsers(int $id = null)
     {
         return $this->userRepository->getUsers($id);
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string|null $fio
-     * @param string|null $login
-     * @param string|null $password
-     * @param string|null $email
-     * @param string|null $email_verified_at
-     * @param string|null $phone
-     * @param string|null $note
-     * @return User|UserRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeUser(
         User $user,
         int $id,
@@ -62,7 +46,7 @@ class UserService
         string $phone = null,
         string $note = null
     ) {
-        if (UsersPolicy::canUpdate($user)) {
+        if ($this->usersPolicy->canUpdate($user)) {
             $user = $this->userRepository->getUsers($id);
             if (isset($fio)) {
                 $user->fill(['fio' => $fio]);
@@ -92,14 +76,9 @@ class UserService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteUser(User $user, int $id)
     {
-        if (UsersPolicy::canDelete($user)) {
+        if ($this->usersPolicy->canDelete($user)) {
             return $this->userRepository->getUsers($id)->delete();
         } else {
             GeneratedAborting::accessDeniedGrandsAdmin();

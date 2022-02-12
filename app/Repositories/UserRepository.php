@@ -12,21 +12,13 @@ use App\Models\User;
  */
 class UserRepository
 {
-    private $model;
+    private User $model;
 
-    /**
-     * UserRepository constructor.
-     * @param User $user
-     */
     public function __construct(User $user)
     {
         $this->model = $user;
     }
 
-    /**
-     * @param int|null $id
-     * @return User[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getUsers(int $id = null)
     {
         if (isset($id)) {

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
  */
 class AdminActionsController extends Controller
 {
-    private $actionsRepository;
+    private AdminActionsRepository $actionsRepository;
 
     /**
      * AdminActionsController constructor.

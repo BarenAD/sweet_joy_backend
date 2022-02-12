@@ -2,14 +2,22 @@
 
 namespace App\Policies;
 
-use App\Http\Services\AdminGrantsService;
+use App\Http\Utils\AdminGrantsUtil;
 use App\Models\User;
 
 class DocumentsPolicy
 {
-    public static function canCreate(User $user)
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(
+        AdminGrantsUtil $adminGrantsUtil
+    ) {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
+    public function canCreate(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -18,9 +26,9 @@ class DocumentsPolicy
         return false;
     }
 
-    public static function canUpdate(User $user)
+    public function canUpdate(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -29,9 +37,9 @@ class DocumentsPolicy
         return false;
     }
 
-    public static function canDelete(User $user)
+    public function canDelete(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;

@@ -14,35 +14,26 @@ use Illuminate\Http\Request;
  */
 class AdminInformationController extends Controller
 {
-    private $adminInformationService;
+    private AdminInformationService $adminInformationService;
+    private AdminInformationPolicy $adminInformationPolicy;
 
-    /**
-     * AdminInformationController constructor.
-     * @param AdminInformationService $adminInformationService
-     */
-    public function __construct(AdminInformationService $adminInformationService)
-    {
+    public function __construct(
+        AdminInformationService $adminInformationService,
+        AdminInformationPolicy $adminInformationPolicy
+    ) {
         $this->adminInformationService = $adminInformationService;
+        $this->adminInformationPolicy = $adminInformationPolicy;
     }
 
-    /**
-     * @param Request $request
-     * @param int $id_user
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getAdmins(Request $request, int $id_user)
     {
-        $actions = AdminInformationPolicy::canViewAny($request->user());
+        $actions = $this->adminInformationPolicy->canViewAny($request->user());
         if (!isset($actions)) {
             GeneratedAborting::accessDeniedGrandsAdmin();
         }
         return response($this->adminInformationService->getAdmins($id_user), 200);
     }
 
-    /**
-     * @param ChangeOrCreateAdminInfo $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function createAdmin(ChangeOrCreateAdminInfo $request)
     {
         return response($this->adminInformationService->createAdmin(
@@ -52,11 +43,6 @@ class AdminInformationController extends Controller
         ), 200);
     }
 
-    /**
-     * @param ChangeOrCreateAdminInfo $request
-     * @param int $id_user
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changeAdmin(ChangeOrCreateAdminInfo $request, int $id_user)
     {
         return response($this->adminInformationService->changeAdmin(
@@ -66,11 +52,6 @@ class AdminInformationController extends Controller
         ), 200);
     }
 
-    /**
-     * @param Request $request
-     * @param int $id_user
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deleteAdmin(Request $request, int $id_user)
     {
         return response($this->adminInformationService->deleteAdmin(

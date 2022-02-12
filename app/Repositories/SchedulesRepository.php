@@ -11,21 +11,13 @@ use App\Models\Schedule;
  */
 class SchedulesRepository
 {
-    private $model;
+    private Schedule $model;
 
-    /**
-     * SchedulesRepository constructor.
-     * @param Schedule $schedule
-     */
     public function __construct(Schedule $schedule)
     {
         $this->model = $schedule;
     }
 
-    /**
-     * @param int|null $id
-     * @return Schedule[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getSchedules(int $id = null)
     {
         if (isset($id)) {
@@ -34,19 +26,6 @@ class SchedulesRepository
         return $this->model::all();
     }
 
-    /**
-     * @param string $name
-     * @param string $monday
-     * @param string $tuesday
-     * @param string $wednesday
-     * @param string $thursday
-     * @param string $friday
-     * @param string $saturday
-     * @param string $sunday
-     * @param string $holiday
-     * @param string $particular
-     * @return mixed
-     */
     public function create(
         string $name,
         string $monday,

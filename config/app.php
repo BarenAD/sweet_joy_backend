@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         Intervention\Image\ImageServiceProvider::class,
+        Jaybizzle\MigrationsOrganiser\MigrationsOrganiserServiceProvider::class,
 
         /*
          * Application Service Providers...

@@ -13,32 +13,18 @@ use Illuminate\Http\Request;
  */
 class DocumentsController extends Controller
 {
-    private $documentsService;
+    private DocumentsService $documentsService;
 
-    /**
-     * DocumentsController constructor.
-     * @param DocumentsService $documentsService
-     */
     public function __construct(DocumentsService $documentsService)
     {
         $this->documentsService = $documentsService;
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getDocuments(Request $request, int $id = null)
     {
         return response($this->documentsService->getDocuments($id), 200);
     }
 
-    /**
-     * @param CreateDocuments $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws \Exception
-     */
     public  function createDocument(CreateDocuments $request)
     {
         return response($this->documentsService->createDocument(
@@ -48,11 +34,6 @@ class DocumentsController extends Controller
         ), 200);
     }
 
-    /**
-     * @param ChangeDocuments $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changeDocument(ChangeDocuments $request, int $id)
     {
         return response($this->documentsService->changeDocument(
@@ -62,11 +43,6 @@ class DocumentsController extends Controller
         ), 200);
     }
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deleteDocument(Request $request, int $id)
     {
         return response($this->documentsService->deleteDocument(

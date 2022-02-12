@@ -2,15 +2,23 @@
 
 namespace App\Policies;
 
-use App\Http\Services\AdminGrantsService;
+use App\Http\Utils\AdminGrantsUtil;
 use App\Models\ProductInformation;
 use App\Models\User;
 
 class ProductInformationPolicy
 {
-    public static function canCreate(User $user, int $id_pos)
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(
+        AdminGrantsUtil $adminGrantsUtil
+    ) {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
+    public function canCreate(User $user, int $id_pos)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -21,9 +29,9 @@ class ProductInformationPolicy
         return false;
     }
 
-    public static function canUpdateDelete(User $user, ProductInformation $productInformation)
+    public function canUpdateDelete(User $user, ProductInformation $productInformation)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;

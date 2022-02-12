@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Services\AdminGrantsService;
 use App\Http\Services\GeneratedAborting;
+use App\Http\Utils\AdminGrantsUtil;
 use Closure;
 
 /**
@@ -12,17 +12,18 @@ use Closure;
  */
 class CheckAllowToManagement
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(AdminGrantsUtil $adminGrantsUtil)
+    {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
     public function handle($request, Closure $next)
     {
-        $adminGrants = AdminGrantsService::getAdminsGrants($request->user()->id);
-        if (!isset($adminGrants)) {
+        try {
+            $this->adminGrantsUtil->getAdminsGrants($request->user()->id);
+        } catch (\Exception $exception) {
             GeneratedAborting::youAreNotAdmin();
         }
         return $next($request);

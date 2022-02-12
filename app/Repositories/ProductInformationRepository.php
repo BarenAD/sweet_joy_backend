@@ -12,21 +12,13 @@ use App\Models\ProductInformation;
  */
 class ProductInformationRepository
 {
-    private $model;
+    private ProductInformation $model;
 
-    /**
-     * ProductInformationRepository constructor.
-     * @param ProductInformation $productInformation
-     */
     public function __construct(ProductInformation $productInformation)
     {
         $this->model = $productInformation;
     }
 
-    /**
-     * @param int|null $id
-     * @return ProductInformation[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getProductsInformation(int $id = null)
     {
         if (isset($id)) {
@@ -35,13 +27,6 @@ class ProductInformationRepository
         return $this->model::all();
     }
 
-    /**
-     * @param int $price
-     * @param int $count
-     * @param int $id_item
-     * @param int $id_point_of_Sale
-     * @return mixed
-     */
     public function create(
         int $id_item,
         int $id_point_of_Sale,

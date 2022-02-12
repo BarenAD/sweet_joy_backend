@@ -12,7 +12,6 @@ namespace App\Http\Services;
 use App\Models\User;
 use App\Policies\LocationsDocumentsPolicy;
 use App\Repositories\LocationsDocumentsRepository;
-use App\Repositories\PointOfSaleRepository;
 
 /**
  * Class LocationsDocumentsService
@@ -20,39 +19,29 @@ use App\Repositories\PointOfSaleRepository;
  */
 class LocationsDocumentsService
 {
-    private $locationsDocumentsRepository;
+    private LocationsDocumentsRepository $locationsDocumentsRepository;
+    private LocationsDocumentsPolicy $locationsDocumentsPolicy;
 
-    /**
-     * LocationsDocumentsService constructor.
-     * @param LocationsDocumentsRepository $locationsDocumentsRepository
-     */
-    public function __construct(LocationsDocumentsRepository $locationsDocumentsRepository)
-    {
+    public function __construct(
+        LocationsDocumentsRepository $locationsDocumentsRepository,
+        LocationsDocumentsPolicy $locationsDocumentsPolicy
+    ){
         $this->locationsDocumentsRepository = $locationsDocumentsRepository;
+        $this->locationsDocumentsPolicy = $locationsDocumentsPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return \App\LocationsDocuments[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getLocationsDocuments(int $id = null)
     {
         return $this->locationsDocumentsRepository->getLocationsDocuments($id);
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param int|null $id_document
-     * @return \App\LocationsDocuments[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeLocationsDocuments(
         User $user,
         int $id,
         int $id_document = null
     ) {
         $locationDocument = $this->locationsDocumentsRepository->getLocationsDocuments($id);
-        if (LocationsDocumentsPolicy::canUpdate($user)) {
+        if ($this->locationsDocumentsPolicy->canUpdate($user)) {
             $locationDocument->fill([
                 'id_d' => $id_document,
             ])->save();

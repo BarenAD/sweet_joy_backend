@@ -15,29 +15,16 @@ class PointsOfSaleController extends Controller
 {
     private $pointsOfSaleService;
 
-    /**
-     * PointsOfSaleController constructor.
-     * @param PointsOfSaleService $pointsOfSaleService
-     */
     public function __construct(PointsOfSaleService $pointsOfSaleService)
     {
         $this->pointsOfSaleService = $pointsOfSaleService;
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getPoints(Request $request, int $id = null)
     {
         return response($this->pointsOfSaleService->getPointsOfSale($id), 200);
     }
 
-    /**
-     * @param ChangeOrCreatePointOfSale $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function createPoints(ChangeOrCreatePointOfSale $request)
     {
         return response(
@@ -52,11 +39,6 @@ class PointsOfSaleController extends Controller
         );
     }
 
-    /**
-     * @param ChangeOrCreatePointOfSale $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changePoints(ChangeOrCreatePointOfSale $request, int $id)
     {
         return response(
@@ -72,11 +54,6 @@ class PointsOfSaleController extends Controller
         );
     }
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deletePoints(Request $request, int $id)
     {
         return response($this->pointsOfSaleService->deletePointOfSale($request->user(), $id), 200);

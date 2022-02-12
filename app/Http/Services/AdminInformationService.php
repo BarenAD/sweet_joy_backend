@@ -20,21 +20,17 @@ use Illuminate\Support\Facades\DB;
  */
 class AdminInformationService
 {
-    private $adminInformationRepository;
+    private AdminInformationRepository $adminInformationRepository;
+    private AdminInformationPolicy $adminInformationPolicy;
 
-    /**
-     * AdminInformationService constructor.
-     * @param AdminInformationRepository $adminInformationRepository
-     */
-    public function __construct(AdminInformationRepository $adminInformationRepository)
-    {
+    public function __construct(
+        AdminInformationRepository $adminInformationRepository,
+        AdminInformationPolicy $adminInformationPolicy
+    ){
         $this->adminInformationRepository = $adminInformationRepository;
+        $this->adminInformationPolicy = $adminInformationPolicy;
     }
 
-    /**
-     * @param int|null $id_u
-     * @return \App\Models\AdminInformation[]|array|\Illuminate\Database\Eloquent\Collection
-     */
     public function getAdmins(int $id_u = null)
     {
         if (isset($id_u)) {
@@ -59,12 +55,6 @@ class AdminInformationService
         return $resultAdmins;
     }
 
-    /**
-     * @param User $user
-     * @param int $id_u
-     * @param array $ids_pos
-     * @return mixed
-     */
     public function createAdmin(
         User $user,
         int $id_u,
@@ -81,7 +71,7 @@ class AdminInformationService
                     $result[$id_pos] = [];
                 }
                 foreach ($roles as $role) {
-                    if (AdminInformationPolicy::canCreate($user, $id_pos)) {
+                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
                         array_push($result[$id_pos], $this->adminInformationRepository->createAdminInfo($role, $id_pos, $id_u));
                     }
                 }
@@ -97,12 +87,6 @@ class AdminInformationService
         });
     }
 
-    /**
-     * @param User $user
-     * @param int $id_u
-     * @param array $ids_pos
-     * @return mixed
-     */
     public function changeAdmin(
         User $user,
         int $id_u,
@@ -115,13 +99,13 @@ class AdminInformationService
                 $keyPos = in_array($id_pos, array_keys($ids_pos));
                 foreach ($admin_roles as $admin_role) {
                     if ($keyPos === false) {
-                        if (AdminInformationPolicy::canDelete($user, $admin_role)) {
+                        if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
                             $admin_role->delete();
                         }
                     } else {
                         $keyAr = array_search($admin_role->id_ar, $ids_pos[$id_pos]);
                         if ($keyAr === false) {
-                            if (AdminInformationPolicy::canDelete($user, $admin_role)) {
+                            if ($this->adminInformationPolicy->canDelete($user, $admin_role)) {
                                 $admin_role->delete();
                             }
                         } else {
@@ -139,7 +123,7 @@ class AdminInformationService
                     if (!isset($result[$id_pos])) {
                         $result[$id_pos] = [];
                     }
-                    if (AdminInformationPolicy::canCreate($user, $id_pos)) {
+                    if ($this->adminInformationPolicy->canCreate($user, $id_pos)) {
                         array_push($result[$id_pos], $this->adminInformationRepository->createAdminInfo($id_ar, $id_pos, $id_u));
                     }
                     if (count($result[$id_pos]) === 0) {
@@ -164,7 +148,7 @@ class AdminInformationService
             $admins = $this->adminInformationRepository->getAdminsInfo($id_u);
             $result = 0;
             foreach ($admins as $admin) {
-                if (AdminInformationPolicy::canDelete($user, $admin)) {
+                if ($this->adminInformationPolicy->canDelete($user, $admin)) {
                     $result += $admin->delete();
                 }
             }

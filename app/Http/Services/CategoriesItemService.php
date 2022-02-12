@@ -19,34 +19,25 @@ use App\Repositories\CategoriesItemRepository;
  */
 class CategoriesItemService
 {
-    private $categoriesItemService;
+    private CategoriesItemRepository $categoriesItemService;
+    private CategoryItemPolicy $categoryItemPolicy;
 
-    /**
-     * CategoriesItemService constructor.
-     * @param CategoriesItemRepository $categoriesItemService
-     */
-    public function __construct(CategoriesItemRepository $categoriesItemService)
-    {
+    public function __construct(
+        CategoriesItemRepository $categoriesItemService,
+        CategoryItemPolicy $categoryItemPolicy
+    ) {
         $this->categoriesItemService = $categoriesItemService;
+        $this->categoryItemPolicy = $categoryItemPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return CategoriesItemRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getCategories(int $id = null)
     {
         return $this->categoriesItemService->getCategoriesItem($id);
     }
 
-    /**
-     * @param User $user
-     * @param string $name
-     * @return mixed
-     */
     public function createCategory(User $user, string $name)
     {
-        if (CategoryItemPolicy::canCreate($user)) {
+        if ($this->categoryItemPolicy->canCreate($user)) {
             CacheService::cacheProductsInfo('delete', 'categories');
             return $this->categoriesItemService->create($name);
         } else {
@@ -54,15 +45,9 @@ class CategoriesItemService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param string $name
-     * @return CategoriesItemRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeCategory(User $user, int $id, string $name)
     {
-        if (CategoryItemPolicy::canUpdate($user)) {
+        if ($this->categoryItemPolicy->canUpdate($user)) {
             $category = $this->categoriesItemService->getCategoriesItem($id);
             $category->fill([
                 'name' => $name
@@ -74,14 +59,9 @@ class CategoriesItemService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteCategory(User $user, int $id)
     {
-        if (CategoryItemPolicy::canDelete($user)) {
+        if ($this->categoryItemPolicy->canDelete($user)) {
             CacheService::cacheProductsInfo('delete', 'categories');
             return $this->categoriesItemService->getCategoriesItem($id)->delete();
         } else {

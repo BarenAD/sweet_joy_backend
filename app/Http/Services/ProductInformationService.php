@@ -19,34 +19,22 @@ use App\Repositories\ProductInformationRepository;
  */
 class ProductInformationService
 {
-    private $productInformationRepository;
+    private ProductInformationRepository $productInformationRepository;
+    private ProductInformationPolicy $productInformationPolicy;
 
-    /**
-     * ProductInformationService constructor.
-     * @param ProductInformationRepository $productInformationRepository
-     */
-    public function __construct(ProductInformationRepository $productInformationRepository)
-    {
+    public function __construct(
+        ProductInformationRepository $productInformationRepository,
+        ProductInformationPolicy $productInformationPolicy
+    ) {
         $this->productInformationRepository = $productInformationRepository;
+        $this->productInformationPolicy = $productInformationPolicy;
     }
 
-    /**
-     * @param int|null $id
-     * @return ProductInformationRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getProductsInfo(int $id = null)
     {
         return $this->productInformationRepository->getProductsInformation($id);
     }
 
-    /**
-     * @param User $user
-     * @param int $id_item
-     * @param int $id_point_of_Sale
-     * @param int $price
-     * @param int $count
-     * @return mixed
-     */
     public function createProductInfo(
         User $user,
         int $id_item,
@@ -54,7 +42,7 @@ class ProductInformationService
         int $price = null,
         int $count = null
     ) {
-        if (ProductInformationPolicy::canCreate($user, $id_point_of_Sale)) {
+        if ($this->productInformationPolicy->canCreate($user, $id_point_of_Sale)) {
             CacheService::cacheProductsInfo('delete', 'products');
             return $this->productInformationRepository->create($id_item, $id_point_of_Sale, $price, $count);
         } else {
@@ -62,15 +50,6 @@ class ProductInformationService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @param int $id_i
-     * @param int $id_pos
-     * @param int $price
-     * @param int $count
-     * @return ProductInformationRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function changeProductInfo(
         User $user,
         int $id,
@@ -80,7 +59,7 @@ class ProductInformationService
         int $count = null
     ) {
         $productInformation = $this->productInformationRepository->getProductsInformation($id);
-        if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
+        if ($this->productInformationPolicy->canUpdateDelete($user, $productInformation)) {
             $productInformation->fill([
                 'price' => $price,
                 'count' => $count,
@@ -94,15 +73,10 @@ class ProductInformationService
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $id
-     * @return mixed
-     */
     public function deleteProductInfo(User $user, int $id)
     {
         $productInformation = $this->productInformationRepository->getProductsInformation($id);
-        if (ProductInformationPolicy::canUpdateDelete($user, $productInformation)) {
+        if ($this->productInformationPolicy->canUpdateDelete($user, $productInformation)) {
             CacheService::cacheProductsInfo('delete', 'products');
             return $productInformation->delete();
         } else {

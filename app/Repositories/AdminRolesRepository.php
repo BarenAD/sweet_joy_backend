@@ -17,21 +17,13 @@ use Illuminate\Support\Facades\DB;
  */
 class AdminRolesRepository
 {
-    private $model;
+    private AdminRole $model;
 
-    /**
-     * AdminRolesRepository constructor.
-     * @param AdminRole $adminRole
-     */
     public function __construct(AdminRole $adminRole)
     {
         $this->model = $adminRole;
     }
 
-    /**
-     * @param int|null $id
-     * @return AdminRole[]|\Illuminate\Database\Eloquent\Collection
-     */
     public function getAdminRoles(int $id = null)
     {
         if ($id) {
@@ -40,10 +32,6 @@ class AdminRolesRepository
         return $this->model::all();
     }
 
-    /**
-     * @param $name
-     * @return mixed
-     */
     public function create($name)
     {
         return $this->model::create(['name' => $name]);

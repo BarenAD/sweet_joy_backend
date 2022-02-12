@@ -2,16 +2,23 @@
 
 namespace App\Policies;
 
-use App\Http\Services\AdminGrantsService;
+use App\Http\Utils\AdminGrantsUtil;
 use App\Models\PointOfSale;
-use App\Models\ProductInformation;
 use App\Models\User;
 
 class PointOfSalePolicy
 {
-    public static function canCreate(User $user)
+    private AdminGrantsUtil $adminGrantsUtil;
+
+    public function __construct(
+        AdminGrantsUtil $adminGrantsUtil
+    ) {
+        $this->adminGrantsUtil = $adminGrantsUtil;
+    }
+
+    public function canCreate(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -20,9 +27,9 @@ class PointOfSalePolicy
         return false;
     }
 
-    public static function canUpdate(User $user, PointOfSale $pointOfSale)
+    public function canUpdate(User $user, PointOfSale $pointOfSale)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;
@@ -33,9 +40,9 @@ class PointOfSalePolicy
         return false;
     }
 
-    public static function canDelete(User $user)
+    public function canDelete(User $user)
     {
-        $adminActions = AdminGrantsService::getAdminsGrants($user->id);
+        $adminActions = $this->adminGrantsUtil->getAdminsGrants($user->id);
         if (isset($adminActions)) {
             if ($adminActions === "is_super_admin") {
                 return true;

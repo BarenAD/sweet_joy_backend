@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ChangeItem;
-use App\Http\Requests\CreateItem;
+use App\Http\Requests\Items\ChangeItem;
+use App\Http\Requests\Items\CreateItem;
 use App\Http\Services\ItemsService;
 use Illuminate\Http\Request;
 
@@ -13,31 +13,18 @@ use Illuminate\Http\Request;
  */
 class ItemsController extends Controller
 {
-    private $itemsService;
+    private ItemsService $itemsService;
 
-    /**
-     * ProductItemsController constructor.
-     * @param ItemsService $itemsService
-     */
     public function __construct(ItemsService $itemsService)
     {
         $this->itemsService = $itemsService;
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getItems(Request $request, int $id = null)
     {
         return response($this->itemsService->getItems($id), 200);
     }
 
-    /**
-     * @param CreateItem $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function createItem(CreateItem $request)
     {
         if ($request->hasFile('picture')) {
@@ -61,11 +48,6 @@ class ItemsController extends Controller
         return response("image is required",424);
     }
 
-    /**
-     * @param ChangeItem $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changeItem(ChangeItem $request, int $id)
     {
         try {
@@ -87,11 +69,6 @@ class ItemsController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deleteItem(Request $request, int $id)
     {
         return response($this->itemsService->deleteItem($request->user(), $id), 200);

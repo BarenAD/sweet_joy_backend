@@ -12,31 +12,18 @@ use Illuminate\Http\Request;
  */
 class SchedulesController extends Controller
 {
-    private $schedulesService;
+    private SchedulesService $schedulesService;
 
-    /**
-     * SchedulesController constructor.
-     * @param SchedulesService $schedulesService
-     */
     public function __construct(SchedulesService $schedulesService)
     {
         $this->schedulesService = $schedulesService;
     }
 
-    /**
-     * @param Request $request
-     * @param int|null $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function getSchedules(Request $request, int $id = null)
     {
         return response($this->schedulesService->getSchedules($id), 200);
     }
 
-    /**
-     * @param ChangeOrCreateSchedule $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function createSchedule(ChangeOrCreateSchedule $request)
     {
         return response(
@@ -57,11 +44,6 @@ class SchedulesController extends Controller
         );
     }
 
-    /**
-     * @param ChangeOrCreateSchedule $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function changeSchedule(ChangeOrCreateSchedule $request, int $id)
     {
         return response(
@@ -83,11 +65,6 @@ class SchedulesController extends Controller
         );
     }
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function deleteSchedules(Request $request, int $id)
     {
         return response($this->schedulesService->deleteSchedules($request->user(), $id), 200);
