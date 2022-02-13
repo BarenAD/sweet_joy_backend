@@ -3,6 +3,7 @@
 
 namespace App\Http\Utils;
 
+use App\Exceptions\NoReportException;
 use App\Models\AdminInformation;
 use App\Models\AdminRole;
 use App\Models\SuperAdmin;
@@ -20,7 +21,7 @@ class AdminGrantsUtil
             }
             $adminInfo = AdminInformation::where('id_u', $idUser)->groupBy('id_pos')->get();
             if (count($adminInfo) === 0) {
-                throw new \Exception("Не является администратором", 0);
+                throw new NoReportException('is_not_admin');
             }
             $adminRoles = AdminRole::all();
             foreach ($adminInfo as $idPointOfSale => $roles) {

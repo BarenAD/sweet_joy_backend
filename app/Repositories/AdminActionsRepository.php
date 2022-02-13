@@ -6,17 +6,10 @@ namespace App\Repositories;
 
 use App\Models\AdminAction;
 
-class AdminActionsRepository
+class AdminActionsRepository extends CoreRepository
 {
-    private AdminAction $model;
-
-    public function __construct(AdminAction $adminAction)
+    public function getModelClass(): string
     {
-        $this->model = $adminAction;
-    }
-
-    public function getAllActions()
-    {
-        return $this->model::all();
+        return AdminAction::class;
     }
 }

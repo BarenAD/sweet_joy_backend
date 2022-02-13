@@ -21,11 +21,7 @@ class CheckAllowToManagement
 
     public function handle($request, Closure $next)
     {
-        try {
-            $this->adminGrantsUtil->getAdminsGrants($request->user()->id);
-        } catch (\Exception $exception) {
-            GeneratedAborting::youAreNotAdmin();
-        }
+        $this->adminGrantsUtil->getAdminsGrants($request->user()->id);
         return $next($request);
     }
 }
