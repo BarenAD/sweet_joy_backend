@@ -8,11 +8,11 @@
 
 namespace App\Http\Services;
 
-
-
-use App\Models\User;
-use App\Policies\DocumentsPolicy;
 use App\Repositories\DocumentsRepository;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -22,78 +22,58 @@ use Illuminate\Support\Facades\Storage;
 class DocumentsService
 {
     private DocumentsRepository $documentsRepository;
-    private DocumentsPolicy $documentsPolicy;
-    private string $pathForDocuments;
-    private string $pathPublicToStorage;
-    private string $pathForStorage;
-
-    private function extractNameFromPath($path)
-    {
-        $explode = explode("/", $path);
-        return end($explode);
-    }
+    private string $pathToDocuments;
 
     public function __construct(
-        DocumentsRepository $documentsRepository,
-        DocumentsPolicy $documentsPolicy
+        DocumentsRepository $documentsRepository
     ){
         $this->documentsRepository = $documentsRepository;
-        $this->documentsPolicy = $documentsPolicy;
-        $this->pathForDocuments = config('storage.path_for_documents');
-        $this->pathPublicToStorage = config('storage.path_for_storage');
-        $this->pathForStorage = config('storage.path_for_storage_for_storage_service');
+        $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
     }
 
-    public function getDocuments(int $id = null)
+    public function getAll(): array
     {
-        return $this->documentsRepository->getDocuments($id);
+        $documents = $this->documentsRepository->getAll();
+        $result = [];
+        foreach ($documents as $document) {
+            $result[] = [
+                'name' => $document->name,
+                'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
+            ];
+        }
+        return $result;
     }
 
-    public function createDocument(User $user, string $name, $document)
+    public function get($id): array
     {
-        if ($this->documentsPolicy->canCreate($user)) {
-                $pathForStorage = $this->pathForStorage . $this->pathForDocuments;
-                $pathFileInStorage = Storage::put($pathForStorage, $document);
-                $pathForUri = $this->pathPublicToStorage . $this->pathForDocuments . $this->extractNameFromPath($pathFileInStorage);;
-            try {
-                CacheService::cacheProductsInfo('delete', 'documents');
-                return $this->documentsRepository->create($name, $pathForUri);
-            } catch (\Exception $exception) {
-                Storage::delete($pathFileInStorage);
-                GeneratedAborting::internalServerError($exception);
-            }
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
+        $document = $this->documentsRepository->find($id);
+        return [
+            'name' => $document->name,
+            'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
+        ];
+    }
+
+    public function store(string $name, UploadedFile $document): Model
+    {
+        $documentName = uniqid('document_').'.'.$document->getClientOriginalExtension();
+        try {
+            Storage::disk('public')->putFileAs($this->pathToDocuments, $document, $documentName);
+            return $this->documentsRepository->store([
+                'name' => $name,
+                'urn' => $documentName
+            ]);
+        } catch (QueryException $exception) {
+            Storage::disk('public')->delete($this->pathToDocuments.$documentName);
+            throw new \Exception($exception);
         }
     }
 
-    public function changeDocument(User $user, int $id, string $name)
+    public function destroy(int $id): void
     {
-        if ($this->documentsPolicy->canUpdate($user)) {
-            try {
-                $document = $this->documentsRepository->getDocuments($id);
-                $document->fill([
-                    'name' => $name
-                ])->save();
-                return $document;
-            } catch (\Exception $exception) {
-                GeneratedAborting::internalServerErrorCustomMessage('Документ с таким именем уже существует');
-            }
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
-    }
-
-    public function deleteDocument(User $user, int $id)
-    {
-        if ($this->documentsPolicy->canDelete($user)) {
-            $document = $this->documentsRepository->getDocuments($id);
-            $pathForStorage = $this->pathForStorage . $this->pathForDocuments . $this->extractNameFromPath($document->uri);
-            Storage::delete($pathForStorage);
-            CacheService::cacheProductsInfo('delete', 'documents');
-            return $document->delete();
-        } else {
-            GeneratedAborting::accessDeniedGrandsAdmin();
-        }
+        DB::beginTransaction();
+        $document = $this->documentsRepository->find($id);
+        $document->delete();
+        Storage::disk('public')->delete($this->pathToDocuments.$document->urn);
+        DB::commit();
     }
 }

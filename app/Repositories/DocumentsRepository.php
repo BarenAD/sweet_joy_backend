@@ -4,41 +4,16 @@
 namespace App\Repositories;
 
 
-use App\Models\Documents;
+use App\Models\Document;
 
 /**
  * Class DocumentsRepository
  * @package App\Repositories
  */
-class DocumentsRepository
+class DocumentsRepository extends CoreRepository
 {
-    private Documents $model;
-
-    public function __construct(Documents $documents)
+    public function getModelClass(): string
     {
-        $this->model = $documents;
-    }
-
-    public function getDocuments(int $id = null)
-    {
-        if ($id) {
-            return $this->model::findOrFail($id);
-        }
-        return $this->model::all();
-    }
-
-    public function create(
-        string $name,
-        string $uri
-    ) {
-        try {
-            return $this->model::create([
-                'name' => $name,
-                'uri' => $uri
-            ]);
-        } catch (\Illuminate\Database\QueryException $exception) {
-            $errorInfo = $exception->errorInfo;
-            throw new \Exception($errorInfo[2], $errorInfo[1]);
-        }
+        return Document::class;
     }
 }

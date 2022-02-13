@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Documents extends Model
+class Document extends Model
 {
     protected $table = 'documents';
 
     protected $fillable = [
-        'name', 'uri'
+        'name', 'urn'
     ];
 
     protected $hidden = [

@@ -6,14 +6,14 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CoreException extends Exception
+class BaseException extends Exception
 {
     private $dataToLog = [];
     private $errorHttpCode;
     private $errorMessage;
     private $errorId;
 
-    public function __construct(string $errorName, $message = null, ?int $code = null, ?Throwable $previous = null, ?array $dataToLog = null)
+    public function __construct(string $errorName, array $dataToLog = null, ?string $message = null, ?int $code = null, ?Throwable $previous = null)
     {
         $error = config("exceptions.${errorName}");
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +21,7 @@ Route::prefix('authentication')->group(function () {
     Route::post('login', 'AuthController@login');
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::prefix('authentication')->group(function () {
         Route::post('logout', 'AuthController@logout');
         Route::post('allLogout', 'AuthController@allLogout');
@@ -83,10 +84,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('locations/{id?}', 'LocationsDocumentsController@getLocationsDocuments');
             Route::post('locations/{id}', 'LocationsDocumentsController@changeLocationsDocuments');
 
-            Route::get('documents/{id?}', 'DocumentsController@getDocuments');
-            Route::post('documents', 'DocumentsController@createDocument');
-            Route::post('documents/{id}', 'DocumentsController@changeDocument');
-            Route::delete('documents/{id}', 'DocumentsController@deleteDocument');
+            Route::apiResource('documents', DocumentsController::class);
         });
     });
 });

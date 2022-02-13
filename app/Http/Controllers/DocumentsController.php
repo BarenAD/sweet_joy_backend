@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Documents\ChangeDocuments;
-use App\Http\Requests\Documents\CreateDocuments;
+use App\Exceptions\BaseException;
+use App\Http\Requests\Documents\UpdateDocument;
+use App\Http\Requests\Documents\StoreDocument;
 use App\Http\Services\DocumentsService;
+use App\Repositories\DocumentsRepository;
 use Illuminate\Http\Request;
 
 /**
@@ -14,41 +16,54 @@ use Illuminate\Http\Request;
 class DocumentsController extends Controller
 {
     private DocumentsService $documentsService;
+    private DocumentsRepository $documentsRepository;
 
-    public function __construct(DocumentsService $documentsService)
-    {
+    public function __construct(
+        DocumentsService $documentsService,
+        DocumentsRepository $documentsRepository
+    ) {
         $this->documentsService = $documentsService;
+        $this->documentsRepository = $documentsRepository;
     }
 
-    public function getDocuments(Request $request, int $id = null)
+    public function index()
     {
-        return response($this->documentsService->getDocuments($id), 200);
+        return response($this->documentsService->getAll(), 200);
     }
 
-    public  function createDocument(CreateDocuments $request)
+    public function show(Request $request, int $id)
     {
-        return response($this->documentsService->createDocument(
-            $request->user(),
-            $request->get('name'),
-            $request->file('document')
-        ), 200);
+        return response($this->documentsService->get($id), 200);
     }
 
-    public function changeDocument(ChangeDocuments $request, int $id)
+    public function store(StoreDocument $request)
     {
-        return response($this->documentsService->changeDocument(
-            $request->user(),
-            $id,
-            $request->get('name')
-        ), 200);
+        try {
+            return response($this->documentsService->store(
+                $request->get('name'),
+                $request->file('document')
+            ), 200);
+        } catch (\Exception $exception) {
+            throw new BaseException('file_is_not_stored', [
+                'message' => $exception->getMessage(),
+                'trace' => $exception->getTrace()
+            ]);
+        }
     }
 
-    public function deleteDocument(Request $request, int $id)
+    public function update(UpdateDocument $request, int $id)
     {
-        return response($this->documentsService->deleteDocument(
-            $request->user(),
-            $id
-        ), 200);
+        return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
+    }
+
+    public function destroy(Request $request, int $id)
+    {
+        try {
+            $this->documentsService->destroy($id);
+        } catch (\Exception $exception) {
+            throw new BaseException('file_is_not_destroy', $exception->getTrace());
+        }
+        return response(1, 200);
     }
 
 }

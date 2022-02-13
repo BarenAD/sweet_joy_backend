@@ -79,7 +79,7 @@ class ProductsForUserService
             CacheService::cacheProductsInfo('create', 'categories', $result['categories']);
         }
         if (!isset($result['documents'])) {
-            $result['documents'] = $this->documentsService->getDocuments();
+            $result['documents'] = $this->documentsService->getAll();
             CacheService::cacheProductsInfo('create', 'documents', $result['documents']);
         }
         if (!isset($result['locations_documents'])) {

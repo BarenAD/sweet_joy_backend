@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class NoReportException extends CoreException
+class NoReportException extends BaseException
 {
     public function report()
     {
