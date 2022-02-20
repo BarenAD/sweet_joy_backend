@@ -12,7 +12,7 @@ class ProductsForUserService
     private ProductInformationService $productInformationService;
     private PointsOfSaleService $pointsOfSaleService;
     private SchedulesService $schedulesService;
-    private ItemsService $itemsService;
+    private ProductsService $itemsService;
     private CategoriesItemService $categoriesItemService;
     private DocumentsService $documentsService;
     private LocationsDocumentsService $locationsDocumentsService;
@@ -22,7 +22,7 @@ class ProductsForUserService
         ProductInformationService $productInformationService,
         PointsOfSaleService $pointsOfSaleService,
         SchedulesService $schedulesService,
-        ItemsService $itemsService,
+        ProductsService $itemsService,
         CategoriesItemService $categoriesItemService,
         DocumentsService $documentsService,
         LocationsDocumentsService $locationsDocumentsService,

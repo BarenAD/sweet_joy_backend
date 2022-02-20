@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CategoryItem extends Model
+class ProductCategory extends Model
 {
-    protected $table = 'categories_item';
+    protected $table = 'product_categories';
 
     protected $fillable = [
-        'name'
+        'product_id', 'category_id'
     ];
 
     protected $hidden = [

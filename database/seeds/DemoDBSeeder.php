@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\CategoryItem;
-use App\Models\InformationCategorieItem;
-use App\Models\Item;
+use App\Models\Category;
+use App\Models\ProductCategory;
+use App\Models\Product;
 use App\Models\PointOfSale;
 use App\Models\ProductInformation;
 use App\Models\Schedule;
@@ -31,12 +31,12 @@ class DemoDBSeeder extends Seeder
                 'id_u' => $newAdmin->id
             ]);
             $categories = [
-                CategoryItem::create(['name' => 'Конфеты']),
-                CategoryItem::create(['name' => 'Подарочные наборы']),
-                CategoryItem::create(['name' => 'Без сахара']),
-                CategoryItem::create(['name' => 'Экологичная упаковка']),
-                CategoryItem::create(['name' => 'Фастфуд']),
-                CategoryItem::create(['name' => 'Без глютена']),
+                Category::create(['name' => 'Конфеты']),
+                Category::create(['name' => 'Подарочные наборы']),
+                Category::create(['name' => 'Без сахара']),
+                Category::create(['name' => 'Экологичная упаковка']),
+                Category::create(['name' => 'Фастфуд']),
+                Category::create(['name' => 'Без глютена']),
             ];
             $schedules = [
                 Schedule::create([
@@ -85,7 +85,7 @@ class DemoDBSeeder extends Seeder
                 ]),
             ];
             $items = [
-                Item::create([
+                Product::create([
                     'picture' => 'static_from_server/images/demo_cat.jpg',
                     'miniature_picture' => 'static_from_server/images/mini/demo_cat.jpg',
                     'name' => 'Демо товар 1',
@@ -94,7 +94,7 @@ class DemoDBSeeder extends Seeder
                     'description' => 'Отлично демонстрирует возможности',
                     'product_unit' => 'фасовка 100г/300г'
                 ]),
-                Item::create([
+                Product::create([
                     'picture' => 'static_from_server/images/demo_cubes.jpg',
                     'miniature_picture' => 'static_from_server/images/mini/demo_cubes.jpg',
                     'name' => 'Демо товар 2',
@@ -104,7 +104,7 @@ class DemoDBSeeder extends Seeder
                     'product_unit' => 'поштучно'
                 ])
             ];
-            InformationCategorieItem::insert([
+            ProductCategory::insert([
                 [
                     'id_i' => $items[0]->id,
                     'id_ci' => $categories[0]->id

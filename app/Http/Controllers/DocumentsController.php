@@ -44,10 +44,7 @@ class DocumentsController extends Controller
                 $request->file('document')
             ), 200);
         } catch (\Exception $exception) {
-            throw new BaseException('file_is_not_stored', [
-                'message' => $exception->getMessage(),
-                'trace' => $exception->getTrace()
-            ]);
+            throw new BaseException('file_is_not_stored', $exception);
         }
     }
 
@@ -61,7 +58,7 @@ class DocumentsController extends Controller
         try {
             $this->documentsService->destroy($id);
         } catch (\Exception $exception) {
-            throw new BaseException('file_is_not_destroy', $exception->getTrace());
+            throw new BaseException('file_is_not_destroy', $exception);
         }
         return response(1, 200);
     }

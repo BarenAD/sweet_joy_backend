@@ -13,7 +13,7 @@ class BaseException extends Exception
     private $errorMessage;
     private $errorId;
 
-    public function __construct(string $errorName, array $dataToLog = null, ?string $message = null, ?int $code = null, ?Throwable $previous = null)
+    public function __construct(string $errorName, ?Throwable $throwable = null, ?array $dataToLog = null, ?string $message = null, ?int $code = null)
     {
         $error = config("exceptions.${errorName}");
 
@@ -24,9 +24,13 @@ class BaseException extends Exception
             'id' => $this->errorId,
             'message' => $this->errorMessage,
         ];
+        if (!is_null($throwable)) {
+            $this->dataToLog['base']['message'] .= "  (THROWABLE MESSAGE => " . $throwable->getMessage() . ")";
+            $this->dataToLog['base']['trace'] = $throwable->getTrace();
+        }
         $this->dataToLog['additional'] = $dataToLog;
 
-        parent::__construct($this->errorMessage, $this->errorHttpCode, $previous);
+        parent::__construct($this->errorMessage, $this->errorHttpCode, $throwable);
     }
 
     public function render()

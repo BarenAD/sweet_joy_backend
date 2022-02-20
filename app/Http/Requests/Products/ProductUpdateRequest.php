@@ -1,44 +1,34 @@
 <?php
 
-namespace App\Http\Requests\Items;
+namespace App\Http\Requests\Products;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateItem extends FormRequest
+class ProductUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
-            'picture' => 'required|image|mimes:jpeg,jpg,png|max:2000',
+            'image' => 'image|mimes:jpeg,jpg,png|max:2000',
             'name' => 'required|string|max:255',
             'composition' => 'string|max:255',
             'manufacturer' => 'string|max:255',
             'description' => 'string|max:255',
             'product_unit' => 'string|max:255',
-            'categories_item' => 'array',
-            'categories_item.*' => 'numeric'
+            'product_categories' => 'array',
+            'product_categories.*' => 'numeric'
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            'categories_item' => json_decode($this->categories_item),
+            'product_categories' => json_decode($this->product_categories),
         ]);
     }
 }

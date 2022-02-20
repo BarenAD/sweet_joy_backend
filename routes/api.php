@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +30,12 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     });
 
     Route::middleware(['checkAllowToManagement'])->prefix('management')->group(function () {
+
+        Route::apiResource('categories', CategoriesController::class);
+        Route::apiResource('products', ProductsController::class);
+        Route::post('products/{id}', [ProductsController::class, 'update']);
+
+
         Route::get('users/{id?}', 'UsersController@getUsers');
         Route::post('users/{id}', 'UsersController@changeUser');
         Route::delete('users/{id}', 'UsersController@deleteUser');
@@ -61,23 +69,6 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
             Route::post('points_of_sale', 'PointsOfSaleController@createPoints');
             Route::post('points_of_sale/{id}', 'PointsOfSaleController@changePoints');
             Route::delete('points_of_sale/{id}', 'PointsOfSaleController@deletePoints');
-        });
-
-        Route::prefix('products')->group(function () {
-            Route::get('categories_item/{id?}', 'CategoriesItemController@getCategories');
-            Route::post('categories_item', 'CategoriesItemController@createCategory');
-            Route::post('categories_item/{id}', 'CategoriesItemController@changeCategory');
-            Route::delete('categories_item/{id}', 'CategoriesItemController@deleteCategory');
-
-            Route::get('items/{id?}', 'ItemsController@getItems');
-            Route::post('items', 'ItemsController@createItem');
-            Route::post('items/{id}', 'ItemsController@changeItem'); //поставить POST и будет всё ок
-            Route::delete('items/{id}', 'ItemsController@deleteItem');
-
-            Route::get('products_information/{id?}', 'ProductInformationController@getProductsInfo');
-            Route::post('products_information', 'ProductInformationController@createProductInfo');
-            Route::post('products_information/{id}', 'ProductInformationController@changeProductInfo');
-            Route::delete('products_information/{id}', 'ProductInformationController@deleteProductInfo');
         });
 
         Route::prefix('documents')->group(function () {
