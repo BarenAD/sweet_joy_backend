@@ -29,7 +29,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::post('allLogout', 'AuthController@allLogout');
     });
 
-    Route::middleware(['checkAllowToManagement'])->prefix('management')->group(function () {
+    Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
 
         Route::apiResource('categories', CategoriesController::class);
         Route::apiResource('products', ProductsController::class);
@@ -71,11 +71,10 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
             Route::delete('points_of_sale/{id}', 'PointsOfSaleController@deletePoints');
         });
 
-        Route::prefix('documents')->group(function () {
+        Route::apiResource('/documents', DocumentsController::class);
+        Route::prefix('documents')->as('documents.')->group(function () {
             Route::get('locations/{id?}', 'LocationsDocumentsController@getLocationsDocuments');
             Route::post('locations/{id}', 'LocationsDocumentsController@changeLocationsDocuments');
-
-            Route::apiResource('documents', DocumentsController::class);
         });
     });
 });

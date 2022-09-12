@@ -64,7 +64,7 @@ class DocumentsController extends Controller
         } catch (\Exception $exception) {
             throw new BaseException('file_is_not_destroy', $exception);
         }
-        return response(1, 200);
+        return response($id . 'destroyed', 200);
     }
 
 }
