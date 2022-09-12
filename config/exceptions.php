@@ -21,4 +21,9 @@ return [
         'message' => 'Неудалось удалить файл',
         'http_code' => 500
     ],
+    'file_is_not_update' => [
+        'id' => 4,
+        'message' => 'Неудалось обновить файл',
+        'http_code' => 500
+    ],
 ];

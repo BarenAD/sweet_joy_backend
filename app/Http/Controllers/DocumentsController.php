@@ -50,7 +50,11 @@ class DocumentsController extends Controller
 
     public function update(UpdateDocument $request, int $id)
     {
-        return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
+        try {
+            return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
+        } catch (\Exception $exception) {
+            throw new BaseException('file_is_not_update', $exception);
+        }
     }
 
     public function destroy(Request $request, int $id)
