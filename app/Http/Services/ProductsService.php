@@ -55,6 +55,11 @@ class ProductsService
         Storage::disk('public')->putFileAs($this->pathToImagesMini, $image->basePath(), $imageName);
     }
 
+    private function deleteImage(string $imageName): void {
+        Storage::disk('public')->delete($this->pathToImages.$imageName);
+        Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
+    }
+
     public function getAll(): array
     {
         $products = $this->productsRepository->getAll();
@@ -126,13 +131,21 @@ class ProductsService
     {
         try {
             DB::beginTransaction();
-            $product = $this->productsRepository->update($id, [
-                'name' => $productDTO->name,
-                'composition' => $productDTO->composition,
-                'manufacturer' => $productDTO->manufacturer,
-                'description' => $productDTO->description,
-                'product_unit' => $productDTO->product_unit
-            ]);
+            $product = $this->productsRepository->find($id);
+            $oldImageName = $product['image'];
+            if (!is_null($productDTO->image)) {
+                $product['image'] = uniqid().'.jpg';
+                $this->saveImage($product['image'], $productDTO->image);
+            }
+            $product['name'] = $productDTO->name;
+            $product['composition'] = $productDTO->composition;
+            $product['manufacturer'] = $productDTO->manufacturer;
+            $product['description'] = $productDTO->description;
+            $product['product_unit'] = $productDTO->product_unit;
+            $product->save();
+            if ($oldImageName !== $product['image']) {
+                $this->deleteImage($oldImageName);
+            }
             $categories = $this->productCategoriesRepository->getByProductId($id);
             foreach ($categories->whereNotIn('category_id', $productDTO->product_categories) as $category) {
                 $category->delete();
@@ -149,9 +162,6 @@ class ProductsService
                 ];
             }
             $this->productCategoriesRepository->insert($categoriesForInsert);
-            if (!is_null($productDTO->image)) {
-                $this->saveImage($product->image, $productDTO->image);
-            }
             $this->preparedProductPathToImages($product);
             DB::commit();
             return [

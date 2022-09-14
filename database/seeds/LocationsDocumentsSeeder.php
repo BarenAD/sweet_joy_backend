@@ -1,6 +1,6 @@
 <?php
 
-use App\LocationsDocuments;
+use App\Models\LocationsDocuments;
 use Illuminate\Database\Seeder;
 
 class LocationsDocumentsSeeder extends Seeder
@@ -14,6 +14,7 @@ class LocationsDocumentsSeeder extends Seeder
     {
         LocationsDocuments::insert([
             [
+                'id' => 1,
                 'name' => 'документ в верхнем баре на главной',
                 'identify' => 'main_top_bar_document',
             ],

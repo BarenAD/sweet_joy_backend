@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\LocationsDocumentsController;
 use App\Http\Controllers\ProductsController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +33,8 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
 
         Route::apiResource('categories', CategoriesController::class);
-        Route::apiResource('products', ProductsController::class);
-        Route::post('products/{id}', [ProductsController::class, 'update']);
+        Route::apiResource('products', ProductsController::class)->except('update');
+        Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
 
 
         Route::get('users/{id?}', 'UsersController@getUsers');
@@ -73,8 +74,8 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
 
         Route::apiResource('/documents', DocumentsController::class);
         Route::prefix('documents')->as('documents.')->group(function () {
-            Route::get('locations/{id?}', 'LocationsDocumentsController@getLocationsDocuments');
-            Route::post('locations/{id}', 'LocationsDocumentsController@changeLocationsDocuments');
+            Route::get('locations/{id?}', [LocationsDocumentsController::class, 'getLocationsDocuments']);
+            Route::post('locations/{id}', [LocationsDocumentsController::class, 'changeLocationsDocuments']);
         });
     });
 });
