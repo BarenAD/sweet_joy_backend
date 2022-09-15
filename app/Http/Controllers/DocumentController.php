@@ -3,40 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\BaseException;
-use App\Http\Requests\Documents\UpdateDocument;
-use App\Http\Requests\Documents\StoreDocument;
-use App\Http\Services\DocumentsService;
-use App\Repositories\DocumentsRepository;
+use App\Http\Requests\Documents\DestroyDocumentRequest;
+use App\Http\Requests\Documents\IndexDocumentRequest;
+use App\Http\Requests\Documents\UpdateDocumentRequest;
+use App\Http\Requests\Documents\StoreDocumentRequest;
+use App\Http\Services\DocumentService;
+use App\Repositories\DocumentRepository;
 use Illuminate\Http\Request;
 
 /**
- * Class DocumentsController
+ * Class DocumentController
  * @package App\Http\Controllers
  */
-class DocumentsController extends Controller
+class DocumentController extends Controller
 {
-    private DocumentsService $documentsService;
-    private DocumentsRepository $documentsRepository;
+    private DocumentService $documentsService;
+    private DocumentRepository $documentsRepository;
 
     public function __construct(
-        DocumentsService $documentsService,
-        DocumentsRepository $documentsRepository
+        DocumentService $documentsService,
+        DocumentRepository $documentsRepository
     ) {
         $this->documentsService = $documentsService;
         $this->documentsRepository = $documentsRepository;
     }
 
-    public function index()
+    public function index(IndexDocumentRequest $request)
     {
         return response($this->documentsService->getAll(), 200);
     }
 
-    public function show(Request $request, int $id)
+    public function show(IndexDocumentRequest $request, int $id)
     {
-        return response($this->documentsService->get($id), 200);
+        return response($this->documentsService->find($id), 200);
     }
 
-    public function store(StoreDocument $request)
+    public function store(StoreDocumentRequest $request)
     {
         try {
             return response($this->documentsService->store(
@@ -48,7 +50,7 @@ class DocumentsController extends Controller
         }
     }
 
-    public function update(UpdateDocument $request, int $id)
+    public function update(UpdateDocumentRequest $request, int $id)
     {
         try {
             return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
@@ -57,7 +59,7 @@ class DocumentsController extends Controller
         }
     }
 
-    public function destroy(Request $request, int $id)
+    public function destroy(DestroyDocumentRequest $request, int $id)
     {
         try {
             $this->documentsService->destroy($id);

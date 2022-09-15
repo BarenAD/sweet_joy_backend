@@ -14,7 +14,7 @@ class ProductsForUserService
     private SchedulesService $schedulesService;
     private ProductsService $itemsService;
     private CategoriesItemService $categoriesItemService;
-    private DocumentsService $documentsService;
+    private DocumentService $documentsService;
     private LocationsDocumentsService $locationsDocumentsService;
     private SiteConfigurationsService $siteConfigurationsService;
 
@@ -24,7 +24,7 @@ class ProductsForUserService
         SchedulesService $schedulesService,
         ProductsService $itemsService,
         CategoriesItemService $categoriesItemService,
-        DocumentsService $documentsService,
+        DocumentService $documentsService,
         LocationsDocumentsService $locationsDocumentsService,
         SiteConfigurationsService $siteConfigurationsService
     ){

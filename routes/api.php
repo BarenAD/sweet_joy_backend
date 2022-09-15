@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LocationsDocumentsController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SiteConfigurationController;
@@ -72,7 +72,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
             Route::delete('points_of_sale/{id}', 'PointsOfSaleController@deletePoints');
         });
 
-        Route::apiResource('/documents', DocumentsController::class);
+        Route::apiResource('/documents', DocumentController::class);
         Route::prefix('documents')->as('documents.')->group(function () {
             Route::get('locations/{id?}', [LocationsDocumentsController::class, 'getLocationsDocuments']);
             Route::post('locations/{id}', [LocationsDocumentsController::class, 'changeLocationsDocuments']);

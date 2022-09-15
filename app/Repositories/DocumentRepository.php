@@ -7,10 +7,10 @@ namespace App\Repositories;
 use App\Models\Document;
 
 /**
- * Class DocumentsRepository
+ * Class DocumentRepository
  * @package App\Repositories
  */
-class DocumentsRepository extends CoreRepository
+class DocumentRepository extends CoreRepository
 {
     public function getModelClass(): string
     {

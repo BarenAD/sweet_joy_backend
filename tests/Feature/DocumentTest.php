@@ -11,7 +11,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class DocumentsTest extends TestCase
+class DocumentTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;

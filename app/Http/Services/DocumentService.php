@@ -8,7 +8,7 @@
 
 namespace App\Http\Services;
 
-use App\Repositories\DocumentsRepository;
+use App\Repositories\DocumentRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
@@ -16,16 +16,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Class DocumentsService
+ * Class DocumentService
  * @package App\Http\Services
  */
-class DocumentsService
+class DocumentService
 {
-    private DocumentsRepository $documentsRepository;
+    private DocumentRepository $documentsRepository;
     private string $pathToDocuments;
 
     public function __construct(
-        DocumentsRepository $documentsRepository
+        DocumentRepository $documentsRepository
     ){
         $this->documentsRepository = $documentsRepository;
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
@@ -44,7 +44,7 @@ class DocumentsService
         return $result;
     }
 
-    public function get($id): array
+    public function find($id): array
     {
         $document = $this->documentsRepository->find($id);
         return [
