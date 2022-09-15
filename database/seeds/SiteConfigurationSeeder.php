@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\SiteConfigurations;
+use App\Models\SiteConfiguration;
 use Illuminate\Database\Seeder;
 
-class SiteConfigurationsSeeder extends Seeder
+class SiteConfigurationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,7 +12,7 @@ class SiteConfigurationsSeeder extends Seeder
      */
     public function run()
     {
-        SiteConfigurations::insert([
+        SiteConfiguration::insert([
             [
                 'id' => 1,
                 'name' => 'Футер первый блок слева',

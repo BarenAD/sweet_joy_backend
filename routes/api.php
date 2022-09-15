@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LocationsDocumentsController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SiteConfigurationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,9 +42,8 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::post('users/{id}', 'UsersController@changeUser');
         Route::delete('users/{id}', 'UsersController@deleteUser');
 
-        Route::prefix('configurations')->group(function () {
-            Route::get('site/{id?}', 'SiteConfigurationsController@getSiteConfigurations');
-            Route::post('site/{id}', 'SiteConfigurationsController@changeSiteConfigurations');
+        Route::prefix('configurations')->as('configurations.')->group(function () {
+            Route::apiResource('site', SiteConfigurationController::class)->only(['index', 'show', 'update']);
         });
 
         Route::prefix('admins')->group(function () {
