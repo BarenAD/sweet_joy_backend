@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PointOfSale extends Model
+class Shop extends Model
 {
-    protected $table = 'points_of_sale';
+    protected $table = 'shops';
 
     protected $fillable = [
-        'address', 'phone', 'id_s', 'map_integration'
+        'address', 'phone', 'schedule_id', 'map_integration'
     ];
 
     protected $hidden = [
