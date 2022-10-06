@@ -79,6 +79,7 @@ class DocumentService
             Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
             DB::commit();
         } catch (\Throwable $exception) {
+            DB::rollBack();
             throw new BaseException('file_is_not_destroy', $exception);
         }
     }
