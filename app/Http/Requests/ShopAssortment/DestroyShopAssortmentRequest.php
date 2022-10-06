@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\ShopAssortment;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeOrCreateCategoryItem extends FormRequest
+class DestroyShopAssortmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,6 @@ class ChangeOrCreateCategoryItem extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name' => 'required|string|max:255',
-        ];
+        return [];
     }
 }

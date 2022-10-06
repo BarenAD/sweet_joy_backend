@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LocationsDocumentsController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ShopAssortmentController;
 use App\Http\Controllers\SiteConfigurationController;
 use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,10 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
 
         Route::apiResource('shops', ShopController::class);
+        Route::apiResource('shops-assortment', ShopAssortmentController::class);
+//        Route::prefix('shops/{shop_id}')->group(function () { //Планы на будущее
+//            Route::apiResource('assortment', ShopAssortmentController::class);
+//        });
 
         Route::prefix('configurations')->as('configurations.')->group(function () {
             Route::apiResource('site', SiteConfigurationController::class)->only(['index', 'show', 'update']);
