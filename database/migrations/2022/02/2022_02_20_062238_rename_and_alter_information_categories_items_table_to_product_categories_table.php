@@ -25,7 +25,7 @@ class RenameAndAlterInformationCategoriesItemsTableToProductCategoriesTable exte
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
-        DB::statement("ALTER TABLE product_categories comment 'Товары'");
+        DB::statement("ALTER TABLE product_categories comment 'Категории на товарах'");
         DB::beginTransaction();
             $products = \App\Models\Product::all();
             foreach ($products as $product) {
