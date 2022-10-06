@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @method static where(string $column, $value)
  */
-class SuperAdmin extends Model
+class Operator extends Model
 {
-    protected $table = 'super_admins';
+    protected $table = 'operators';
 
     protected $fillable = [
-        'id_u'
+        'user_id'
     ];
 
     protected $hidden = [
