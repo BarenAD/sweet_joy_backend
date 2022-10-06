@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LocationsDocumentsController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShopAssortmentController;
 use App\Http\Controllers\SiteConfigurationController;
 use App\Http\Controllers\ShopController;
@@ -43,7 +44,9 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::apiResource('shops-assortment', ShopAssortmentController::class);
 //        Route::prefix('shops/{shop_id}')->group(function () { //Планы на будущее
 //            Route::apiResource('assortment', ShopAssortmentController::class);
+//            ...передача товаров массивами
 //        });
+        Route::apiResource('schedules', ScheduleController::class);
 
         Route::prefix('configurations')->as('configurations.')->group(function () {
             Route::apiResource('site', SiteConfigurationController::class)->only(['index', 'show', 'update']);
@@ -74,13 +77,6 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
             Route::post('admins', 'AdminInformationController@createAdmin');
             Route::post('admins/{id_user}', 'AdminInformationController@changeAdmin');
             Route::delete('admins/{id_user}', 'AdminInformationController@deleteAdmin');
-        });
-
-        Route::prefix('points_of_sale')->group(function () {
-            Route::get('schedules/{id?}', 'SchedulesController@getSchedules');
-            Route::post('schedules', 'SchedulesController@createSchedule');
-            Route::post('schedules/{id}', 'SchedulesController@changeSchedule');
-            Route::delete('schedules/{id}', 'SchedulesController@deleteSchedules');
         });
     });
 });
