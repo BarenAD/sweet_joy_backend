@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\BaseException;
 use App\Http\Requests\Documents\DestroyDocumentRequest;
 use App\Http\Requests\Documents\IndexDocumentRequest;
 use App\Http\Requests\Documents\UpdateDocumentRequest;
 use App\Http\Requests\Documents\StoreDocumentRequest;
 use App\Http\Services\DocumentService;
 use App\Repositories\DocumentRepository;
-use Illuminate\Http\Request;
 
 /**
  * Class DocumentController
@@ -40,32 +38,20 @@ class DocumentController extends Controller
 
     public function store(StoreDocumentRequest $request)
     {
-        try {
-            return response($this->documentsService->store(
-                $request->get('name'),
-                $request->file('document')
-            ), 200);
-        } catch (\Exception $exception) {
-            throw new BaseException('file_is_not_stored', $exception);
-        }
+        return response($this->documentsService->store(
+            $request->get('name'),
+            $request->file('document')
+        ), 200);
     }
 
     public function update(UpdateDocumentRequest $request, int $id)
     {
-        try {
-            return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
-        } catch (\Exception $exception) {
-            throw new BaseException('file_is_not_update', $exception);
-        }
+        return response($this->documentsRepository->update($id, ['name' => $request->get('name')]), 200);
     }
 
     public function destroy(DestroyDocumentRequest $request, int $id)
     {
-        try {
-            $this->documentsService->destroy($id);
-        } catch (\Exception $exception) {
-            throw new BaseException('file_is_not_destroy', $exception);
-        }
+        $this->documentsService->destroy($id);
         return response($id . 'destroyed', 200);
     }
 

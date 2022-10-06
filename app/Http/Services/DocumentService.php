@@ -8,6 +8,7 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\BaseException;
 use App\Repositories\DocumentRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -64,16 +65,20 @@ class DocumentService
             ]);
         } catch (QueryException $exception) {
             Storage::disk('public')->delete($this->pathToDocuments.$documentName);
-            throw new \Exception($exception);
+            throw new BaseException('file_is_not_stored', $exception);
         }
     }
 
     public function destroy(int $id): void
     {
-        DB::beginTransaction();
-        $document = $this->documentsRepository->find($id);
-        $document->delete();
-        Storage::disk('public')->delete($this->pathToDocuments.$document->urn);
-        DB::commit();
+        try {
+            DB::beginTransaction();
+            $document = $this->documentsRepository->find($id);
+            $document->delete();
+            Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
+            DB::commit();
+        } catch (\Throwable $exception) {
+            throw new BaseException('file_is_not_destroy', $exception);
+        }
     }
 }
