@@ -8,6 +8,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShopAssortmentController;
 use App\Http\Controllers\SiteConfigurationController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,7 +37,9 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
 
     Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
 
+        Route::apiResource('users', UserController::class)->except('store');
         Route::apiResource('categories', CategoriesController::class);
+
         Route::apiResource('products', ProductsController::class)->except('update');
         Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
 
@@ -58,11 +61,6 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::apiResource('/documents', DocumentController::class);
 
         //#######################################
-
-
-        Route::get('users/{id?}', 'UsersController@getUsers');
-        Route::post('users/{id}', 'UsersController@changeUser');
-        Route::delete('users/{id}', 'UsersController@deleteUser');
 
         Route::prefix('admins')->group(function () {
             Route::get('actions', 'AdminActionsController@getActions');
