@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\LocationsDocumentsController;
+use App\Http\Controllers\DocumentLocationController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShopAssortmentController;
@@ -52,11 +52,10 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
             Route::apiResource('site', SiteConfigurationController::class)->only(['index', 'show', 'update']);
         });
 
-        Route::apiResource('/documents', DocumentController::class);
         Route::prefix('documents')->as('documents.')->group(function () {
-            Route::get('locations/{id?}', [LocationsDocumentsController::class, 'getLocationsDocuments']);
-            Route::post('locations/{id}', [LocationsDocumentsController::class, 'changeLocationsDocuments']);
+            Route::apiResource('locations', DocumentLocationController::class)->only(['index', 'show', 'update']);
         });
+        Route::apiResource('/documents', DocumentController::class);
 
         //#######################################
 

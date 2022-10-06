@@ -38,6 +38,7 @@ class DocumentService
         $result = [];
         foreach ($documents as $document) {
             $result[] = [
+                'id' => $document->id,
                 'name' => $document->name,
                 'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
             ];

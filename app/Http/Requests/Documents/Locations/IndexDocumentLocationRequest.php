@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Documents\Locations;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateLocationDocumentRequest extends FormRequest
+class IndexDocumentLocationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,6 @@ class UpdateLocationDocumentRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'id_d' => 'required|numeric',
-        ];
+        return [];
     }
 }

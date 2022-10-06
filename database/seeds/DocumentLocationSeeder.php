@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\LocationsDocuments;
+use App\Models\DocumentLocation;
 use Illuminate\Database\Seeder;
 
-class LocationsDocumentsSeeder extends Seeder
+class DocumentLocationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,7 +12,7 @@ class LocationsDocumentsSeeder extends Seeder
      */
     public function run()
     {
-        LocationsDocuments::insert([
+        DocumentLocation::insert([
             [
                 'id' => 1,
                 'name' => 'документ в верхнем баре на главной',
