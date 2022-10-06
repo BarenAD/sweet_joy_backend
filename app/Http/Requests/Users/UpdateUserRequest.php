@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Shop;
+namespace App\Http\Requests\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreShopRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,11 @@ class StoreShopRequest extends FormRequest
     public function rules()
     {
         return [
-            'schedule_id' => 'required|numeric',
-            'address' => 'required|string|max:255',
+            'fio' => 'required|string|max:255',
+            'login' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'password' => 'string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',
-            'map_integration' => 'string',
         ];
     }
 }

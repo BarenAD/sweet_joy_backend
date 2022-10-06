@@ -11,7 +11,7 @@ use App\Models\Product;
  * Class ItemsRepository
  * @package App\Repositories
  */
-class ProductsRepository extends CoreRepository
+class ProductRepository extends CoreRepository
 {
     public function getModelClass(): string
     {

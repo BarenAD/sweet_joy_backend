@@ -7,17 +7,17 @@ use App\Http\Requests\Products\ProductDestroyRequest;
 use App\Http\Requests\Products\ProductIndexRequest;
 use App\Http\Requests\Products\ProductStoreRequest;
 use App\Http\Requests\Products\ProductUpdateRequest;
-use App\Http\Services\ProductsService;
+use App\Http\Services\ProductService;
 
 /**
  * Class ProductItemsController
  * @package App\Http\Controllers
  */
-class ProductsController extends Controller
+class ProductController extends Controller
 {
-    private ProductsService $productsService;
+    private ProductService $productsService;
 
-    public function __construct(ProductsService $productsService)
+    public function __construct(ProductService $productsService)
     {
         $this->productsService = $productsService;
     }

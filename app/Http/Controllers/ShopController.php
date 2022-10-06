@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Shop\DestroyShopRequest;
-use App\Http\Requests\Shop\IndexShopRequest;
-use App\Http\Requests\Shop\StoreShopRequest;
-use App\Http\Requests\Shop\UpdateShopRequest;
+use App\Http\Requests\Shops\DestroyShopRequest;
+use App\Http\Requests\Shops\IndexShopRequest;
+use App\Http\Requests\Shops\StoreShopRequest;
+use App\Http\Requests\Shops\UpdateShopRequest;
 use App\Repositories\ShopRepository;
 
 /**

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\User\DeleteUserRequest;
-use App\Http\Requests\User\IndexUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\Users\DeleteUserRequest;
+use App\Http\Requests\Users\IndexUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 use App\Repositories\UserRepository;
 
 /**

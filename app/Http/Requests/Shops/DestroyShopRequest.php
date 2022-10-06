@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ShopAssortment;
+namespace App\Http\Requests\Shops;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreShopAssortmentRequest extends FormRequest
+class DestroyShopRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +23,6 @@ class StoreShopAssortmentRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'product_id' => 'required|numeric',
-            'shop_id' => 'required|numeric',
-            'price' => 'numeric',
-            'count' => 'numeric',
-        ];
+        return [];
     }
 }

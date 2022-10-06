@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentLocationController;
-use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\ShopAssortmentController;
+use App\Http\Controllers\ShopProductController;
 use App\Http\Controllers\SiteConfigurationController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
@@ -38,15 +38,15 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
 
         Route::apiResource('users', UserController::class)->except('store');
-        Route::apiResource('categories', CategoriesController::class);
+        Route::apiResource('categories', CategoryController::class);
 
-        Route::apiResource('products', ProductsController::class)->except('update');
-        Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
+        Route::apiResource('products', ProductController::class)->except('update');
+        Route::post('products/{id}', [ProductController::class, 'update'])->name('products.update');
 
         Route::apiResource('shops', ShopController::class);
-        Route::apiResource('shops-assortment', ShopAssortmentController::class);
-//        Route::prefix('shops/{shop_id}')->group(function () { //Планы на будущее
-//            Route::apiResource('assortment', ShopAssortmentController::class);
+        Route::apiResource('shops-products', ShopProductController::class);
+//        Route::prefix('shops/{shop_id}')->as('shops.')->group(function () { //Планы на будущее
+//            Route::apiResource('products', ShopAssortmentController::class);
 //            ...передача товаров массивами
 //        });
         Route::apiResource('schedules', ScheduleController::class);

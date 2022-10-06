@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Shops\Products;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteUserRequest extends FormRequest
+class IndexShopProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

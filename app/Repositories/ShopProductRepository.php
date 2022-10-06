@@ -4,17 +4,17 @@
 namespace App\Repositories;
 
 
-use App\Models\ShopAssortment;
+use App\Models\ShopProduct;
 
 /**
  * Class ProductInformationRepository
  * @package App\Repositories
  */
-class ShopAssortmentRepository extends CoreRepository
+class ShopProductRepository extends CoreRepository
 {
     public function getModelClass(): string
     {
-        return ShopAssortment::class;
+        return ShopProduct::class;
     }
 
     public function hasProductInShop(int $shopID, int $productID): bool

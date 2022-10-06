@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
  * Class InformationCategoriesItemRepository
  * @package App\Repositories
  */
-class ProductCategoriesRepository extends CoreRepository
+class ProductCategoryRepository extends CoreRepository
 {
     public function getModelClass(): string
     {

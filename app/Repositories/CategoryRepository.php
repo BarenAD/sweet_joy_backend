@@ -10,7 +10,7 @@ use App\Models\Category;
  * Class CategoriesItemRepository
  * @package App\Repositories
  */
-class CategoriesRepository extends CoreRepository
+class CategoryRepository extends CoreRepository
 {
     public function getModelClass(): string
     {

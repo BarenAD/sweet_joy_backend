@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Shops;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+class IndexShopRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +23,6 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'fio' => 'required|string|max:255',
-            'login' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
-            'password' => 'string|max:255',
-            'phone' => 'required|regex:/^[7]\d{10}$/',
-        ];
+        return [];
     }
 }

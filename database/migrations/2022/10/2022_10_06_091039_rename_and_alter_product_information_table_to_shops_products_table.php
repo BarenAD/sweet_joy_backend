@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RenameAndAlterProductInformationTableToShopsAssortmentTable extends Migration
+class RenameAndAlterProductInformationTableToShopsProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class RenameAndAlterProductInformationTableToShopsAssortmentTable extends Migrat
      */
     public function up()
     {
-        Schema::rename('products_information','shop_assortment');
-        Schema::table('shop_assortment', function(Blueprint $table) {
+        Schema::rename('products_information','shop_products');
+        Schema::table('shop_products', function(Blueprint $table) {
             $table->dropForeign('products_information_id_i_foreign');
             $table->dropForeign('products_information_id_pos_foreign');
             $table->dropIndex('products_information_id_i_foreign');
@@ -25,7 +25,7 @@ class RenameAndAlterProductInformationTableToShopsAssortmentTable extends Migrat
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
         });
-        DB::statement("ALTER TABLE shop_assortment comment 'Ассортимент продуктов в магазине'");
+        DB::statement("ALTER TABLE shop_products comment 'Ассортимент продуктов в магазине'");
     }
 
     /**
@@ -35,12 +35,12 @@ class RenameAndAlterProductInformationTableToShopsAssortmentTable extends Migrat
      */
     public function down()
     {
-        Schema::rename('shop_assortment','products_information');
+        Schema::rename('shop_products','products_information');
         Schema::table('products_information', function(Blueprint $table) {
-            $table->dropForeign('shop_assortment_product_id_foreign');
-            $table->dropForeign('shop_assortment_shop_id_foreign');
-            $table->dropIndex('shop_assortment_product_id_foreign');
-            $table->dropIndex('shop_assortment_shop_id_foreign');
+            $table->dropForeign('shop_products_product_id_foreign');
+            $table->dropForeign('shop_products_shop_id_foreign');
+            $table->dropIndex('shop_products_product_id_foreign');
+            $table->dropIndex('shop_products_shop_id_foreign');
             $table->renameColumn('product_id', 'id_i');
             $table->renameColumn('shop_id', 'id_pos');
             $table->foreign('id_i')->references('id')->on('products')->onDelete('cascade');

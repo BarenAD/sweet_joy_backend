@@ -11,8 +11,8 @@ namespace App\Http\Services;
 
 use App\DTO\ProductDTO;
 use App\Models\Product;
-use App\Repositories\ProductCategoriesRepository;
-use App\Repositories\ProductsRepository;
+use App\Repositories\ProductCategoryRepository;
+use App\Repositories\ProductRepository;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -23,16 +23,16 @@ use Intervention\Image\Facades\Image;
  * Class ItemsService
  * @package App\Http\Services
  */
-class ProductsService
+class ProductService
 {
-    private ProductsRepository $productsRepository;
-    private ProductCategoriesRepository $productCategoriesRepository;
+    private ProductRepository $productsRepository;
+    private ProductCategoryRepository $productCategoriesRepository;
     private string $pathToImages;
     private string $pathToImagesMini;
 
     public function __construct(
-        ProductsRepository $productsRepository,
-        ProductCategoriesRepository $productCategoriesRepository
+        ProductRepository $productsRepository,
+        ProductCategoryRepository $productCategoriesRepository
     ){
         $this->productsRepository = $productsRepository;
         $this->productCategoriesRepository = $productCategoriesRepository;

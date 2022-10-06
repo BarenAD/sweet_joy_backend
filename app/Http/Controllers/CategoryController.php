@@ -6,15 +6,15 @@ use App\Http\Requests\Categories\CategoryDestroyRequest;
 use App\Http\Requests\Categories\CategoryIndexRequest;
 use App\Http\Requests\Categories\CategoryStoreRequest;
 use App\Http\Requests\Categories\CategoryUpdateRequest;
-use App\Repositories\CategoriesRepository;
+use App\Repositories\CategoryRepository;
 use Illuminate\Http\Response;
 
-class CategoriesController
+class CategoryController
 {
-    private CategoriesRepository $categoriesRepository;
+    private CategoryRepository $categoriesRepository;
 
     public function __construct(
-        CategoriesRepository $categoriesRepository
+        CategoryRepository $categoriesRepository
     ) {
         $this->categoriesRepository = $categoriesRepository;
     }
