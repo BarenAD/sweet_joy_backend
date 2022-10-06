@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ChangeLocationsDocuments;
+use App\Http\Requests\UpdateLocationDocumentRequest;
 use App\Http\Services\LocationsDocumentsService;
 use Illuminate\Http\Request;
 
@@ -24,7 +24,7 @@ class LocationsDocumentsController extends Controller
         return response($this->locationsDocumentsService->getLocationsDocuments($id), 200);
     }
 
-    public function changeLocationsDocuments(ChangeLocationsDocuments $request, int $id)
+    public function changeLocationsDocuments(UpdateLocationDocumentRequest $request, int $id)
     {
         return response($this->locationsDocumentsService->changeLocationsDocuments(
             $request->user(),
