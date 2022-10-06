@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeUser;
 use App\Http\Services\UserService;
-use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 /**

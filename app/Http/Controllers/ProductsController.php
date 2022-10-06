@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DTO\ProductDTO;
-use App\Http\Requests\Products\ChangeItem;
-use App\Http\Requests\Products\CreateItem;
 use App\Http\Requests\Products\ProductDestroyRequest;
 use App\Http\Requests\Products\ProductIndexRequest;
 use App\Http\Requests\Products\ProductStoreRequest;
 use App\Http\Requests\Products\ProductUpdateRequest;
 use App\Http\Services\ProductsService;
-use Illuminate\Http\Request;
 
 /**
  * Class ProductItemsController
