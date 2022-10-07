@@ -24,6 +24,7 @@ class RenameAndAlterProductInformationTableToShopsProductsTable extends Migratio
             $table->renameColumn('id_pos', 'shop_id');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
+            $table->unique(['product_id', 'shop_id']);
         });
         DB::statement("ALTER TABLE shop_products comment 'Ассортимент продуктов в магазине'");
     }
@@ -39,8 +40,8 @@ class RenameAndAlterProductInformationTableToShopsProductsTable extends Migratio
         Schema::table('products_information', function(Blueprint $table) {
             $table->dropForeign('shop_products_product_id_foreign');
             $table->dropForeign('shop_products_shop_id_foreign');
-            $table->dropIndex('shop_products_product_id_foreign');
             $table->dropIndex('shop_products_shop_id_foreign');
+            $table->dropUnique('shop_products_product_id_shop_id_unique');
             $table->renameColumn('product_id', 'id_i');
             $table->renameColumn('shop_id', 'id_pos');
             $table->foreign('id_i')->references('id')->on('products')->onDelete('cascade');
