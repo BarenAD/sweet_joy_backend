@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Utils\UserPermissionsUtil;
+use App\Http\Utils\UserPermissionUtil;
 use Closure;
 use Illuminate\Support\Facades\Session;
 
@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Session;
  */
 class CheckAllowToManagement
 {
-    private UserPermissionsUtil $adminGrantsUtil;
+    private UserPermissionUtil $adminGrantsUtil;
 
-    public function __construct(UserPermissionsUtil $adminGrantsUtil)
+    public function __construct(UserPermissionUtil $adminGrantsUtil)
     {
         $this->adminGrantsUtil = $adminGrantsUtil;
     }

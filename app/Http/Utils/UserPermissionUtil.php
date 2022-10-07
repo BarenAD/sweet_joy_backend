@@ -10,7 +10,7 @@ use App\Models\UserRole;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
-class UserPermissionsUtil
+class UserPermissionUtil
 {
     public function getUserPermissions(int $idUser)
     {

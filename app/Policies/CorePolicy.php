@@ -5,16 +5,16 @@ namespace App\Policies;
 
 
 use App\Exceptions\NoReportException;
-use App\Http\Utils\UserPermissionsUtil;
+use App\Http\Utils\UserPermissionUtil;
 
 abstract class CorePolicy
 {
     protected string $baseRule;
-    private UserPermissionsUtil $userPermissionsUtil;
+    private UserPermissionUtil $userPermissionsUtil;
 
     abstract protected function setUpParams(): void;
 
-    public function __construct(UserPermissionsUtil $userPermissionsUtil)
+    public function __construct(UserPermissionUtil $userPermissionsUtil)
     {
         $this->userPermissionsUtil = $userPermissionsUtil;
         $this->setUpParams();
