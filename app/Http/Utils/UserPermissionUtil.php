@@ -51,7 +51,7 @@ class UserPermissionsUtil
                 $preparedRules[] = $prefix . '.*';
             }
         }
-        if (array_intersect(array_unique($preparedRules), $userPermissions)) {
+        if (count(array_intersect(array_unique($preparedRules), $userPermissions)) > 0) {
             return true;
         }
         return false;
