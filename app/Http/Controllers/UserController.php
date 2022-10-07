@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Users\DeleteUserRequest;
+use App\Http\Requests\Users\DestroyUserRequest;
 use App\Http\Requests\Users\IndexUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Repositories\UserRepository;
@@ -38,7 +38,7 @@ class UserController extends Controller
         return response($this->userRepository->update($id, $params), 200);
     }
 
-    public function destroy(DeleteUserRequest $request, int $id)
+    public function destroy(DestroyUserRequest $request, int $id)
     {
         return response($this->userRepository->destroy($id), 200);
     }

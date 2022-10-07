@@ -2,25 +2,16 @@
 
 namespace App\Http\Requests\Shops;
 
+use App\Policies\ShopPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreShopRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(ShopPolicy $shopPolicy)
     {
-        return true;
+        return $shopPolicy->canStore();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [

@@ -2,25 +2,16 @@
 
 namespace App\Http\Requests\Documents;
 
+use App\Policies\DocumentPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDocumentRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(DocumentPolicy $documentPolicy)
     {
-        return true;
+        return $documentPolicy->canStore();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [

@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Services\GeneratedAborting;
-use App\Http\Utils\AdminGrantsUtil;
+use App\Http\Utils\UserPermissionsUtil;
 use Closure;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Class CheckAllowToManagement
@@ -12,16 +12,16 @@ use Closure;
  */
 class CheckAllowToManagement
 {
-    private AdminGrantsUtil $adminGrantsUtil;
+    private UserPermissionsUtil $adminGrantsUtil;
 
-    public function __construct(AdminGrantsUtil $adminGrantsUtil)
+    public function __construct(UserPermissionsUtil $adminGrantsUtil)
     {
         $this->adminGrantsUtil = $adminGrantsUtil;
     }
 
     public function handle($request, Closure $next)
     {
-        $this->adminGrantsUtil->getAdminsGrants($request->user()->id);
+        Session::flash('user_permissions', $this->adminGrantsUtil->getUserPermissions($request->user()->id));
         return $next($request);
     }
 }

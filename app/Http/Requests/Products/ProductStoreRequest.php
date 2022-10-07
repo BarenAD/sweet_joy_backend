@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Products;
 
+use App\Policies\ProductPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductStoreRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(ProductPolicy $productPolicy)
     {
-        return true;
+        return $productPolicy->canStore();
     }
 
     public function rules()

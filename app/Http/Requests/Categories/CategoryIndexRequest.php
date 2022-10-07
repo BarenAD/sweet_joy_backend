@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Categories;
 
+use App\Policies\CategoryPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryIndexRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(CategoryPolicy $categoryPolicy)
     {
-        return true;
+        return $categoryPolicy->canIndex();
     }
 
     public function rules()
