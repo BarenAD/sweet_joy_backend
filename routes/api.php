@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentLocationController;
@@ -28,14 +29,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('products_for_users', 'ProductInformationController@getProductsForUsers');
 
 Route::prefix('authentication')->group(function () {
-    Route::post('register', 'AuthController@register');
-    Route::post('login', 'AuthController@login');
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
 });
 
 Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::prefix('authentication')->group(function () {
-        Route::post('logout', 'AuthController@logout');
-        Route::post('allLogout', 'AuthController@allLogoutb');
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('allLogout', [AuthController::class, 'allLogout']);
     });
 
     Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
