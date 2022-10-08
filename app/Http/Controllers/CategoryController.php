@@ -9,7 +9,7 @@ use App\Http\Requests\Categories\CategoryUpdateRequest;
 use App\Repositories\CategoryRepository;
 use Illuminate\Http\Response;
 
-class CategoryController
+class CategoryController extends Controller
 {
     private CategoryRepository $categoriesRepository;
 

@@ -56,6 +56,12 @@ class ProductTest extends TestCase
         $response->assertStatus(
             Response::HTTP_OK
         );
+        $responseIndex = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.index'));
+        $responseIndex->assertStatus(
+            Response::HTTP_OK
+        );
         $this->assertDatabaseHas('products', [
             'id' => $response['product']['id'],
             'name' => $this->params['name'],
@@ -70,6 +76,43 @@ class ProductTest extends TestCase
                 ->count()
             ===
             $this->productCategories->count()
+        );
+        $productImageName = last(explode('/',$response['product']['image']));
+        $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName));
+        $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
+        Storage::disk('public')->delete($this->pathToImages.$productImageName);
+        Storage::disk('public')->delete($this->pathToImagesMini.$productImageName);
+    }
+
+    public function testStoreProductWithoutCategories()
+    {
+        $this->params['product_categories'] = "[]";
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('management.products.store'), $this->params);
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $responseIndex = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.index'));
+        $responseIndex->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertDatabaseHas('products', [
+            'id' => $response['product']['id'],
+            'name' => $this->params['name'],
+            'composition' => $this->params['composition'],
+            'manufacturer' => $this->params['manufacturer'],
+            'description' => $this->params['description'],
+            'product_unit' => $this->params['product_unit'],
+        ]);
+        $this->assertTrue(
+            ProductCategory::query()
+                ->where('product_id', $response['product']['id'])
+                ->count()
+            ===
+            0
         );
         $productImageName = last(explode('/',$response['product']['image']));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName));

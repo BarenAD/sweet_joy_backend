@@ -65,7 +65,6 @@ class ProductService
         $products = $this->productsRepository->getAll();
         $categories = $this->productCategoriesRepository->getAll()->groupBy('product_id');
         $result = [];
-
         foreach ($products as &$product) {
             $this->preparedProductPathToImages($product);
         }
@@ -74,7 +73,7 @@ class ProductService
         {
             $result[] = [
                 'product' => $product->toArray(),
-                'categories' => $categories[$product->id]->pluck('category_id')
+                'categories' => isset($categories[$product['id']]) ? $categories[$product['id']]->pluck('category_id') : []
             ];
         }
 

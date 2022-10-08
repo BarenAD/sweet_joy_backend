@@ -21,7 +21,7 @@ class ProductStoreRequest extends FormRequest
             'manufacturer' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'product_unit' => 'required|string|max:255',
-            'product_categories' => 'required|array',
+            'product_categories' => 'array',
             'product_categories.*' => 'numeric'
         ];
     }

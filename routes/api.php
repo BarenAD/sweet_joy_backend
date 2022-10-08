@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentLocationController;
+use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('products_for_users', 'ProductInformationController@getProductsForUsers');
+Route::get('data', [MasterDataController::class, 'masterData']);
 
 Route::prefix('authentication')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
