@@ -13,12 +13,14 @@ use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use Tests\Traits\WithoutPermissionsTrait;
 
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
     use WithoutMiddleware;
+    use WithoutPermissionsTrait;
 
     private Model $document;
     private Collection $productCategories;

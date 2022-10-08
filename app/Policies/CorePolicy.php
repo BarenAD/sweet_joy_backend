@@ -27,7 +27,7 @@ abstract class CorePolicy
         }
         if (!$this->userPermissionsUtil->checkCanActionByPermissions(
             $permissions,
-            Session('user_permissions')
+            Session('user_permissions') ?? []
         )) {
             throw new NoReportException('not_enough_permissions');
         }
