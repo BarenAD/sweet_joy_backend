@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 
 class UserPermissionUtil
 {
-    public function getUserPermissions(int $idUser)
+    public function getUserPermissions(int $idUser): array
     {
         return Cache::remember('cache_user_' . $idUser . '_permissions', 3600, function () use ($idUser) {
             if (Operator::query()->where('user_id', $idUser)->exists()) {

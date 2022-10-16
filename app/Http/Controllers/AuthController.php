@@ -16,7 +16,7 @@ class AuthController extends Controller
         $params['password'] = bcrypt($params['password']);
         $user = User::create($params);
         $result = $user;
-        $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
+        $result['token'] = $user->createToken($request->userAgent(), [])->plainTextToken;
 
         return response()->json($result, 200);
     }
