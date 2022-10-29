@@ -41,7 +41,7 @@ abstract class CoreRepository
 
     public function update(int $id, array $params = []): Model
     {
-        $modelItem = $this->model->where('id', $id)->findOrFail();
+        $modelItem = $this->model->where('id', $id)->firstOrFail();
 
         return tap($modelItem)->update($params);
     }
