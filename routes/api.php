@@ -45,7 +45,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
 
         Route::apiResource('permissions', PermissionController::class)->only(['index', 'show']);
         Route::apiResource('roles', RoleController::class);
-        Route::apiResource('roles-permissions', RolePermissionController::class)->except('update');
+        Route::apiResource('roles.permissions', RolePermissionController::class)->except('update');
 
         Route::apiResource('users', UserController::class)->except('store');
         Route::apiResource('users.roles', UserRoleController::class)->except('update');

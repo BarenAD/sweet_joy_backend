@@ -20,23 +20,25 @@ class RolePermissionController extends Controller
         $this->rolePermissionRepository = $rolePermissionRepository;
     }
 
-    public function index(IndexRolePermissionRequest $request)
+    public function index(IndexRolePermissionRequest $request, int $roleId)
     {
-        return response($this->rolePermissionRepository->getAll(), 200);
+        return response($this->rolePermissionRepository->getRolePermissions($roleId), 200);
     }
 
-    public function show(IndexRolePermissionRequest $request, int $id)
+    public function show(IndexRolePermissionRequest $request, int $roleId, int $id)
     {
-        return response($this->rolePermissionRepository->find($id), 200);
+        return response($this->rolePermissionRepository->findByRole($roleId, $id), 200);
     }
 
-    public function store(StoreRolePermissionRequest $request)
+    public function store(StoreRolePermissionRequest $request, int $roleId)
     {
-        return response($this->rolePermissionRepository->store($request->validated()), 200);
+        $params = $request->validated();
+        $params['role_id'] = $roleId;
+        return response($this->rolePermissionRepository->store($params), 200);
     }
 
-    public function destroy(DestroyRolePermissionRequest $request, int $id)
+    public function destroy(DestroyRolePermissionRequest $request, int $roleId, int $id)
     {
-        return response($this->rolePermissionRepository->destroy($id), 200);
+        return response($this->rolePermissionRepository->destroyByRole($roleId, $id), 200);
     }
 }
