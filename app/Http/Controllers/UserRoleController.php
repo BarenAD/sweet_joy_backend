@@ -21,23 +21,25 @@ class UserRoleController extends Controller
         $this->userRoleRepository = $userRoleRepository;
     }
 
-    public function index(IndexUserRoleRequest $request)
+    public function index(IndexUserRoleRequest $request, int $userId)
     {
-        return response($this->userRoleRepository->getAll(), 200);
+        return response($this->userRoleRepository->getUserRoles($userId), 200);
     }
 
-    public function show(IndexUserRoleRequest $request, int $id)
+    public function show(IndexUserRoleRequest $request, int $userId, int $id)
     {
-        return response($this->userRoleRepository->find($id), 200);
+        return response($this->userRoleRepository->findByUser($userId, $id), 200);
     }
 
-    public function store(StoreUserRoleRequest $request)
+    public function store(StoreUserRoleRequest $request, int $userId)
     {
-        return response($this->userRoleRepository->store($request->validated()), 200);
+        $params = $request->validated();
+        $params['user_id'] = $userId;
+        return response($this->userRoleRepository->store($params), 200);
     }
 
-    public function destroy(DestroyUserRoleRequest $request, int $id)
+    public function destroy(DestroyUserRoleRequest $request, int $userId, int $id)
     {
-        return response($this->userRoleRepository->destroy($id), 200);
+        return response($this->userRoleRepository->destroyByUser($userId, $id), 200);
     }
 }

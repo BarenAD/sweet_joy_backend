@@ -16,7 +16,6 @@ class StoreUserRoleRequest extends FormRequest
     {
         return [
             'role_id' => 'required|numeric',
-            'user_id' => 'required|numeric',
         ];
     }
 }

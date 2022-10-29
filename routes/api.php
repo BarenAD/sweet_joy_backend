@@ -14,6 +14,7 @@ use App\Http\Controllers\ShopProductController;
 use App\Http\Controllers\SiteConfigurationController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,7 +48,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::apiResource('roles-permissions', RolePermissionController::class)->except('update');
 
         Route::apiResource('users', UserController::class)->except('store');
-        Route::apiResource('users-roles', UserController::class)->except('update');
+        Route::apiResource('users.roles', UserRoleController::class)->except('update');
 
         Route::apiResource('categories', CategoryController::class);
 
