@@ -55,7 +55,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::post('products/{id}', [ProductController::class, 'update'])->name('products.update');
 
         Route::apiResource('shops', ShopController::class);
-        Route::apiResource('shops-products', ShopProductController::class);
+        Route::apiResource('shops.products', ShopProductController::class);
         Route::apiResource('schedules', ScheduleController::class);
 
         Route::prefix('configurations')->as('configurations.')->group(function () {

@@ -5,6 +5,8 @@ namespace App\Repositories;
 
 
 use App\Models\ShopProduct;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ProductInformationRepository
@@ -17,12 +19,26 @@ class ShopProductRepository extends CoreRepository
         return ShopProduct::class;
     }
 
+    public function findByShop(int $shopID, int $id): Model
+    {
+        return $this->model
+            ->where('shop_id', $shopID)
+            ->findOrFail($id);
+    }
+
     public function hasProductInShop(int $shopID, int $productID): bool
     {
         return $this->model
             ->where('shop_id', $shopID)
             ->where('product_id', $productID)
             ->exists();
+    }
+
+    public function getShopProducts(int $shopID): Collection
+    {
+        return $this->model
+            ->where('shop_id', $shopID)
+            ->get();
     }
 
     public function getAllGroupShop()

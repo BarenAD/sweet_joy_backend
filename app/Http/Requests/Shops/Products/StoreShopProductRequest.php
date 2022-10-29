@@ -16,7 +16,6 @@ class StoreShopProductRequest extends FormRequest
     {
         return [
             'product_id' => 'required|numeric',
-            'shop_id' => 'required|numeric',
             'price' => 'numeric',
             'count' => 'numeric',
         ];

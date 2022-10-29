@@ -19,31 +19,32 @@ class ShopProductController extends Controller
         $this->shopProductRepository = $shopProductRepository;
     }
 
-    public function index(IndexShopProductRequest $request)
+    public function index(IndexShopProductRequest $request, int $shopId)
     {
-        return response($this->shopProductRepository->getAll(), 200);
+        return response($this->shopProductRepository->getShopProducts($shopId), 200);
     }
 
-    public function show(IndexShopProductRequest $request, int $id)
+    public function show(IndexShopProductRequest $request, int $shopId, int $id)
     {
-        return response($this->shopProductRepository->find($id), 200);
+        return response($this->shopProductRepository->findByShop($shopId, $id), 200);
     }
 
-    public function store(StoreShopProductRequest $request)
+    public function store(StoreShopProductRequest $request, int $shopId)
     {
         $params = $request->validated();
-        if ($this->shopProductRepository->hasProductInShop($params['shop_id'], $params['product_id'])) {
+        $params['shop_id'] = $shopId;
+        if ($this->shopProductRepository->hasProductInShop($shopId, $params['product_id'])) {
             throw new NoReportException('product_already_in_shop');
         }
         return response($this->shopProductRepository->store($params), 200);
     }
 
-    public function update(UpdateShopProductRequest $request, int $id)
+    public function update(UpdateShopProductRequest $request, int $shopId, int $id)
     {
         return response($this->shopProductRepository->update($id, $request->validated()), 200);
     }
 
-    public function destroy(DestroyShopProductRequest $request, int $id)
+    public function destroy(DestroyShopProductRequest $request, int $shopId, int $id)
     {
         return response($this->shopProductRepository->destroy($id), 200);
     }

@@ -15,8 +15,7 @@ class UpdateShopProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'required|numeric',
-            'shop_id' => 'required|numeric',
+            'product_id' => 'numeric',
             'price' => 'numeric',
             'count' => 'numeric',
         ];
