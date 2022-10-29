@@ -19,43 +19,43 @@ class ShopProductRepository extends CoreRepository
         return ShopProduct::class;
     }
 
-    public function getShopProducts(int $shopID): Collection
+    public function getShopProducts(int $shopId): Collection
     {
         return $this->model
-            ->where('shop_id', $shopID)
+            ->where('shop_id', $shopId)
             ->get();
     }
 
-    public function findByShop(int $shopID, int $id): Model
+    public function findByShop(int $shopId, int $id): Model
     {
         return $this->model
-            ->where('shop_id', $shopID)
+            ->where('shop_id', $shopId)
             ->findOrFail($id);
     }
 
-    public function updateByShop(int $shopID, int $id, array $params = []): Model
+    public function updateByShop(int $shopId, int $id, array $params = []): Model
     {
         $modelItem = $this->model
-            ->where('shop_id', $shopID)
+            ->where('shop_id', $shopId)
             ->where('id', $id)
             ->firstOrFail();
 
         return tap($modelItem)->update($params);
     }
 
-    public function destroyByShop(int $shopID, int $id): int
+    public function destroyByShop(int $shopId, int $id): int
     {
         return $this->model
-            ->where('shop_id', $shopID)
+            ->where('shop_id', $shopId)
             ->where('id', $id)
             ->delete();
     }
 
-    public function hasProductInShop(int $shopID, int $productID): bool
+    public function hasProductInShop(int $shopId, int $productId): bool
     {
         return $this->model
-            ->where('shop_id', $shopID)
-            ->where('product_id', $productID)
+            ->where('shop_id', $shopId)
+            ->where('product_id', $productId)
             ->exists();
     }
 

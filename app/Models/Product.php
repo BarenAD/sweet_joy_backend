@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @method Product withCategoriesIDs(bool $with = false)
+ * @method Product withCategoriesIds(bool $with = false)
  *
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -25,15 +25,15 @@ class Product extends Model
         'created_at', 'updated_at'
     ];
 
-    public function scopeWithCategoriesIDs(Builder $query, bool $with = false)
+    public function scopeWithCategoriesIds(Builder $query, bool $with = false)
     {
         if ($with) {
-            return $query->with('categoriesIDs');
+            return $query->with('categoriesIds');
         }
         return $query;
     }
 
-    public function categoriesIDs()
+    public function categoriesIds()
     {
         $this->hasMany(ProductCategory::class, 'product_id');
     }
