@@ -41,11 +41,11 @@ class ShopProductController extends Controller
 
     public function update(UpdateShopProductRequest $request, int $shopId, int $id)
     {
-        return response($this->shopProductRepository->update($id, $request->validated()), 200);
+        return response($this->shopProductRepository->updateByShop($shopId, $id, $request->validated()), 200);
     }
 
     public function destroy(DestroyShopProductRequest $request, int $shopId, int $id)
     {
-        return response($this->shopProductRepository->destroy($id), 200);
+        return response($this->shopProductRepository->destroyByShop($shopId, $id), 200);
     }
 }

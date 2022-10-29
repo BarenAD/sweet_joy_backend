@@ -50,4 +50,22 @@ class ShopProductRepository extends CoreRepository
     {
         return $this->model->get()->groupBy('product_id');
     }
+
+    public function updateByShop(int $shopID, int $id, array $params = []): Model
+    {
+        $modelItem = $this->model
+            ->where('shop_id', $shopID)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        return tap($modelItem)->update($params);
+    }
+
+    public function destroyByShop(int $shopID, int $id): int
+    {
+        return $this->model
+            ->where('shop_id', $shopID)
+            ->where('id', $id)
+            ->delete();
+    }
 }
