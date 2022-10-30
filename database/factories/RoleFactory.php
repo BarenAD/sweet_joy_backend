@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
+use App\Models\Role;
 
-class CategoryFactory extends CoreFactory
+class RoleFactory extends CoreFactory
 {
-    protected $model = Category::class;
+    protected $model = Role::class;
 
     public function definition()
     {
