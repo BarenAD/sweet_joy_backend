@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 abstract class CoreFactory extends Factory
 {
-    protected function decorateTimestamp(array $params): array
+    protected function decorateTimestamp(array $params = []): array
     {
         return array_merge(
             $params,

@@ -21,11 +21,15 @@ abstract class TestApiResource extends TestCase
     use WithoutPermissionsTrait;
 
     abstract protected function setUpProperties();
-    protected string $baseRouteName;
-    protected Model $model;
-    protected array $only = ['index','show','store','update','destroy'];
-    protected array $except = [];
-    protected array $formRequests = [];
+    protected string $baseRouteName;                                        //Название роута, без метода.
+    protected Model $model;                                                 //Тестируемая модель
+    protected array $only = ['index','show','store','update','destroy'];    //Тестируемые методы
+    protected array $except = [];                                           //Исключаемые методы
+    protected array $formRequests = [];                                     //Форм-реквесты обработки запросов
+    protected array $parentModelDTOs = [];                                  //Родительские модели в порядке вложенности
+
+    protected array $parentModelsIds = [];
+    protected array $sequenceIds = [];
 
     public function setUp(): void {
         parent::setUp();
@@ -33,6 +37,19 @@ abstract class TestApiResource extends TestCase
             $this->setUpProperties();
             $this->only = array_diff($this->only, $this->except);
         }
+        $this->parentModelsIds = [];
+        $this->sequenceIds = [];
+        foreach ($this->parentModelDTOs as $key => $parentModelDTO) {
+            $id = $parentModelDTO
+                ->model->factory($this->preparedByFillable($this->parentModelsIds, $parentModelDTO->model->getFillable()))
+                ->create()
+                ->toArray()['id'];
+            $this->parentModelsIds[$parentModelDTO->foreignKey] = $id;
+            if ($parentModelDTO->needInRoute) {
+                $this->sequenceIds[] = $id;
+            }
+        }
+        $this->parentModelsIds = $this->preparedByFillable($this->parentModelsIds, $this->model->getFillable());
     }
 
     protected function checkNeedTest(string $action)
@@ -50,14 +67,28 @@ abstract class TestApiResource extends TestCase
         return $params;
     }
 
+    protected function preparedByFillable(array $params, array $fillable)
+    {
+        return array_flip(array_intersect(array_flip($params), $fillable));
+    }
+
+    protected function seedsBD(): array
+    {
+        return $this->model
+            ->factory($this->parentModelsIds)
+            ->count(10)
+            ->create()
+            ->toArray();
+    }
+
     public function testIndexRoute()
     {
         $this->checkNeedTest('index');
-        $customParams = $this->model->factory()->count(10)->create()->toArray();
+        $customParams = $this->seedsBD();
         $this->preparedByFormRequest('index', $customParams);
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->get(route($this->baseRouteName . '.index'));
+            ->get(route($this->baseRouteName . '.index', $this->sequenceIds));
         $response->assertStatus(
             Response::HTTP_OK
         );
@@ -67,10 +98,11 @@ abstract class TestApiResource extends TestCase
     public function testShowRoute()
     {
         $this->checkNeedTest('show');
-        $customParam = $this->model->factory()->count(10)->create()->toArray()[rand(0, 9)];
+        $customParam = $this->seedsBD()[rand(0, 9)];
+        $this->sequenceIds[] = $customParam['id'];
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->get(route($this->baseRouteName . '.show', $customParam['id']));
+            ->get(route($this->baseRouteName . '.show', $this->sequenceIds));
         $response->assertStatus(
             Response::HTTP_OK
         );
@@ -80,11 +112,14 @@ abstract class TestApiResource extends TestCase
     public function testStoreRoute()
     {
         $this->checkNeedTest('store');
-        $params = $this->model->factory()->make()->toArray();
+        $params = $this->model
+            ->factory($this->parentModelsIds)
+            ->make()
+            ->toArray();
         $params = $this->preparedByFormRequest('store', $params);
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->post(route($this->baseRouteName . '.store'), $params);
+            ->post(route($this->baseRouteName . '.store', $this->sequenceIds), $params);
         $response->assertStatus(
             Response::HTTP_OK
         );
@@ -102,13 +137,19 @@ abstract class TestApiResource extends TestCase
     public function testUpdateRoute()
     {
         $this->checkNeedTest('update');
-        $item = $this->model->factory()->create();
-        $newParams = $this->model->factory()->make()->toArray();
+        $item = $this->model
+            ->factory($this->parentModelsIds)
+            ->create();
+        $newParams = $this->model
+            ->factory($this->parentModelsIds)
+            ->make()
+            ->toArray();
         $newParams = $this->preparedByFormRequest('update', $newParams);
-        $response2 = $this
+        $this->sequenceIds[] = $item['id'];
+        $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->put(route($this->baseRouteName . '.update', $item['id']), $newParams);
-        $response2->assertStatus(
+            ->put(route($this->baseRouteName . '.update', $this->sequenceIds), $newParams);
+        $response->assertStatus(
             Response::HTTP_OK
         );
         $this->assertDatabaseHas(
@@ -125,10 +166,13 @@ abstract class TestApiResource extends TestCase
     public function testDestroyRoute()
     {
         $this->checkNeedTest('destroy');
-        $item = $this->model->factory()->create();
+        $item = $this->model
+            ->factory($this->parentModelsIds)
+            ->create();
+        $this->sequenceIds[] = $item['id'];
         $response2 = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->delete(route($this->baseRouteName . '.destroy', $item['id']));
+            ->delete(route($this->baseRouteName . '.destroy', $this->sequenceIds));
         $response2->assertStatus(
             Response::HTTP_OK
         );
