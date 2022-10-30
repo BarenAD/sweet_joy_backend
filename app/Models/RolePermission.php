@@ -9,6 +9,9 @@ class RolePermission extends Pivot
 {
     use HasFactory;
 
+    protected $primaryKey = "id";
+    public $incrementing = true;
+
     protected $table = 'role_permissions';
 
     protected $fillable = [

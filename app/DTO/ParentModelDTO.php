@@ -8,7 +8,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 class ParentModelDTO extends DataTransferObject
 {
     public Model $model;
-    public ?string $foreignKey;
+    public string $foreignKey;
     public bool $needInRoute;
 
     public static function make($params): self
