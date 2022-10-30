@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Utils\UserPermissionUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,7 +9,6 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Mockery\MockInterface;
 use Tests\TestCase;
 use Tests\Traits\WithoutPermissionsTrait;
 
