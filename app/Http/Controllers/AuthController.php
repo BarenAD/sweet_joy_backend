@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NoReportException;
 use App\Http\Requests\Auth\AuthLoginRequest;
 use App\Http\Requests\Auth\AuthRegisterRequest;
 use App\Models\User;
@@ -27,7 +28,7 @@ class AuthController extends Controller
         $user = User::where('login', $params['login'])->first();
 
         if (!$user || !Hash::check($params['password'], $user->password)) {
-            return response()->json(['error' => 'Логин или пароль неверные.'], 401);
+            throw new NoReportException('invalid_login');
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;

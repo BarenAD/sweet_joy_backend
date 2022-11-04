@@ -1,165 +1,180 @@
 <?php
 
 use App\Models\Category;
-use App\Models\Operator;
+use App\Models\Document;
+use App\Models\DocumentLocation;
 use App\Models\ProductCategory;
 use App\Models\Product;
 use App\Models\Schedule;
 use App\Models\Shop;
 use App\Models\ShopProduct;
+use App\Models\SiteConfiguration;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use Illuminate\Support\Str;
 
 class DemoDBSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+
+    public int $count = 100;
+
+    public Collection $categories;
+    public Collection $products;
+    public Collection $productCategories;
+    public Collection $schedules;
+    public Collection $shops;
+    public Collection $shopProducts;
+    public Collection $documents;
+    public Collection $documentLocations;
+    public Collection $siteConfigurations;
+
+    public function __construct()
+    {
+        $this->categories = new Collection();
+        $this->products = new Collection();
+        $this->productCategories = new Collection();
+        $this->schedules = new Collection();
+        $this->shops = new Collection();
+        $this->shopProducts = new Collection();
+        $this->documents = new Collection();
+        $this->documentLocations = new Collection();
+        $this->siteConfigurations = new Collection();
+    }
+
+    public function seedCategories()
+    {
+        $this->categories = $this->categories
+            ->merge(
+                Category::factory()
+                    ->count($this->count)
+                    ->create()
+            )
+            ->keyBy('id');
+    }
+
+    public function seedProducts()
+    {
+        $newProducts = Product::factory()
+            ->count($this->count)
+            ->create()
+            ->keyBy('id');
+        $this->products = $this->products
+            ->merge($newProducts)
+            ->keyBy('id');
+        $this->seedProductCategories($newProducts);
+    }
+
+    private function seedProductCategories(Collection $products)
+    {
+        $productCategories = new Collection();
+        foreach ($products as $productId => $product) {
+            $categoryIds = array_rand($this->categories->toArray(), $this->count / 2);
+            foreach ($categoryIds as $categoryId) {
+                $productCategories->push(
+                    ProductCategory::factory([
+                        'product_id' => $productId,
+                        'category_id' => $categoryId,
+                    ])->create()
+                );
+            }
+        }
+        $this->productCategories = $this->productCategories->merge($productCategories);
+    }
+
+    public function seedSchedules()
+    {
+        $this->schedules = $this->schedules
+            ->merge(
+                Schedule::factory()
+                    ->count($this->count)
+                    ->create()
+            )
+            ->keyBy('id');
+    }
+
+    public function seedShops()
+    {
+        $newShops = new Collection();
+        for($i = 0; $i < $this->count; $i++) {
+            $newShops->push(
+                Shop::factory([
+                    'schedule_id' => $this->schedules->random()['id'],
+                ])->create()
+            );
+        }
+        $newShops = $newShops->keyBy('id');
+        $this->shops = $this->shops
+            ->merge($newShops)
+            ->keyBy('id');
+        $this->seedShopProducts($newShops);
+    }
+
+    private function seedShopProducts(Collection $shops)
+    {
+        foreach ($shops as $shopId => $shop) {
+            $productIds = array_rand($this->products->toArray(), $this->count);
+            foreach ($productIds as $productId) {
+                $this->shopProducts->push(
+                    ShopProduct::factory([
+                        'shop_id' => $shopId,
+                        'product_id' => $productId
+                    ])->create()
+                );
+            }
+        }
+    }
+
+    public function seedDocuments()
+    {
+        $this->documents = $this->documents
+            ->merge(
+                Document::factory()
+                    ->count($this->count)
+                    ->create()
+            )
+            ->keyBy('id');
+    }
+
+    public function seedDocumentLocations()
+    {
+        $seeder = new DocumentLocationSeeder();
+        $seeder->run();
+        $this->documentLocations = DocumentLocation::all()->keyBy('id');
+        foreach ($this->documentLocations as $documentLocation) {
+            $documentLocation->document_id = $this->documents->random()['id'];
+            $documentLocation->save();
+        }
+    }
+
+    public function seedSiteConfigurations()
+    {
+        $seeder = new SiteConfigurationSeeder();
+        $seeder->run();
+        $this->siteConfigurations = SiteConfiguration::all()->keyBy('id');
+        foreach ($this->siteConfigurations as $siteConfiguration) {
+            $siteConfiguration->value = str::random('100');
+            $siteConfiguration->save();
+        }
+    }
+
+    public function handleSeed()
+    {
+        $this->seedCategories();
+        $this->seedCategories();
+        $this->seedProducts();
+        $this->seedProducts();
+        $this->seedSchedules();
+        $this->seedSchedules();
+        $this->seedShops();
+        $this->seedDocuments();
+        $this->seedDocumentLocations();
+        $this->seedSiteConfigurations();
+    }
+
     public function run()
     {
         if (env('APP_DEMO_MODE', false)) {
-            $newAdmin = User::create([
-                'fio' => 'Админов Админ Админович',
-                'login' => 'admin',
-                'password' => bcrypt('admin'),
-                'email' => 'admin@demo.com',
-                'phone' => '70000000000'
-            ]);
-            Operator::create([
-                'user_id' => $newAdmin->id
-            ]);
-            $categories = [
-                Category::create(['name' => 'Конфеты']),
-                Category::create(['name' => 'Подарочные наборы']),
-                Category::create(['name' => 'Без сахара']),
-                Category::create(['name' => 'Экологичная упаковка']),
-                Category::create(['name' => 'Фастфуд']),
-                Category::create(['name' => 'Без глютена']),
-            ];
-            $schedules = [
-                Schedule::create([
-                    'name' => 'Обычный режим работы',
-                    'monday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'tuesday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'wednesday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'thursday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'friday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'saturday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00.',
-                    'sunday' => 'С 10:00 до 14:00. Без перерывов.',
-                    'holiday' => 'С 10:00 до 14:00. Без перерывов.',
-                    'particular' => 'С 10:00 до 14:00. Без перерывов.'
-                ]),
-                Schedule::create([
-                    'name' => 'Карантинный режим работы',
-                    'monday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'tuesday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'wednesday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'thursday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'friday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'saturday' => 'С 9:00 до 18:00. Обед с 13:00 до 14:00. Наличие маски обязательно.',
-                    'sunday' => 'Выходной',
-                    'holiday' => 'Выходной',
-                    'particular' => 'Выходной'
-                ])
-            ];
-            $shops = [
-                Shop::create([
-                    'address' => 'Ленина 120, корпус 46',
-                    'phone' => '79130000202',
-                    'schedule_id' => $schedules[0]->id,
-                    'map_integration' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d916.9619145338502!2d37.60946573413041!3d55.76161982703659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b54a443a83ac07%3A0xadf75d017913401c!2z0J_QsNC80Y_RgtC90LjQuiDQrtGA0LjRjiDQlNC-0LvQs9C-0YDRg9C60L7QvNGD!5e0!3m2!1sru!2sru!4v1630992435798!5m2!1sru!2sru" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
-                ]),
-                Shop::create([
-                    'address' => 'Суворова 36/1',
-                    'phone' => '79030000201',
-                    'schedule_id' => $schedules[1]->id,
-                    'map_integration' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1587.9195119691037!2d37.641745010155795!3d55.747089465302615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b54af0623b063f%3A0xa526e27d4e68d917!2z0JLRi9GB0L7RgtC60LAg0L3QsCDQmtC-0YLQtdC70YzQvdC40YfQtdGB0LrQvtC5INC90LDQsdC10YDQtdC20L3QvtC5!5e0!3m2!1sru!2sru!4v1630992565070!5m2!1sru!2sru" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>',
-                ]),
-                Shop::create([
-                    'address' => 'Новогодняя 3',
-                    'phone' => '70000000209',
-                    'schedule_id' => $schedules[0]->id,
-                    'map_integration' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3664.8822000959376!2d37.67746707203464!3d55.79313763771376!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b535b7788c0391%3A0x1dbb7567c7495d08!2z0J_QsNGA0Log0KHQvtC60L7Qu9GM0L3QuNC60Lg!5e0!3m2!1sru!2sru!4v1630992589647!5m2!1sru!2sru" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>',
-                ]),
-            ];
-            $products = [
-                Product::create([
-                    'image' => 'demo_cat.jpg',
-                    'name' => 'Демо товар 1',
-                    'composition' => 'Только лучшие и отброные мемы',
-                    'manufacturer' => 'BarenAD industries',
-                    'description' => 'Отлично демонстрирует возможности',
-                    'product_unit' => 'фасовка 100г/300г'
-                ]),
-                Product::create([
-                    'image' => 'demo_cubes.jpg',
-                    'name' => 'Демо товар 2',
-                    'composition' => 'Только лучшие и отброные мемы',
-                    'manufacturer' => 'BarenAD industries',
-                    'description' => 'Отлично демонстрирует возможности',
-                    'product_unit' => 'поштучно'
-                ])
-            ];
-            ProductCategory::insert([
-                [
-                    'product_id' => $products[0]->id,
-                    'category_id' => $categories[0]->id
-                ],
-                [
-                    'product_id' => $products[0]->id,
-                    'category_id' => $categories[1]->id
-                ],
-                [
-                    'product_id' => $products[0]->id,
-                    'category_id' => $categories[2]->id
-                ],
-                [
-                    'product_id' => $products[1]->id,
-                    'category_id' => $categories[3]->id
-                ],
-                [
-                    'product_id' => $products[1]->id,
-                    'category_id' => $categories[4]->id
-                ],
-                [
-                    'product_id' => $products[1]->id,
-                    'category_id' => $categories[5]->id
-                ],
-            ]);
-            ShopProduct::insert([
-                [
-                    'price' => 59,
-                    'count' => 36,
-                    'product_id' =>  $products[0]->id,
-                    'shop_id' => $shops[0]->id,
-                ],
-                [
-                    'price' => 79,
-                    'count' => 60,
-                    'product_id' =>  $products[0]->id,
-                    'shop_id' => $shops[1]->id,
-                ],
-                [
-                    'price' => 54,
-                    'count' => 87,
-                    'product_id' =>  $products[0]->id,
-                    'shop_id' => $shops[2]->id,
-                ],
-                [
-                    'price' => 120,
-                    'count' => 8,
-                    'product_id' =>  $products[1]->id,
-                    'shop_id' => $shops[0]->id,
-                ],
-                [
-                    'price' => 150,
-                    'count' => 24,
-                    'product_id' =>  $products[1]->id,
-                    'shop_id' => $shops[2]->id,
-                ],
-            ]);
+            $this->handleSeed();
         }
     }
 }

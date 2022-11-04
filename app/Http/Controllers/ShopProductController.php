@@ -33,10 +33,14 @@ class ShopProductController extends Controller
     {
         $params = $request->validated();
         $params['shop_id'] = $shopId;
-        if ($this->shopProductRepository->hasProductInShop($shopId, $params['product_id'])) {
-            throw new NoReportException('product_already_in_shop');
+        try {
+            return response($this->shopProductRepository->store($params), 200);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            if ($exception->getCode() == 23000) {
+                throw new NoReportException('product_already_in_shop');
+            }
+            throw $exception;
         }
-        return response($this->shopProductRepository->store($params), 200);
     }
 
     public function update(UpdateShopProductRequest $request, int $shopId, int $id)

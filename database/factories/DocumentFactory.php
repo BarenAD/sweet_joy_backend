@@ -12,7 +12,7 @@ class DocumentFactory extends CoreFactory
     {
         return $this->decorateTimestamp([
             'name' => $this->faker->text(100),
-            'urn' => uniqid() . '.pdf',
+            'urn' => 'demo/document_' . rand(1, 5) . '.pdf',
         ]);
     }
 }

@@ -11,7 +11,7 @@ class ProductFactory extends CoreFactory
     public function definition()
     {
         return $this->decorateTimestamp([
-            'image' => "http://localhost/storage/favicon.ico",
+            'image' => 'demo/image_' . rand(1, 10) . '.jpg',
             'name' => $this->faker->text(50),
             'composition' => $this->faker->text(50),
             'manufacturer' => $this->faker->text(50),

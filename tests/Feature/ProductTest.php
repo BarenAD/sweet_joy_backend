@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -22,7 +22,7 @@ class ProductTest extends TestCase
     use WithoutMiddleware;
     use WithoutPermissionsTrait;
 
-    private Model $document;
+    private Product $product;
     private Collection $productCategories;
     private string $pathToImages;
     private string $pathToImagesMini;
@@ -44,8 +44,64 @@ class ProductTest extends TestCase
     public function setUp(): void {
         parent::setUp();
         $this->setUpParams();
+        $this->product = new Product();
         $this->pathToImages = config('filesystems.path_inside_disk.products.images');
         $this->pathToImagesMini = config('filesystems.path_inside_disk.products.images_mini');
+    }
+
+    public function testIndexProduct()
+    {
+        $products = $this->product
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.index'));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $preparedProducts = array_map(function ($product) {
+            return [
+                "product" => array_merge(
+                    $product,
+                    [
+                        "image_mini" => Storage::disk('public')->url($this->pathToImagesMini.$product['image']),
+                        "image" => Storage::disk('public')->url($this->pathToImages.$product['image']),
+                    ]
+                ),
+                "categories" => [],
+            ];
+        }, $products);
+        $this->assertEquals($response->json(), $preparedProducts);
+    }
+
+    public function testShowProduct()
+    {
+        $product = $this->product
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray()
+            [rand(0, 9)];
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.show', $product['id']));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $preparedProduct = [
+            "product" => array_merge(
+                $product,
+                [
+                    "image_mini" => Storage::disk('public')->url($this->pathToImagesMini.$product['image']),
+                    "image" => Storage::disk('public')->url($this->pathToImages.$product['image']),
+                ]
+            ),
+            "categories" => [],
+        ];
+        $this->assertEquals($response->json(), $preparedProduct);
     }
 
     public function testStoreProduct()

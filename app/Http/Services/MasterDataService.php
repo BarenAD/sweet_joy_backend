@@ -49,14 +49,24 @@ class MasterDataService
     public function getMasterData()
     {
         return Cache::tags(['products'])->remember('cache_products', 3600, function () {
+            $documents = [];
+            foreach ($this->documentLocationRepository->getAll() as $documentLocation) {
+                $document = $this->documentService->find($documentLocation['document_id']);
+                $document['location'] = $documentLocation->toArray();
+                $documents[] = $document;
+            }
+            $shops = [];
+            foreach ($this->shopRepository->getAll() as $shop) {
+                $prepareShop = $shop->toArray();
+                $prepareShop['schedule'] = $this->scheduleRepository->find($shop['schedule_id'])->toArray();
+                $shops[] = $prepareShop;
+            }
             return [
                 'products' => $this->productService->getAll(),
                 'categories' => $this->categoryRepository->getAll(),
-                'shops' => $this->shopRepository->getAll(),
+                'shops' => $shops,
                 'shop_products' => $this->shopProductRepository->getAllGroupProduct(),
-                'documents' => $this->documentService->getAll(),
-                'document_locations' => $this->documentLocationRepository->getAll(),
-                'schedules' => $this->scheduleRepository->getAll(),
+                'documents' => $documents,
                 'site_configurations' => $this->siteConfigurationRepository->getAll(),
             ];
         });

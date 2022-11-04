@@ -11,6 +11,9 @@ use App\Models\Product;
 use App\Models\Schedule;
 use App\Models\Shop;
 use App\Models\ShopProduct;
+use App\Repositories\ShopProductRepository;
+use Illuminate\Http\Response;
+use Mockery\MockInterface;
 use Tests\TestApiResource;
 
 class ShopProductTest extends TestApiResource
@@ -54,5 +57,56 @@ class ShopProductTest extends TestApiResource
                 ->toArray();
         }
         return $result;
+    }
+
+    public function testStoreRouteAlreadyException()
+    {
+        $params = $this->model
+            ->factory($this->parentModelsIds)
+            ->make()
+            ->toArray();
+        $params = $this->preparedByFormRequest('store', $params);
+        $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route($this->baseRouteName . '.store', $this->sequenceIds), $params);
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route($this->baseRouteName . '.store', $this->sequenceIds), $params);
+        $response->assertStatus(
+            Response::HTTP_CONFLICT
+        );
+        $equalResponse = config('exceptions.product_already_in_shop');
+        unset($equalResponse['http_code']);
+        $this->assertEquals($response->json(), $equalResponse);
+    }
+
+    public function testStoreRouteUnknownException()
+    {
+        $exceptionMessage = uniqid('test_exception_');
+        $this->mock(
+            ShopProductRepository::class,
+            function (MockInterface $mock) use ($exceptionMessage) {
+                $mock->shouldReceive('store')
+                    ->andThrowExceptions([
+                        new \Illuminate\Database\QueryException(
+                            'insert somebody...',
+                            [],
+                            new \Exception($exceptionMessage, 500)
+                        ),
+                    ]);
+            }
+        );
+        $params = $this->model
+            ->factory($this->parentModelsIds)
+            ->make()
+            ->toArray();
+        $params = $this->preparedByFormRequest('store', $params);
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route($this->baseRouteName . '.store', $this->sequenceIds), $params);
+        $response->assertStatus(
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+        $this->assertTrue(strpos($response->json()['message'], $exceptionMessage) >= 0);
     }
 }

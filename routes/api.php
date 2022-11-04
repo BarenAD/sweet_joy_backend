@@ -28,17 +28,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('data', [MasterDataController::class, 'masterData']);
+Route::get('data', [MasterDataController::class, 'masterData'])->name('master.data');
 
 Route::prefix('authentication')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 });
 
 Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::prefix('authentication')->group(function () {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('allLogout', [AuthController::class, 'allLogout']);
+        Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::post('allLogout', [AuthController::class, 'allLogout'])->name('auth.allLogout');
     });
 
     Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {

@@ -51,19 +51,6 @@ class ShopProductRepository extends CoreRepository
             ->delete();
     }
 
-    public function hasProductInShop(int $shopId, int $productId): bool
-    {
-        return $this->model
-            ->where('shop_id', $shopId)
-            ->where('product_id', $productId)
-            ->exists();
-    }
-
-    public function getAllGroupShop()
-    {
-        return $this->model->get()->groupBy('shop_id');
-    }
-
     public function getAllGroupProduct()
     {
         return $this->model->get()->groupBy('product_id');

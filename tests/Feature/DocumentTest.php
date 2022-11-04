@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Document;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -19,16 +19,56 @@ class DocumentTest extends TestCase
     use WithoutMiddleware;
     use WithoutPermissionsTrait;
 
-    private Model $document;
+    private Document $document;
     private string $currentName;
     private UploadedFile $currentFile;
     private string $pathToDocuments;
 
     public function setUp(): void {
         parent::setUp();
+        $this->document = new Document();
         $this->currentFile = UploadedFile::fake()->create('test.pdf', 100);
         $this->currentName = $this->faker->text(30);
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
+    }
+
+    public function testIndexDocument()
+    {
+        $documents = $this->document
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.documents.index'));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        array_walk($documents, function (&$document) {
+            $document['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+            unset($document['urn']);
+        });
+        $this->assertEquals($response->json(), $documents);
+    }
+
+    public function testShowDocument()
+    {
+        $document = $this->document
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray()
+            [rand(0, 9)];
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.documents.show', $document['id']));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $document['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+        unset($document['urn']);
+        $this->assertEquals($response->json(), $document);
     }
 
     public function testStoreDocument()

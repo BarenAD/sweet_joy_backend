@@ -50,6 +50,7 @@ class DocumentService
     {
         $document = $this->documentsRepository->find($id);
         return [
+            'id' => $document->id,
             'name' => $document->name,
             'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
         ];
