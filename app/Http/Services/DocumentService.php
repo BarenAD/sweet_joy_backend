@@ -9,6 +9,7 @@
 namespace App\Http\Services;
 
 use App\Exceptions\BaseException;
+use App\Repositories\DocumentLocationRepository;
 use App\Repositories\DocumentRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -23,37 +24,48 @@ use Illuminate\Support\Facades\Storage;
 class DocumentService
 {
     private DocumentRepository $documentsRepository;
+    private DocumentLocationRepository $documentLocationRepository;
     private string $pathToDocuments;
 
     public function __construct(
-        DocumentRepository $documentsRepository
+        DocumentRepository $documentsRepository,
+        DocumentLocationRepository $documentLocationRepository
     ){
         $this->documentsRepository = $documentsRepository;
+        $this->documentLocationRepository = $documentLocationRepository;
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
     }
 
-    public function getAll(): array
+    public function getAllUsed(): array
     {
-        $documents = $this->documentsRepository->getAll();
+        $documentLocations = $this->documentLocationRepository->getAllWithDocuments(true)->toArray();
         $result = [];
-        foreach ($documents as $document) {
-            $result[] = [
-                'id' => $document->id,
-                'name' => $document->name,
-                'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
-            ];
+        foreach ($documentLocations as $documentLocation) {
+            $preparedDocument = $documentLocation['document'];
+            $preparedDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$preparedDocument['urn']);
+            $preparedDocument['location'] = $documentLocation['identify'];
+            unset($preparedDocument['urn']);
+            $result[] = $preparedDocument;
         }
         return $result;
     }
 
+    public function getAll(): array
+    {
+        $documents = $this->documentsRepository->getAll()->toArray();
+        foreach ($documents as &$document) {
+            $document['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+            unset($document['urn']);
+        }
+        return $documents;
+    }
+
     public function find($id): array
     {
-        $document = $this->documentsRepository->find($id);
-        return [
-            'id' => $document->id,
-            'name' => $document->name,
-            'url' => Storage::disk('public')->url($this->pathToDocuments.$document->urn)
-        ];
+        $document = $this->documentsRepository->find($id)->toArray();
+        $document['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+        unset($document['urn']);
+        return $document;
     }
 
     public function store(string $name, UploadedFile $document): Model

@@ -67,7 +67,7 @@ class MasterTest extends TestCase
         $preparedDocuments = array_map(function ($documentLocation) use ($pathToDocuments) {
             $document = $this->seeder->documents[$documentLocation['document_id']]->toArray();
             $document['url'] = Storage::disk('public')->url($pathToDocuments.$document['urn']);
-            $document['location'] = $documentLocation;
+            $document['location'] = $documentLocation['identify'];
             unset($document['urn']);
             return $document;
         }, $this->seeder->documentLocations->toArray());

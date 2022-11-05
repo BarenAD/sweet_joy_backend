@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method Shop withSchedules(bool $with = false)
+ *
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Shop extends Model
 {
     use HasFactory;
@@ -18,4 +24,17 @@ class Shop extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
+
+    public function scopeWithSchedules(Builder $query, $with = false)
+    {
+        if ($with) {
+            return $query->with('schedule');
+        }
+        return $query;
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class);
+    }
 }
