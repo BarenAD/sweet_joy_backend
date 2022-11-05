@@ -28,4 +28,17 @@ class ProductDTO extends DataTransferObject
             'product_categories' => $request->get('product_categories'),
         ]);
     }
+
+    public static function make(array $params): self
+    {
+        return new self([
+            'image' =>  $params['image'] ?? null,
+            'name' =>  $params['name'] ?? null,
+            'composition' =>  $params['composition'] ?? null,
+            'manufacturer' =>  $params['manufacturer'] ?? null,
+            'description' =>  $params['description'] ?? null,
+            'product_unit' =>  $params['product_unit'] ?? null,
+            'product_categories' =>  $params['product_categories'] ?? null,
+        ]);
+    }
 }

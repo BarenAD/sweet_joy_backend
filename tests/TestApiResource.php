@@ -13,10 +13,10 @@ use Tests\Traits\WithoutPermissionsTrait;
 
 abstract class TestApiResource extends TestCase
 {
-    use RefreshDatabase;
-    use WithFaker;
-    use WithoutMiddleware;
-    use WithoutPermissionsTrait;
+    use RefreshDatabase,
+        WithFaker,
+        WithoutMiddleware,
+        WithoutPermissionsTrait;
 
     abstract protected function setUpProperties();
     protected string $baseRouteName;                                        //Название роута, без метода.

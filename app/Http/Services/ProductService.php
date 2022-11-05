@@ -10,6 +10,7 @@ namespace App\Http\Services;
 
 
 use App\DTO\ProductDTO;
+use App\Exceptions\BaseException;
 use App\Models\Product;
 use App\Repositories\ProductCategoryRepository;
 use App\Repositories\ProductRepository;
@@ -107,26 +108,26 @@ class ProductService
                 $this->productCategoriesRepository->insert($categoriesForInsert);
                 $this->preparedProductPathToImages($product);
             DB::commit();
-            return [
-                'product' => $product->toArray(),
-                'categories' => $productDTO->product_categories
-            ];
-        } catch (\Throwable $error) {
+            $product['categories'] = $productDTO->product_categories;
+            return $product->toArray();
+        } catch (\Throwable $exception) {
             DB::rollBack();
             Storage::disk('public')->delete($this->pathToImages.$imageName);
             Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
-            throw $error;
+            throw new BaseException('file_is_not_stored', $exception);
         }
     }
 
     public function update(int $id, ProductDTO $productDTO): array
     {
+        $newNameImages = null;
         try {
             DB::beginTransaction();
             $product = $this->productsRepository->find($id);
             $oldImageName = $product['image'];
             if (!is_null($productDTO->image)) {
                 $product['image'] = uniqid().'.jpg';
+                $newNameImages = $product['image'];
                 $this->saveImage($product['image'], $productDTO->image);
             }
             $product['name'] = $productDTO->name;
@@ -134,10 +135,6 @@ class ProductService
             $product['manufacturer'] = $productDTO->manufacturer;
             $product['description'] = $productDTO->description;
             $product['product_unit'] = $productDTO->product_unit;
-            $product->save();
-            if ($oldImageName !== $product['image']) {
-                $this->deleteImage($oldImageName);
-            }
             $categories = $this->productCategoriesRepository->getByProductId($id);
             foreach ($categories->whereNotIn('category_id', $productDTO->product_categories) as $category) {
                 $category->delete();
@@ -154,23 +151,36 @@ class ProductService
                 ];
             }
             $this->productCategoriesRepository->insert($categoriesForInsert);
+            $product->save();
+            if ($oldImageName !== $product['image']) {
+                $this->deleteImage($oldImageName);
+            }
             $this->preparedProductPathToImages($product);
             DB::commit();
-            return [
-                'product' => $product->toArray(),
-                'categories' => $productDTO->product_categories
-            ];
-        } catch (\Throwable $error) {
+            $product['categories'] = $productDTO->product_categories;
+            return $product->toArray();
+        } catch (\Throwable $exception) {
             DB::rollBack();
-            throw $error;
+            if (!is_null($newNameImages)) {
+                $this->deleteImage($newNameImages);
+            }
+            throw new BaseException('file_is_not_update', $exception);
         }
     }
 
     public function destroy(int $id): int
     {
-        $product = $this->productsRepository->find($id);
-        Storage::disk('public')->delete($this->pathToImages.$product->image);
-        Storage::disk('public')->delete($this->pathToImagesMini.$product->image);
-        return $product->delete();
+        try {
+            DB::beginTransaction();
+            $product = $this->productsRepository->find($id);
+            $result = $product->delete();
+            Storage::disk('public')->delete($this->pathToImages.$product->image);
+            Storage::disk('public')->delete($this->pathToImagesMini.$product->image);
+            DB::commit();
+            return $result;
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+            throw new BaseException('file_is_not_destroy', $exception);
+        }
     }
 }

@@ -77,7 +77,7 @@ class DocumentService
                 'name' => $name,
                 'urn' => $documentName
             ]);
-        } catch (QueryException $exception) {
+        } catch (\Throwable $exception) {
             Storage::disk('public')->delete($this->pathToDocuments.$documentName);
             throw new BaseException('file_is_not_stored', $exception);
         }

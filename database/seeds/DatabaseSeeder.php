@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
             DB::transaction(function () {
                 $this->call(DocumentLocationSeeder::class);
                 $this->call(SiteConfigurationSeeder::class);
-                $this->call(DemoDBSeeder::class);
                 $this->call(PermissionSeeder::class);
+                $this->call(DemoDBSeeder::class);
                 DB::commit();
             });
         } catch (\Exception $error) {

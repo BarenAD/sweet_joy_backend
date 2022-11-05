@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'test' => [
+        'id' => -1,
+        'message' => 'test_exception',
+        'http_code' => 100
+    ],
     'unauthorized' => [
         'id' => 0,
         'message' => 'Пользователь не авторизован',

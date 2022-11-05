@@ -105,7 +105,7 @@ class ProductTest extends TestCase
             Response::HTTP_OK
         );
         $this->assertDatabaseHas('products', [
-            'id' => $response['product']['id'],
+            'id' => $response['id'],
             'name' => $this->params['name'],
             'composition' => $this->params['composition'],
             'manufacturer' => $this->params['manufacturer'],
@@ -114,12 +114,12 @@ class ProductTest extends TestCase
         ]);
         $this->assertTrue(
             ProductCategory::query()
-                ->where('product_id', $response['product']['id'])
+                ->where('product_id', $response['id'])
                 ->count()
             ===
             $this->productCategories->count()
         );
-        $productImageName = last(explode('/',$response['product']['image']));
+        $productImageName = last(explode('/',$response['image']));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
         Storage::disk('public')->delete($this->pathToImages.$productImageName);
@@ -142,7 +142,7 @@ class ProductTest extends TestCase
             Response::HTTP_OK
         );
         $this->assertDatabaseHas('products', [
-            'id' => $response['product']['id'],
+            'id' => $response['id'],
             'name' => $this->params['name'],
             'composition' => $this->params['composition'],
             'manufacturer' => $this->params['manufacturer'],
@@ -151,12 +151,12 @@ class ProductTest extends TestCase
         ]);
         $this->assertTrue(
             ProductCategory::query()
-                ->where('product_id', $response['product']['id'])
+                ->where('product_id', $response['id'])
                 ->count()
             ===
             0
         );
-        $productImageName = last(explode('/',$response['product']['image']));
+        $productImageName = last(explode('/',$response['image']));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
         Storage::disk('public')->delete($this->pathToImages.$productImageName);
@@ -173,7 +173,7 @@ class ProductTest extends TestCase
         $productCategories1 = $this->productCategories;
         $this->setUpParams();
         $productCategories2 = $this->productCategories;
-        $productImageName = last(explode('/',$response['product']['image']));
+        $productImageName = last(explode('/',$response['image']));
         unset($this->params['image']);
         $productsCategoriesIdsStep2 = array_merge(
             [],
@@ -183,14 +183,14 @@ class ProductTest extends TestCase
         $this->params['product_categories'] = json_encode($productsCategoriesIdsStep2);
         $response2 = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->post(route('management.products.update', $response['product']['id']), $this->params);
+            ->post(route('management.products.update', $response['id']), $this->params);
         $response2->assertStatus(
             Response::HTTP_OK
         );
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
         $this->assertDatabaseHas('products', [
-            'id' => $response['product']['id'],
+            'id' => $response['id'],
             'name' => $this->params['name'],
             'composition' => $this->params['composition'],
             'manufacturer' => $this->params['manufacturer'],
@@ -199,7 +199,7 @@ class ProductTest extends TestCase
         ]);
         $this->assertTrue(
             ProductCategory::query()
-                ->where('product_id', $response['product']['id'])
+                ->where('product_id', $response['id'])
                 ->count()
             ===
             $countCategories*2
@@ -222,23 +222,23 @@ class ProductTest extends TestCase
         $this->params['product_categories'] = json_encode($prepareProductCategories3);
         $response3 = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->post(route('management.products.update', $response['product']['id']), $this->params);
+            ->post(route('management.products.update', $response['id']), $this->params);
         $response3->assertStatus(
             Response::HTTP_OK
         );
-        $productImageName2 = last(explode('/',$response3['product']['image']));
+        $productImageName2 = last(explode('/',$response3['image']));
         $this->assertFalse(Storage::disk('public')->exists($this->pathToImages.$productImageName));
         $this->assertFalse(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImages.$productImageName2));
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName2));
         $productCategoriesCollection = ProductCategory::query()
-            ->where('product_id', $response['product']['id'])
+            ->where('product_id', $response['id'])
             ->get();
         $this->assertTrue($productCategoriesCollection->count() === count($prepareProductCategories3));
         foreach ($prepareProductCategories3 as $value) {
             $this->assertNotNull($productCategoriesCollection
                 ->where('category_id', $value)
-                ->where('product_id', $response['product']['id'])
+                ->where('product_id', $response['id'])
                 ->firstOrFail()
             );
         }
@@ -253,19 +253,19 @@ class ProductTest extends TestCase
             ->post(route('management.products.store'), $this->params);
         $response2 = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->delete(route('management.products.destroy', $response['product']['id']));
+            ->delete(route('management.products.destroy', $response['id']));
         $response2->assertStatus(
             Response::HTTP_OK
         );
-        $this->assertDatabaseMissing('products', ['id' => $response['product']['id']]);
+        $this->assertDatabaseMissing('products', ['id' => $response['id']]);
         $this->assertTrue(
             ProductCategory::query()
-                ->where('product_id', $response['product']['id'])
+                ->where('product_id', $response['id'])
                 ->count()
             ===
             0
         );
-        $productImageName = last(explode('/',$response['product']['image']));
+        $productImageName = last(explode('/',$response['image']));
         $this->assertFalse(Storage::disk('public')->exists($this->pathToImages.$productImageName));
         $this->assertFalse(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
     }
