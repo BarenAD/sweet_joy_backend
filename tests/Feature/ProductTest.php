@@ -62,19 +62,12 @@ class ProductTest extends TestCase
         $response->assertStatus(
             Response::HTTP_OK
         );
-        $preparedProducts = array_map(function ($product) {
-            return [
-                "product" => array_merge(
-                    $product,
-                    [
-                        "image_mini" => Storage::disk('public')->url($this->pathToImagesMini.$product['image']),
-                        "image" => Storage::disk('public')->url($this->pathToImages.$product['image']),
-                    ]
-                ),
-                "categories" => [],
-            ];
-        }, $products);
-        $this->assertEquals($response->json(), $preparedProducts);
+        foreach ($products as &$product) {
+            $product['image_mini'] = Storage::disk('public')->url($this->pathToImagesMini.$product['image']);
+            $product['image'] = Storage::disk('public')->url($this->pathToImages.$product['image']);
+            $product['categories'] = [];
+        }
+        $this->assertEquals($response->json(), $products);
     }
 
     public function testShowProduct()
@@ -91,17 +84,10 @@ class ProductTest extends TestCase
         $response->assertStatus(
             Response::HTTP_OK
         );
-        $preparedProduct = [
-            "product" => array_merge(
-                $product,
-                [
-                    "image_mini" => Storage::disk('public')->url($this->pathToImagesMini.$product['image']),
-                    "image" => Storage::disk('public')->url($this->pathToImages.$product['image']),
-                ]
-            ),
-            "categories" => [],
-        ];
-        $this->assertEquals($response->json(), $preparedProduct);
+        $product['image_mini'] = Storage::disk('public')->url($this->pathToImagesMini.$product['image']);
+        $product['image'] = Storage::disk('public')->url($this->pathToImages.$product['image']);
+        $product['categories'] = [];
+        $this->assertEquals($response->json(), $product);
     }
 
     public function testStoreProduct()

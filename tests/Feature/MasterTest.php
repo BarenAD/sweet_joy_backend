@@ -52,10 +52,8 @@ class MasterTest extends TestCase
         ) {
             $product['image_mini'] = Storage::disk('public')->url($pathToImagesMini.$product['image']);
             $product['image'] = Storage::disk('public')->url($pathToImages.$product['image']);
-            return [
-                'product' => $product,
-                'categories' => $groupedProductCategories[$product['id']]->pluck('category_id')->toArray(),
-            ];
+            $product['categories'] = $groupedProductCategories[$product['id']]->pluck('category_id')->toArray();
+            return $product;
         }, $this->seeder->products->toArray());
 
         $preparedShops = array_map(function ($shop) {

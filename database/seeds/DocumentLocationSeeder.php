@@ -5,6 +5,14 @@ use Illuminate\Database\Seeder;
 
 class DocumentLocationSeeder extends Seeder
 {
+    private array $inserting = [
+        [
+            'id' => 1,
+            'name' => 'документ в верхнем баре на главной',
+            'identify' => 'main_top_bar_document',
+        ],
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -12,12 +20,13 @@ class DocumentLocationSeeder extends Seeder
      */
     public function run()
     {
-        DocumentLocation::insert([
-            [
-                'id' => 1,
-                'name' => 'документ в верхнем баре на главной',
-                'identify' => 'main_top_bar_document',
-            ],
-        ]);
+        foreach ($this->inserting as $params) {
+            $newModel = new DocumentLocation($params);
+            if ($newModel->exists()) {
+                $newModel->update();
+            } else {
+                $newModel->save();
+            }
+        }
     }
 }

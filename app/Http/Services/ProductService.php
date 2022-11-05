@@ -64,30 +64,23 @@ class ProductService
     {
         $products = $this->productsRepository->getAll();
         $categories = $this->productCategoriesRepository->getAll()->groupBy('product_id');
-        $result = [];
         foreach ($products as &$product) {
             $this->preparedProductPathToImages($product);
+            $product['categories'] = isset($categories[$product['id']]) ?
+                $categories[$product['id']]->pluck('category_id')
+                :
+                [];
         }
 
-        foreach ($products as $product)
-        {
-            $result[] = [
-                'product' => $product->toArray(),
-                'categories' => isset($categories[$product['id']]) ? $categories[$product['id']]->pluck('category_id') : []
-            ];
-        }
-
-        return $result;
+        return $products->toArray();
     }
 
     public function find($id)
     {
         $product = $this->productsRepository->find($id);
         $this->preparedProductPathToImages($product);
-        return [
-            'product' => $product->toArray(),
-            'categories' => $this->productCategoriesRepository->getByProductId($product->id)->pluck('category_id')
-        ];
+        $product['categories'] = $this->productCategoriesRepository->getByProductId($product->id)->pluck('category_id');
+        return $product->toArray();
     }
 
     public function store(ProductDTO $productDTO): array
