@@ -41,7 +41,7 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
         Route::post('allLogout', [AuthController::class, 'allLogout'])->name('auth.allLogout');
     });
 
-    Route::middleware(['checkAllowToManagement'])->prefix('management')->as('management.')->group(function () {
+    Route::middleware(['setUpAbilities'])->prefix('management')->as('management.')->group(function () {
 
         Route::apiResource('permissions', PermissionController::class)->only(['index', 'show']);
         Route::apiResource('roles', RoleController::class);

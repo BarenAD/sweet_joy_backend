@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @method Product withCategoriesIds(bool $with = false)
@@ -25,17 +24,4 @@ class Product extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
-
-    public function scopeWithCategoriesIds(Builder $query, bool $with = false)
-    {
-        if ($with) {
-            return $query->with('categoriesIds');
-        }
-        return $query;
-    }
-
-    public function categoriesIds()
-    {
-        $this->hasMany(ProductCategory::class, 'product_id');
-    }
 }

@@ -20,9 +20,9 @@ abstract class CorePolicy
         $this->setUpParams();
     }
 
-    protected function authorize(array $permissions)
+    protected function authorize(array $permissions = [])
     {
-        if (!isset($permissions)) {
+        if (count($permissions) === 0) {
             return true;
         }
         if (!$this->userPermissionsUtil->checkCanActionByPermissions(

@@ -6,11 +6,7 @@ use App\Http\Utils\UserPermissionUtil;
 use Closure;
 use Illuminate\Support\Facades\Session;
 
-/**
- * Class CheckAllowToManagement
- * @package App\Http\Middleware
- */
-class CheckAllowToManagement
+class SetUpAbilities
 {
     private UserPermissionUtil $adminGrantsUtil;
 
