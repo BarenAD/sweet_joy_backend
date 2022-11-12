@@ -16,7 +16,6 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'fio' => 'required|string|max:255',
-            'login' => 'required|string|max:255',
             'email' => 'required|string|max:255',
             'password' => 'string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',

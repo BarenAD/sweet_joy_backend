@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('data', [MasterDataController::class, 'masterData'])->name('master.data');
 
-Route::prefix('authentication')->group(function () {
+Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 });

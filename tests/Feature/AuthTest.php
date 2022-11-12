@@ -52,7 +52,7 @@ class AuthTest extends TestCase
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'password',
             ]);
         $response->assertStatus(
@@ -72,7 +72,7 @@ class AuthTest extends TestCase
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'incorrect_password',
             ]);
         $response->assertStatus(
@@ -92,7 +92,7 @@ class AuthTest extends TestCase
         $loginResponse = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'password',
             ]);
         $loginResponseJson = $loginResponse->json();
@@ -123,19 +123,19 @@ class AuthTest extends TestCase
         $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'password',
             ]);
         $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'password',
             ]);
         $loginResponse = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('auth.login'), [
-                'login' => $params['login'],
+                'email' => $params['email'],
                 'password' => 'password',
             ]);
         $loginResponseJson = $loginResponse->json();

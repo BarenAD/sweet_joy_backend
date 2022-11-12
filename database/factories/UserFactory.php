@@ -13,7 +13,6 @@ class UserFactory extends CoreFactory
     {
         return $this->decorateTimestamp([
             'fio' => $this->faker->name(),
-            'login' => uniqid('login_'),
             'phone' => $this->faker->regexify('/^[7]\d{10}$/'),
             'note' => $this->faker->text('100'),
             'email' => $this->faker->unique()->safeEmail,

@@ -15,7 +15,14 @@ class AuthController extends Controller
     {
         $params = $request->validated();
         $params['password'] = bcrypt($params['password']);
-        $user = User::create($params);
+        try {
+            $user = User::create($params);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            if ($exception->getCode() == 23000) {
+                throw new NoReportException('user_already_exists');
+            }
+            throw $exception;
+        }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent(), [])->plainTextToken;
 
@@ -25,7 +32,7 @@ class AuthController extends Controller
     public function login(AuthLoginRequest $request)
     {
         $params = $request->validated();
-        $user = User::where('login', $params['login'])->first();
+        $user = User::where('email', $params['email'])->first();
 
         if (!$user || !Hash::check($params['password'], $user->password)) {
             throw new NoReportException('invalid_login');

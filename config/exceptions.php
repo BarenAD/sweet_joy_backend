@@ -46,4 +46,9 @@ return [
         'message' => 'Неверный логин или пароль',
         'http_code' => 401
     ],
+    'user_already_exists' => [
+        'id' => 8,
+        'message' => 'Пользователь с таким e-mail или телефоном уже существует.',
+        'http_code' => 400
+    ],
 ];
