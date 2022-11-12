@@ -1,1271 +1,2593 @@
-swagger: "2.0"
+openapi: 3.0.3
 info:
-  description: "Информационный ресурс для точек продаж сладостей"
-  version: "1.0.0"
-  title: "Сладкая радость"
-  contact:
-    email: "baren1998@gmail.com"
-host: "barenad.info"
-basePath: "/api/v1"
+  title: BarenAD - products
+  description: |-
+    Это документация API для демонстрационно-боевого* проекта доски товаров.
+    
+    *- проект сделан для саморазвития, но под требования заказчика и работает на него по сей день.
+  version: 1.0.0
+servers:
+  - url: https://products.kemerovo.barenad.ru
 tags:
-  - name: "AUTHORIZATION"
-    description: "Authorization and register users"
-  - name: "MANAGEMENT"
-    description: "Management"
-  - name: "PRODUCTS"
-    description: "products info"
-schemes:
-  - "https"
-  - "http"
+  - name: Master
+    description: Получение основной информации
+  - name: Auth
+    description: Авторизация и регистрация
+  - name: Permissions
+    description: Права доступа
+  - name: Roles
+    description: Роли администраторов
+  - name: Users
+    description: Пользователи
+  - name: Products
+    description: Продукты
+  - name: Categories
+    description: Категории
+  - name: Shops
+    description: Магазины
+  - name: Schedules
+    description: Расписания
+  - name: Configurations
+    description: Конфигурации
+  - name: Documents
+    description: Документы
+  
 paths:
-
-  /login:
-    post:
-      security:
-        - ApiKey: []
-      tags:
-        - "AUTHORIZATION"
-      summary: "login for user"
-      description: ""
-      operationId: "userLogin"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "login and password"
-          required: true
-          schema:
-            $ref: "#/definitions/AuthLogin"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/AuthLoginResponse"
-
-  /register:
-    post:
-      security:
-        - ApiKey: []
-      tags:
-        - "AUTHORIZATION"
-      summary: "register new user"
-      description: ""
-      operationId: "userRegister"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "userInfo"
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-      responses:
-        200:
-          description: "Ok"
-
-  /management/users:
+  /api/data:
     get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "get all users"
-      description: ""
-      operationId: "getUsers"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Master
+      summary: Получить основную информацию
+      description: Получает всю основную информацию
+      operationId: getMasterData
       responses:
         200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: '#/definitions/User'
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  shops:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Shop'
+                  shop_products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopProduct'
+                  documents:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/Document'
+                        - type: object
+                          properties:
+                            location:
+                              type: string
+                              example: main_top_bar_document
+                  site_configurations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SiteConfiguration'
+        
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Регистрация нового пользователя
+      description: Создаёт нового пользователя и авторизует его
+      operationId: register
+      requestBody:
+        $ref: '#/components/requestBodies/Registration'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 8
+                  message:
+                    type: string
+                    example: Пользователь с таким e-mail или телефоном уже существует.
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Авторизация пользователя
+      description: Авторизирует пользователя по email и паролю
+      operationId: login
+      requestBody:
+        $ref: '#/components/requestBodies/Login'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 7
+                  message:
+                    type: string
+                    example: Неверный логин или пароль
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Разавторизоваться
+      description: Удаляет текущий авторизационный токен
+      operationId: logout
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: OK
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+      security:
+        - bearerAuth: []
+  /api/auth/allLogout:
+    post:
+      tags:
+        - Auth
+      summary: Разавторизоваться на всех устройствах
+      description: Удаляет все авторизационные токены
+      operationId: allLogout
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: OK
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+      security:
+        - bearerAuth: []
 
+  /api/management/permissions:
+    get:
+      tags:
+        - Permissions
+      summary: Получить права доступа
+      description: Получает все возможные права доступа
+      operationId: getPermissions
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Permission'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/permissions/{id}:
+    get:
+      tags:
+        - Permissions
+      summary: Получить право доступа
+      description: Получает возможное право доступа
+      operationId: showPermissions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+
+  /api/management/roles:
+    get:
+      tags:
+        - Roles
+      summary: Получить роли
+      description: Получает все роли администрирования
+      operationId: getRoles
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Roles
+      summary: Создаёт роль
+      description: Создаёт роль администрирования
+      operationId: storeRoles
+      requestBody:
+        description: Параметры для создания роли
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/roles/{id}:
+    get:
+      tags:
+        - Roles
+      summary: Получить роль
+      description: Получает роль администрирования
+      operationId: showRoles
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
     put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "change user"
-      description: ""
-      operationId: "changeUser"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Roles
+      summary: Обновляет роль
+      description: Обновляет роль администрирования
+      operationId: updateRoles
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID user"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "newUserInfo"
-          required: true
+        - in: path
+          name: id
           schema:
-            $ref: "#/definitions/User"
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления роли
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleFillable'
       responses:
         200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/User"
-
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
     delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "delete user"
-      description: ""
-      operationId: "deleteUser"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Roles
+      summary: Удаляет роль
+      description: Удаляет роль администрирования
+      operationId: deleteRoles
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID user"
+        - in: path
+          name: id
+          schema:
+            type: integer
           required: true
-          type: "integer"
+          description: Идентификатор модели
       responses:
         200:
-          description: "Ok"
-
-  /management/admins/actions:
-    get:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get admin actions"
-      description: ""
-      operationId: "getAdminActions"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID action"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/AdminActionDTO"
-
-  /management/admins/roles:
+        - bearerAuth: []
+  /api/management/roles/{roleId}/permissions:
     get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "get admin roles"
-      description: ""
-      operationId: "getAdminRoles"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Roles
+      summary: Получить права доступа роли
+      description: Получает все права доступа роли
+      operationId: getRolesPermissions
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID role"
-          required: false
-          type: "integer"
+        - in: path
+          name: roleId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
       responses:
         200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/GetAdminRole"
-
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermission'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
     post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "create admin role"
-      description: ""
-      operationId: "adminCreateRole"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Roles
+      summary: Добавить право доступа роли
+      description: Добавляет право доступа роли
+      operationId: storeRolesPermissions
       parameters:
-        - in: "body"
-          name: "body"
-          description: "name admin role"
-          required: true
+        - in: path
+          name: roleId
           schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для создания роли
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolePermissionFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolePermission'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/roles/{roleId}/permissions/{id}:
+    get:
+      tags:
+        - Roles
+      summary: Получить право доступа роли
+      description: Получает право доступа роли
+      operationId: showRolesPermissions
+      parameters:
+        - in: path
+          name: roleId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolePermission'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Roles
+      summary: Удалить право доступа роли
+      description: Удаляет право доступа роли
+      operationId: deleteRolesPermission
+      parameters:
+        - in: path
+          name: roleId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+        
+  /api/management/users:
+    get:
+      tags:
+        - Users
+      summary: Получить пользователей
+      description: Получает всех пользователей
+      operationId: getUsers
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Получить пользователя
+      description: Получает пользователя
+      operationId: showUsers
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Users
+      summary: Обновить пользователя
+      description: Обновляет пользователя
+      operationId: updateUsers
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Users
+      summary: Удалить пользователя
+      description: Удаляет пользователя
+      operationId: deleteUsers
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/users/{userId}/roles:
+    get:
+      tags:
+        - Users
+      summary: Получить роли пользователя
+      description: Получает все роли пользователя
+      operationId: getUsersRoles
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Users
+      summary: Добавить роль пользователю
+      description: Добавляет роль пользователю
+      operationId: storeUsersRoles
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для создания роли
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/users/{userId}/roles/{id}:
+    get:
+      tags:
+        - Users
+      summary: Получить роль пользователя
+      description: Получает роль пользователя
+      operationId: showUsersRoles
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Users
+      summary: Удалить роль пользователю
+      description: Удаляетроль пользователю
+      operationId: deleteUsersRoles
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+        
+  /api/management/categories:
+    get:
+      tags:
+        - Categories
+      summary: Получить категории
+      description: Получает все категории
+      operationId: getCategories
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Categories
+      summary: Создаёт категорию
+      description: Создаёт категорию
+      operationId: storeCategories
+      requestBody:
+        description: Параметры для создания категории
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Получить категорию
+      description: Получает категорию
+      operationId: showCategories
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Categories
+      summary: Обновляет категорию
+      description: Обновляет категорию
+      operationId: updateCategory
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления категории
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Categories
+      summary: Удаляет категорию
+      description: Удаляет категорию
+      operationId: deleteCategories
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+        
+  /api/management/products:
+    get:
+      tags:
+        - Products
+      summary: Получить продукты
+      description: Получает продукты
+      operationId: getProducts
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Products
+      summary: Создать продукт
+      description: Создаёт продукт
+      operationId: storeProducts
+      requestBody:
+        description: Параметры для создания продукта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Получить продукт
+      description: Получает продукт
+      operationId: showProducts
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Products
+      summary: Обновляет продукт
+      description: Обновляет продукт
+      operationId: updateProducts
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления продукта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Products
+      summary: Удаляет продукт
+      description: Удаляет продукт
+      operationId: deleteProducts
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+        
+  /api/management/shops:
+    get:
+      tags:
+        - Shops
+      summary: Получить магазины
+      description: Получает магазины
+      operationId: getShops
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shop'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Shops
+      summary: Создать магазин
+      description: Создаёт магазин
+      operationId: storeShop
+      requestBody:
+        description: Параметры для создания магазина
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShopFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/shops/{id}:
+    get:
+      tags:
+        - Shops
+      summary: Получить магазин
+      description: Получает магазин
+      operationId: showShops
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Shops
+      summary: Обновляет магазин
+      description: Обновляет магазин
+      operationId: updateShops
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления магазина
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShopFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Shops
+      summary: Удаляет магазин
+      description: Удаляет магазин
+      operationId: deleteShops
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/shops/{shopId}/products:
+    get:
+      tags:
+        - Shops
+      summary: Получить ассортимент продуктов магазина
+      description: Получает ассортимент продуктов магазина
+      operationId: getShopsProducts
+      parameters:
+        - in: path
+          name: shopId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopProduct'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Shops
+      summary: Добавить продукт в ассортимент магазина
+      description: Добавляет продукт в ассортимент продуктов магазина
+      operationId: storeShopsProducts
+      parameters:
+        - in: path
+          name: shopId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для добавления продукта в магазин
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShopProductFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopProduct'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/shops/{shopId}/products/{id}:
+    get:
+      tags:
+        - Shops
+      summary: Получить продукт из ассортимента магазина
+      description: Получить продукт из ассортимента продуктов магазина
+      operationId: showShopsProducts
+      parameters:
+        - in: path
+          name: shopId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopProduct'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Shops
+      summary: Обновляет продукт в ассортименте магазина
+      description: Обновляет продукт в ассортименте продуктов магазина
+      operationId: updateShopsProducts
+      parameters:
+        - in: path
+          name: shopId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления продукта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShopProductFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShopProduct'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Shops
+      summary: Удалить продукт из ассортимента магазина
+      description: Удаляет продукт из ассортимента магазина
+      operationId: deleteShopsProducts
+      parameters:
+        - in: path
+          name: shopId
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+
+  /api/management/schedules:
+    get:
+      tags:
+        - Schedules
+      summary: Получить расписания
+      description: Получает расписания
+      operationId: getSchedules
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Schedules
+      summary: Создать расписание
+      description: Создаёт расписание
+      operationId: storeSchedule
+      requestBody:
+        description: Параметры для создания расписания
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/schedules/{id}:
+    get:
+      tags:
+        - Schedules
+      summary: Получить расписание
+      description: Получает расписание
+      operationId: showSchedule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Schedules
+      summary: Обновляет расписание
+      description: Обновляет расписание
+      operationId: updateSchedule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления продукта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Schedules
+      summary: Удаляет расписание
+      description: Удаляет расписание
+      operationId: deleteSchedule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+
+  /api/management/configurations/site:
+    get:
+      tags:
+        - Configurations
+      summary: Получить конифгурации сайта
+      description: Получает конифгурации сайта
+      operationId: getSiteConfiguration
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SiteConfiguration'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/configurations/site/{id}:
+    get:
+      tags:
+        - Configurations
+      summary: Получить конфигурацию сайта
+      description: Получает конфигурацию сайта
+      operationId: showSiteConfirurations
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteConfiguration'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Configurations
+      summary: Обновляет конфигурацию сайта
+      description: Обновляет конфигурацию сайта
+      operationId: updateSiteConfirurations
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для конфигурации сайта
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteConfigurationFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteConfiguration'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+   
+  /api/management/documents:
+    get:
+      tags:
+        - Documents
+      summary: Получить документы
+      description: Получает все документы
+      operationId: getDocuments
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Documents
+      summary: Создаёт документ
+      description: Создаёт документ
+      operationId: storeDocument
+      requestBody:
+        description: Параметры для документа
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentFillable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/documents/{id}:
+    get:
+      tags:
+        - Documents
+      summary: Получить документ
+      description: Получает документ
+      operationId: showDocuments
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Documents
+      summary: Обновляет документ
+      description: Обновляет документ
+      operationId: updateDocuments
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления документа
+        required: true
+        content:
+          application/json:
+            schema:
               type: object
               properties:
                 name:
-                  type: "string"
-                  example: "Управляющий"
-                actions:
-                  type: "array"
-                  items:
-                    type: "integer"
-                  example: [0, 1, 3]
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetAdminRole"
-
-    put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "change admin role"
-      description: ""
-      operationId: "adminChangeRole"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID role"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "new options"
-          required: true
-          schema:
-              type: object
-              properties:
-                name:
-                  type: "string"
-                  example: "Управляющий"
-                actions:
-                  type: "array"
-                  items:
-                    type: "integer"
-                  example: [0, 1, 3]
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetAdminRole"
-
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete admin role"
-      description: ""
-      operationId: "adminDeleteRole"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID role"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
-  /management/admins/admins:
-    get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get admins information"
-      description: ""
-      operationId: "getAdminInfo"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id_u"
-          in: "query"
-          description: "ID user"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            type: "object"
-            properties:
-              id_u:
-                type: "object"
-                $ref: "#/definitions/GetAdminInfo"
-        201:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetAdminInfo"
-
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "assign administrator role for user"
-      description: ""
-      operationId: "assignAdministratorRole"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "ids admin role and admin actions"
-          required: true
-          schema:
-              type: "object"
-              properties:
-                id_user:
-                  type: "integer"
-                  example: 12
-                ids_pos:
-                  type: "object"
-                  properties:
-                    id_pos:
-                      type: "array"
-                      items:
-                        type: "integer"
-                  example: {4: [0, 1]}
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetAdminInfo"
-
-    put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "chenge administrator role for user"
-      description: ""
-      operationId: "changeAdminInfo"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id_user"
-          in: "query"
-          description: "ID user"
-          required: false
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "ids admin role and admin actions"
-          required: true
-          schema:
-              type: "object"
-              properties:
-                id_user:
-                  type: "integer"
-                  example: 12
-                ids_pos:
-                  type: "object"
-                  properties:
-                    id_pos:
-                      type: "array"
-                      items:
-                        type: "integer"
-                  example: {4: [0, 1]}
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetAdminInfo"
-
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete admin iformation"
-      description: ""
-      operationId: "deleteAdminInfo"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id_user"
-          in: "query"
-          description: "ID user"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
-  /management/points_of_sale/schedules:
-    get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get schedules"
-      description: ""
-      operationId: "getSchedules"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID schedule"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/ScheduleDTO"
-
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create new schedule"
-      description: ""
-      operationId: "createSchedule"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "schedule Info whit not 'id'"
-          required: true
-          schema:
-            $ref: "#/definitions/ScheduleDTO"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/ScheduleDTO"
-
-    put:
-      security:
-        - ApiKey: []
-      tags:
-        - "MANAGEMENT"
-      summary: "change schedule"
-      description: ""
-      operationId: "changeSchedule"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID schedule"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "scheduleInfo"
-          required: true
-          schema:
-            $ref: "#/definitions/ScheduleDTO"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/ScheduleDTO"
-
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete schedule"
-      description: ""
-      operationId: "deleteSchedule"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID schedule"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
-  /management/points_of_sale/points_of_sale:
-    get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get points of sale"
-      description: ""
-      operationId: "getPointOfSale"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID point_of_sale"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PointOfSaleDTO"
-
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create new point of sale"
-      description: ""
-      operationId: "createPointOfSale"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "id schedule and info about point of sale"
-          required: true
-          schema:
-              type: object
-              properties:
-                id_s:
-                  type: integer
-                address:
                   type: string
-                  example: "пр. Ленина 86/2, корпус 7 (вход со двора)"
-                phone:
-                  type: string
-                  example: "+7(543)-453-32-43"
+                  example: Каталог подарков на новый год
       responses:
         200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/PointOfSaleDTO"
-
-    put:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create new point of sale"
-      description: ""
-      operationId: "changePointOfSale"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID point_of_sale"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "id schedule and info about point of sale"
-          required: true
-          schema:
-              type: object
-              properties:
-                id_s:
-                  type: integer
-                address:
-                  type: string
-                  example: "пр. Ленина 86/2, корпус 7 (вход со двора)"
-                phone:
-                  type: string
-                  example: "+7(543)-453-32-43"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/PointOfSaleDTO"
-
+        - bearerAuth: []
     delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "delete point of sale"
-      description: ""
-      operationId: "deletePointOfSale"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Documents
+      summary: Удаляет документ
+      description: Удаляет документ
+      operationId: deleteDocuments
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID point_of_sale"
+        - in: path
+          name: id
+          schema:
+            type: integer
           required: true
-          type: "integer"
+          description: Идентификатор модели
       responses:
         200:
-          description: "Ok"
-
-  /management/products/items:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/documents/locations:
     get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "get all items"
-      description: ""
-      operationId: "getItems"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID item"
-          required: false
-          type: "integer"
+        - Documents
+      summary: Получить доступные расположения документов
+      description: Получает все расположения документов
+      operationId: getDocumentsLocations
       responses:
         200:
-          description: "Ok"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/GetItems"
-
-    post:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentLocation'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create new item"
-      description: ""
-      operationId: "createItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "item info whitch not 'id'"
-          required: true
-          schema:
-            $ref: "#/definitions/GetItems"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetItems"
-
-    put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "change new item"
-      description: ""
-      operationId: "changeItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID item"
-          required: true
-          type: "integer"
-        - in: "body"
-          name: "body"
-          description: "new item info"
-          required: true
-          schema:
-            $ref: "#/definitions/GetItems"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/GetItems"
-
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete item"
-      description: ""
-      operationId: "deleteItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID item"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
-  /management/products/products_information:
+        - bearerAuth: []
+  /api/management/documents/locations/{id}:
     get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "get all product information"
-      description: ""
-      operationId: "getProductsInformation"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Documents
+      summary: Получить доступную локацию документа
+      description: Получает доступную локацию для документа
+      operationId: showDocumentsLocations
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID product"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
+        - in: path
+          name: id
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/ProductInformationDTO"
-
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create product information in point of sale"
-      description: ""
-      operationId: "createProductsInformation"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "info about product"
+            type: integer
           required: true
-          schema:
-              type: object
-              properties:
-                id_i:
-                  type: integer
-                id_pos:
-                  type: integer
-                price:
-                  type: integer
-                count:
-                  type: integer
+          description: Идентификатор модели
       responses:
         200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/ProductInformationDTO"
-
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentLocation'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
     put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
       tags:
-        - "MANAGEMENT"
-      summary: "change product information in point of sale"
-      description: ""
-      operationId: "changeProductsInformation"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
+        - Documents
+      summary: Обновить локацию для документа
+      description: Обновляет локацию для документа
+      operationId: updateDocumentsLocations
       parameters:
-        - name: "id"
-          in: "query"
-          description: "ID product"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "new info about product"
-          required: true
+        - in: path
+          name: id
           schema:
+            type: integer
+          required: true
+          description: Идентификатор модели
+      requestBody:
+        description: Параметры для обновления локации для документа
+        required: true
+        content:
+          application/json:
+            schema:
               type: object
               properties:
-                id:
+                document_id:
                   type: integer
-                id_i:
-                  type: integer
-                id_pos:
-                  type: integer
-                price:
-                  type: integer
-                count:
-                  type: integer
+                  example: 3
       responses:
         200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/ProductInformationDTO"
-
-    delete:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentLocation'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete product information"
-      description: ""
-      operationId: "deleteProductsInformation"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID product"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
+        - bearerAuth: []
+   
+components:
+  schemas:
+    UnauthorizedExeption:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: Пользователь не авторизован.
+    NotEnoughPermissionsExeption:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 6
+        message:
+          type: string
+          example: Недостаточно прав администрирования.
+          
+    UserAuthFillable:
+      type: object
+      properties:
+        email:
+          type: string
+          example: ivanov1965@example.com
+        password:
+          type: string
+          example: qwerty
+    UserDataFillable:
+      type: object
+      properties:
+        fio:
+          type: string
+          example: Иванов Иван Иванович
+        phone:
+          type: string
+          example: 79998880011
+    UserFillable:
+      allOf:
+        - $ref: '#/components/schemas/UserDataFillable'
+        - $ref: '#/components/schemas/UserAuthFillable'
+    User:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            email:
+              type: string
+              example: ivanov1965@example.com
+        - $ref: '#/components/schemas/UserDataFillable'
+            
+    CategoryFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Без сахарозаменителей
+    Category:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+        - $ref: '#/components/schemas/CategoryFillable'
+            
+    DocumentFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Каталог подарков на новый год
+        document:
+          type: string
+          format: binary
+          example: BINARY_FILE_PDF
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: Каталог подарков на новый год
+        url:
+          type: string
+          example: http://products.kemerovo.barenad.ru/storage/documents/document.pdf
+            
+    DocumentLocationFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Документ в верхнем баре на главной
+        identify:
+          type: string
+          example: main_top_bar_document
+        document_id:
+          type: integer
+          example: 3
+    DocumentLocation:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 4
+        - $ref: '#/components/schemas/DocumentLocationFillable'
+            
+    PermissionFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Обновление товаров
+        description:
+          type: string
+          example: Позволяет обновлять товары.
+        permission:
+          type: string
+          example: products.update
+    Permission:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+        - $ref: '#/components/schemas/PermissionFillable'
+            
+    ProductFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Шоколад
+        composition:
+          type: string
+          example: Какао бобы, сахар и молоко
+        manufacturer:
+          type: string
+          example: ООО кондитерский завод "BARENAD"
+        description:
+          type: string
+          example: Это самый вкусный шоколад на земле, а главное - БЕЗ КАЛОРИЙ!
+        product_unit:
+          type: string
+          example: Плитки, поштучно.
+        categories:
+          type: array
+          items:
+            type: integer
+            example: 2
+    ProductRequestFillable:
+      allOf:
+        - type: object
+          properties:
+            image:
+              type: string
+              format: binary
+              example: BINARY_FILE_IMAGE
+        - $ref: '#/components/schemas/ProductFillable'
+    Product:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 6
+            image:
+              type: string
+              example: http://products.kemerovo.barenad.ru/storage/items/images/image.jpg
+            image_mini:
+              type: string
+              example: http://products.kemerovo.barenad.ru/storage/items/images/mini/image.jpg
+        - $ref: '#/components/schemas/ProductFillable'
+          
+    ProductCategoryFillable:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          example: 6
+        category_id:
+          type: integer
+          example: 2
+    ProductCategory:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 7
+        - $ref: '#/components/schemas/ProductCategoryFillable'      
+          
+    RoleFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Менеджер товаров
+    Role:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 8
+        - $ref: '#/components/schemas/RoleFillable'
+        
+    RolePermissionFillable:
+      type: object
+      properties:
+        permission_id:
+          type: integer
+          example: 5
+    RolePermission:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 9
+            role_id:
+              type: integer
+              example: 8
+        - $ref: '#/components/schemas/RolePermissionFillable'
+          
+    ScheduleFillable:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Обычные будни
+        monday:
+          type: string
+          example: С 9:00 до 18:00. Обед с 13:00 до 14:00
+        tuesday:
+          type: string
+          example: С 9:00 до 18:00. Обед с 13:00 до 14:00
+        wednesday:
+          type: string
+          example: С 9:00 до 18:00. Обед с 13:00 до 14:00
+        thursday:
+          type: string
+          example: С 9:00 до 18:00. Обед с 13:00 до 14:00
+        friday:
+          type: string
+          example: С 11:00 до 15:00. Без обеда.
+        saturday:
+          type: string
+          example: Выходной.
+        sunday:
+          type: string
+          example: Выходной.
+        holiday:
+          type: string
+          example: Выходной.
+        particular:
+          type: string
+          example: Выходной.
+    Schedule:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 10
+        - $ref: '#/components/schemas/ScheduleFillable'
+          
+    ShopFillable:
+      type: object
+      properties:
+        address:
+          type: string
+          example: Ул. Ленина, д. 122, корпус 3. Вход с торца.
+        phone:
+          type: string
+          example: 79998885500
+        schedule_id:
+          type: integer
+          example: 10
+        map_integration:
+          type: string
+          example: "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d916.9619145338502!2d37.60946573413041!3d55.76161982703659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b54a443a83ac07%3A0xadf75d017913401c!2z0J_QsNC80Y_RgtC90LjQuiDQrtGA0LjRjiDQlNC-0LvQs9C-0YDRg9C60L7QvNGD!5e0!3m2!1sru!2sru!4v1630992435798!5m2!1sru!2sru\" width=\"800\" height=\"600\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>"
+    Shop:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 11
+        - $ref: '#/components/schemas/ShopFillable'
 
-  /management/products/categories_item:
-    get:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "get all categories for item"
-      description: ""
-      operationId: "getCategoriesItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID categorie"
-          required: false
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
+    ShopProductFillable:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          example: 6
+        price:
+          type: integer
+          example: 100000
+        count:
+          type: integer
+          example: 100
+    ShopProduct:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 12
+            shop_id:
+              type: integer
+              example: 11
+        - $ref: '#/components/schemas/ShopProductFillable'
+        
+    SiteConfigurationFillable:
+      type: object
+      properties:
+        value:
+          type: string
+          example: "Telegram: <b>@BarenAD</b>"
+    SiteConfiguration:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 13
+            name:
+              type: string
+              example: Футер третий блок слева
+            identify:
+              type: string
+              example: footer_third
+        - $ref: '#/components/schemas/SiteConfigurationFillable'
+    
+    UserRoleFillable:
+      type: object
+      properties:
+        role_id:
+          type: integer
+          example: 8
+    UserRole:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 14
+            user_id:
+              type: integer
+              example: 1
+        - $ref: '#/components/schemas/UserRoleFillable'
+  
+  requestBodies:
+    Registration:
+      description: Объект пользовательских данных необходимый для регистрации
+      required: true
+      content:
+        application/json:
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/CategoriesItemDTO"
-
-    post:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "create new categorie for item"
-      description: ""
-      operationId: "createCategoriesItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "name"
-          required: true
+            $ref: '#/components/schemas/UserFillable'
+    Login:
+      description: Объект пользовательских данных необходимый для авторизации
+      required: true
+      content:
+        application/json:
           schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "Подарочные наборы"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/CategoriesItemDTO"
-
-    put:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "change categorie for item"
-      description: ""
-      operationId: "changeCategoriesItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID categorie"
-          required: true
-          type: "integer"
-
-        - in: "body"
-          name: "body"
-          description: "name"
-          required: true
-          schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-                  example: "Подарочные наборы"
-      responses:
-        200:
-          description: "Ok"
-          schema:
-            $ref: "#/definitions/CategoriesItemDTO"
-
-    delete:
-      security:
-        - ApiKey: []
-        - JWTToken: []
-      tags:
-        - "MANAGEMENT"
-      summary: "delete categorie for item"
-      description: ""
-      operationId: "deleteCategoriesItem"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "query"
-          description: "ID categorie"
-          required: true
-          type: "integer"
-      responses:
-        200:
-          description: "Ok"
-
-definitions:
-  AuthLogin:
-    type: "object"
-    properties:
-      login:
-        type: "string"
-        example: "barenad"
-      password:
-        type: "string"
-        example: "@Pass9752word000"
-
-  AuthLoginResponse:
-    type: "object"
-    properties:
-      access_token:
-        type: "string"
-        example: "YWNjZXNzX3Rva2Vu"
-      refresh_token:
-        type: "string"
-        example: "YWNjZXNzX3Rva2Vu"
-      user:
-         $ref: '#/definitions/User'
-
-  AdminRoleDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      name:
-        type: "string"
-        example: "Управляющий"
-
-  GetAdminRole:
-    type: "object"
-    properties:
-      role:
-        $ref: '#/definitions/AdminRoleDTO'
-      actions:
-        type: "array"
-        items:
-          type: "integer"
-        example: [0, 1]
-
-  AdminActionDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      name:
-        type: "string"
-        example: "Назначение ролей администратора"
-      description:
-        type: "string"
-        example: "Позволит выдавать права администратора пользователям"
-
-  AdminInfoDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 12
-      id_ar:
-        type: "integer"
-        example: 1
-      id_pos:
-        type: "integer"
-        example: 4
-      id_u:
-        type: "integer"
-        example: 12
-      created_at:
-        type: "string"
-        example: "2020-08-07T03:44:13.000000Z"
-      updated_at:
-        type: "string"
-        example: "2020-08-07T03:44:13.000000Z"
-
-  GetAdminInfo:
-    type: "object"
-    properties:
-      id_pos:
-        type: "array"
-        items:
-          type: "object"
-          $ref: '#/definitions/AdminInfoDTO'
-
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      fio:
-        type: "string"
-        example: "Иванов Иван Иванович"
-      login:
-        type: "string"
-        example: "baren"
-      password:
-        type: "string"
-        example: "c6a40522f88b3527f3b7e137ac998179"
-      e_mail:
-        type: "string"
-        example: "baren1998@gmail.com"
-      email_verified_at:
-        type: "integer"
-        example: 1594899010
-      phone:
-        type: "string"
-        example: "+7(912)-765-43-21"
-      note:
-        type: "string"
-        example: "Ворует из кассы"
-
-  ScheduleDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      name:
-        type: "string"
-        example: "обычное расписание"
-      monday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      tuesday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      wednesday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      thursday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      friday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      saturday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      sunday:
-        type: "string"
-        example: "с 9:00 до 18:00 (13:00 - 14:00 обед)"
-      holiday:
-        type: "string"
-        example: "с 11:00 до 15:00"
-      particular:
-        type: "string"
-        example: "в праздники не работаем, исключение - новый год"
-
-  GetItems:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      picture:
-        type: "string"
-        example: "/images/product_items/4342525.png"
-      miniature_picture:
-        type: "string"
-        example: "/images/mini/product_items/4342525.png"
-      name:
-        type: "string"
-        example: "Конфеты коркунов"
-      composition:
-        type: "string"
-        example: "Молочный шоколад, орехи, глютен"
-      manufacturer:
-        type: "string"
-        example: "ООО 'Чарли и шоколадная фабрика'"
-      description:
-        type: "string"
-        example: "Отлично подойдёт к красному вину"
-      product_unit:
-        type: "string"
-        example: "1 коробка"
-      categories_item:
-        type: "array"
-        items:
-          type: "integer"
-          example: [0, 1, 3]
-
-  CategoriesItemDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      name:
-        type: "string"
-        example: "подарочные наборы"
-
-  PointOfSaleDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      adress:
-        type: "string"
-        example: "пр Ленина 86/2 корпус 3 (вход с торца)"
-      phone:
-        type: "string"
-        example: "+7(654)-544-24-21"
-      id_s:
-        type: "integer"
-        example: 0
-
-  ProductInformationDTO:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        example: 1
-      id_item:
-        type: "integer"
-        example: 1
-      id_point_of_sale:
-        type: "integer"
-        example: 1
-      price:
-        type: "integer"
-        example: 199
-      count:
-        type: "integer"
-        example: 20
-
-securityDefinitions:
-  ApiKey:
-    type: apiKey
-    name: x-api-key
-    in: header
-  JWTToken:
-    type: apiKey
-    name: Authorization
-    in: header
+            $ref: '#/components/schemas/UserAuthFillable'
+  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
