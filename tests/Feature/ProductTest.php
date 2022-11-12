@@ -37,7 +37,7 @@ class ProductTest extends TestCase
             'manufacturer' => $this->faker->text(50),
             'description' => $this->faker->text(100),
             'product_unit' => $this->faker->text(10),
-            'product_categories' => json_encode($this->productCategories->pluck('id')->toArray()),
+            'categories' => json_encode($this->productCategories->pluck('id')->toArray()),
         ];
     }
 
@@ -128,7 +128,7 @@ class ProductTest extends TestCase
 
     public function testStoreProductWithoutCategories()
     {
-        $this->params['product_categories'] = "[]";
+        $this->params['categories'] = "[]";
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('management.products.store'), $this->params);
@@ -180,7 +180,7 @@ class ProductTest extends TestCase
             $productCategories1->pluck('id')->toArray(),
             $this->productCategories->pluck('id')->toArray()
         );
-        $this->params['product_categories'] = json_encode($productsCategoriesIdsStep2);
+        $this->params['categories'] = json_encode($productsCategoriesIdsStep2);
         $response2 = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('management.products.update', $response['id']), $this->params);
@@ -219,7 +219,7 @@ class ProductTest extends TestCase
             $productCategories3[$indexesForGet[1]]['id'],
             $productCategories3[$indexesForGet[2]]['id'],
         ];
-        $this->params['product_categories'] = json_encode($prepareProductCategories3);
+        $this->params['categories'] = json_encode($prepareProductCategories3);
         $response3 = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->post(route('management.products.update', $response['id']), $this->params);

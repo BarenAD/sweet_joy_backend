@@ -21,15 +21,15 @@ class ProductUpdateRequest extends FormRequest
             'manufacturer' => 'string|max:255',
             'description' => 'string|max:255',
             'product_unit' => 'string|max:255',
-            'product_categories' => 'array',
-            'product_categories.*' => 'numeric'
+            'categories' => 'array',
+            'categories.*' => 'numeric'
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            'product_categories' => json_decode($this->product_categories),
+            'categories' => json_decode($this->categories),
         ]);
     }
 }

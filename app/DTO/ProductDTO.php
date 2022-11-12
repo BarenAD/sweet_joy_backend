@@ -14,7 +14,7 @@ class ProductDTO extends DataTransferObject
     public string $manufacturer;
     public string $description;
     public string $product_unit;
-    public array $product_categories;
+    public array $categories;
 
     public static function formRequest(FormRequest $request): self
     {
@@ -25,7 +25,7 @@ class ProductDTO extends DataTransferObject
             'manufacturer' => $request->get('manufacturer'),
             'description' => $request->get('description'),
             'product_unit' => $request->get('product_unit'),
-            'product_categories' => $request->get('product_categories'),
+            'categories' => $request->get('categories'),
         ]);
     }
 
@@ -38,7 +38,7 @@ class ProductDTO extends DataTransferObject
             'manufacturer' =>  $params['manufacturer'] ?? null,
             'description' =>  $params['description'] ?? null,
             'product_unit' =>  $params['product_unit'] ?? null,
-            'product_categories' =>  $params['product_categories'] ?? null,
+            'categories' =>  $params['categories'] ?? null,
         ]);
     }
 }

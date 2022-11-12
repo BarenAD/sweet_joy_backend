@@ -37,7 +37,7 @@ class ProductServiceTest extends TestCase
             'manufacturer' => 'test',
             'description' => 'test',
             'product_unit' => 'test',
-            'product_categories' => [],
+            'categories' => [],
         ]);
     }
 
@@ -118,7 +118,7 @@ class ProductServiceTest extends TestCase
             'manufacturer' => 'test2',
             'description' => 'test2',
             'product_unit' => 'test2',
-            'product_categories' => [],
+            'categories' => [],
         ]);
         try {
             $productService->update($productObjectBeforeUpdate['id'], $newDto);

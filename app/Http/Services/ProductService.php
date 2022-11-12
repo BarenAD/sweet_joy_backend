@@ -99,7 +99,7 @@ class ProductService
                     'product_unit' => $productDTO->product_unit
                 ]);
                 $categoriesForInsert = [];
-                foreach ($productDTO->product_categories as $categoryId) {
+                foreach ($productDTO->categories as $categoryId) {
                     $categoriesForInsert[] = [
                         'product_id' => $product->id,
                         'category_id' => $categoryId,
@@ -108,7 +108,7 @@ class ProductService
                 $this->productCategoriesRepository->insert($categoriesForInsert);
                 $this->preparedProductPathToImages($product);
             DB::commit();
-            $product['categories'] = $productDTO->product_categories;
+            $product['categories'] = $productDTO->categories;
             return $product->toArray();
         } catch (\Throwable $exception) {
             DB::rollBack();
@@ -136,11 +136,11 @@ class ProductService
             $product['description'] = $productDTO->description;
             $product['product_unit'] = $productDTO->product_unit;
             $categories = $this->productCategoriesRepository->getByProductId($id);
-            foreach ($categories->whereNotIn('category_id', $productDTO->product_categories) as $category) {
+            foreach ($categories->whereNotIn('category_id', $productDTO->categories) as $category) {
                 $category->delete();
             }
             $diffCategoriesId = array_diff(
-                $productDTO->product_categories,
+                $productDTO->categories,
                 $categories->pluck('category_id')->toArray()
             );
             $categoriesForInsert = [];
@@ -157,7 +157,7 @@ class ProductService
             }
             $this->preparedProductPathToImages($product);
             DB::commit();
-            $product['categories'] = $productDTO->product_categories;
+            $product['categories'] = $productDTO->categories;
             return $product->toArray();
         } catch (\Throwable $exception) {
             DB::rollBack();
