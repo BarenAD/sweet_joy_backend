@@ -102,6 +102,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('storage/products/images/demo') => storage_path('app/public/demo/images'),
+        public_path('storage/products/images/mini/demo') => storage_path('app/public/demo/images/mini'),
+        public_path('storage/documents/demo') => storage_path('app/public/demo/documents'),
     ],
 
 ];
