@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function register(AuthRegisterRequest $request)
     {
         $params = $request->validated();
-        $params['password'] = bcrypt($params['password']);
+        $params['password'] = Hash::make($params['password']);
         try {
             $user = User::create($params);
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -49,7 +49,7 @@ class AuthController extends Controller
         return response()->json("OK", 200);
     }
 
-    public function allLogout(Request $request)
+    public function logoutAll(Request $request)
     {
         $request->user()->tokens()->delete();
         return response()->json("OK", 200);

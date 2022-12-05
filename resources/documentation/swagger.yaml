@@ -3,7 +3,7 @@ info:
   title: BarenAD - products
   description: |-
     Это документация API для демонстрационно-боевого* проекта доски товаров.
-    
+
     *- проект сделан для саморазвития, но под требования заказчика и работает на него по сей день.
   version: 1.0.0
 servers:
@@ -31,7 +31,7 @@ tags:
     description: Конфигурации
   - name: Documents
     description: Документы
-  
+
 paths:
   /api/data:
     get:
@@ -78,7 +78,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/SiteConfiguration'
-        
+
   /api/auth/register:
     post:
       tags:
@@ -172,13 +172,13 @@ paths:
                 $ref: '#/components/schemas/UnauthorizedExeption'
       security:
         - bearerAuth: []
-  /api/auth/allLogout:
+  /api/auth/logout/all:
     post:
       tags:
         - Auth
       summary: Разавторизоваться на всех устройствах
       description: Удаляет все авторизационные токены
-      operationId: allLogout
+      operationId: logoutAll
       responses:
         200:
           description: OK
@@ -597,7 +597,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-        
+
   /api/management/users:
     get:
       tags:
@@ -899,7 +899,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-        
+
   /api/management/categories:
     get:
       tags:
@@ -1075,7 +1075,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-        
+
   /api/management/products:
     get:
       tags:
@@ -1251,7 +1251,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-        
+
   /api/management/shops:
     get:
       tags:
@@ -1917,7 +1917,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-   
+
   /api/management/documents:
     get:
       tags:
@@ -2207,7 +2207,7 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
-   
+
 components:
   schemas:
     UnauthorizedExeption:
@@ -2228,7 +2228,7 @@ components:
         message:
           type: string
           example: Недостаточно прав администрирования.
-          
+
     UserAuthFillable:
       type: object
       properties:
@@ -2262,7 +2262,7 @@ components:
               type: string
               example: ivanov1965@example.com
         - $ref: '#/components/schemas/UserDataFillable'
-            
+
     CategoryFillable:
       type: object
       properties:
@@ -2277,7 +2277,7 @@ components:
               type: integer
               example: 2
         - $ref: '#/components/schemas/CategoryFillable'
-            
+
     DocumentFillable:
       type: object
       properties:
@@ -2300,7 +2300,7 @@ components:
         url:
           type: string
           example: http://products.kemerovo.barenad.ru/storage/documents/document.pdf
-            
+
     DocumentLocationFillable:
       type: object
       properties:
@@ -2321,7 +2321,7 @@ components:
               type: integer
               example: 4
         - $ref: '#/components/schemas/DocumentLocationFillable'
-            
+
     PermissionFillable:
       type: object
       properties:
@@ -2342,7 +2342,7 @@ components:
               type: integer
               example: 5
         - $ref: '#/components/schemas/PermissionFillable'
-            
+
     ProductFillable:
       type: object
       properties:
@@ -2389,7 +2389,7 @@ components:
               type: string
               example: http://products.kemerovo.barenad.ru/storage/items/images/mini/image.jpg
         - $ref: '#/components/schemas/ProductFillable'
-          
+
     ProductCategoryFillable:
       type: object
       properties:
@@ -2406,8 +2406,8 @@ components:
             id:
               type: integer
               example: 7
-        - $ref: '#/components/schemas/ProductCategoryFillable'      
-          
+        - $ref: '#/components/schemas/ProductCategoryFillable'
+
     RoleFillable:
       type: object
       properties:
@@ -2422,7 +2422,7 @@ components:
               type: integer
               example: 8
         - $ref: '#/components/schemas/RoleFillable'
-        
+
     RolePermissionFillable:
       type: object
       properties:
@@ -2440,7 +2440,7 @@ components:
               type: integer
               example: 8
         - $ref: '#/components/schemas/RolePermissionFillable'
-          
+
     ScheduleFillable:
       type: object
       properties:
@@ -2482,7 +2482,7 @@ components:
               type: integer
               example: 10
         - $ref: '#/components/schemas/ScheduleFillable'
-          
+
     ShopFillable:
       type: object
       properties:
@@ -2530,7 +2530,7 @@ components:
               type: integer
               example: 11
         - $ref: '#/components/schemas/ShopProductFillable'
-        
+
     SiteConfigurationFillable:
       type: object
       properties:
@@ -2551,7 +2551,7 @@ components:
               type: string
               example: footer_third
         - $ref: '#/components/schemas/SiteConfigurationFillable'
-    
+
     UserRoleFillable:
       type: object
       properties:
@@ -2569,7 +2569,7 @@ components:
               type: integer
               example: 1
         - $ref: '#/components/schemas/UserRoleFillable'
-  
+
   requestBodies:
     Registration:
       description: Объект пользовательских данных необходимый для регистрации
@@ -2585,7 +2585,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserAuthFillable'
-  
+
   securitySchemes:
     bearerAuth:
       type: http
