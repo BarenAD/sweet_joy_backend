@@ -30,7 +30,7 @@
 - Выполнить `composer dump-autoload`
 - Создать ссылку для хранилища `php artisan storage:link`
 - Накатить миграции `php artisan migrate`
-- Сконфигураровать Laravel-passport `php artisan passport:install`
+- Сконфигурировать Laravel-passport `php artisan passport:install`
 - Заполнить базу `php artisan db:seed`
 - Установить, запустить и добавить в автозагрузку redis-server
 - Готово. Можно запускать проект `php artisan serve`

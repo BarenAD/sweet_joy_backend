@@ -8,10 +8,13 @@ use App\Http\Requests\Auth\AuthRefreshRequest;
 use App\Http\Requests\Auth\AuthRegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 use Laravel\Passport\TokenRepository;
 use Lcobucci\JWT\Parser as JwtParser;
 use League\OAuth2\Server\AuthorizationServer;
@@ -100,13 +103,21 @@ class AuthController extends AccessTokenController
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->token()->revoke();
         return response()->json("OK", 200);
     }
 
     public function allLogout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $tokens = $request->user()->tokens()->pluck('id');
+        DB::beginTransaction();
+        Token::query()
+            ->whereIn('id', $tokens)
+            ->update(['revoked'=> true]);
+        RefreshToken::query()
+            ->whereIn('access_token_id', $tokens)
+            ->update(['revoked' => true]);
+        DB::commit();
         return response()->json("OK", 200);
     }
 }
