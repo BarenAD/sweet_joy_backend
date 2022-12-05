@@ -33,9 +33,10 @@ Route::get('data', [MasterDataController::class, 'masterData'])->name('master.da
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
 });
 
-Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
+Route::middleware(['auth:api'])->namespace('\\')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('allLogout', [AuthController::class, 'allLogout'])->name('auth.allLogout');

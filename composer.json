@@ -16,10 +16,12 @@
         "intervention/image": "^2.5",
         "jaybizzle/laravel-migrations-organiser": "^6.1",
         "laravel/framework": "^8.0",
+        "laravel/passport": "^10.4",
         "laravel/sanctum": "^2.4",
         "laravel/tinker": "^2.0",
         "predis/predis": "^1.1",
-        "spatie/data-transfer-object": "^2.8"
+        "spatie/data-transfer-object": "^2.8",
+        "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

@@ -51,4 +51,9 @@ return [
         'message' => 'Пользователь с таким e-mail или телефоном уже существует.',
         'http_code' => 400
     ],
+    'invalid_refresh_token' => [
+        'id' => 1,
+        'message' => 'Неверный refresh токен',
+        'http_code' => 401
+    ],
 ];
