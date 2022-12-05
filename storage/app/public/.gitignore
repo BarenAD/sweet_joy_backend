@@ -1,3 +1,5 @@
 *
 !.gitignore
-!item_images
+!products
+!demo
+!documents

@@ -1,5 +1,20 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentLocationController;
+use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ShopProductController;
+use App\Http\Controllers\SiteConfigurationController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,80 +28,44 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('products_for_users', 'ProductInformationController@getProductsForUsers');
+Route::get('data', [MasterDataController::class, 'masterData'])->name('master.data');
 
-Route::prefix('authentication')->group(function () {
-    Route::post('register', 'AuthController@register');
-    Route::post('login', 'AuthController@login');
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::prefix('authentication')->group(function () {
-        Route::post('logout', 'AuthController@logout');
-        Route::post('allLogout', 'AuthController@allLogout');
+Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::post('allLogout', [AuthController::class, 'allLogout'])->name('auth.allLogout');
     });
 
-    Route::middleware(['checkAllowToManagement'])->prefix('management')->group(function () {
-        Route::get('users/{id?}', 'UsersController@getUsers');
-        Route::post('users/{id}', 'UsersController@changeUser');
-        Route::delete('users/{id}', 'UsersController@deleteUser');
+    Route::middleware(['setUpAbilities'])->prefix('management')->as('management.')->group(function () {
 
-        Route::prefix('configurations')->group(function () {
-            Route::get('site/{id?}', 'SiteConfigurationsController@getSiteConfigurations');
-            Route::post('site/{id}', 'SiteConfigurationsController@changeSiteConfigurations');
+        Route::apiResource('permissions', PermissionController::class)->only(['index', 'show']);
+        Route::apiResource('roles', RoleController::class);
+        Route::apiResource('roles.permissions', RolePermissionController::class)->except('update');
+
+        Route::apiResource('users', UserController::class)->except('store');
+        Route::apiResource('users.roles', UserRoleController::class)->except('update');
+
+        Route::apiResource('categories', CategoryController::class);
+
+        Route::apiResource('products', ProductController::class)->except('update');
+        Route::post('products/{id}', [ProductController::class, 'update'])->name('products.update');
+
+        Route::apiResource('shops', ShopController::class);
+        Route::apiResource('shops.products', ShopProductController::class);
+        Route::apiResource('schedules', ScheduleController::class);
+
+        Route::prefix('configurations')->as('configurations.')->group(function () {
+            Route::apiResource('site', SiteConfigurationController::class)->only(['index', 'show', 'update']);
         });
 
-        Route::prefix('admins')->group(function () {
-            Route::get('actions', 'AdminActionsController@getActions');
-
-            Route::get('roles/{id?}', 'AdminRolesController@getRoles');
-            Route::post('roles', 'AdminRolesController@createRole');
-            Route::post('roles/{id}', 'AdminRolesController@changeRole');
-            Route::delete('roles/{id}', 'AdminRolesController@deleteRole');
-
-            Route::get('admins/{id_user?}', 'AdminInformationController@getAdmins');
-            Route::post('admins', 'AdminInformationController@createAdmin');
-            Route::post('admins/{id_user}', 'AdminInformationController@changeAdmin');
-            Route::delete('admins/{id_user}', 'AdminInformationController@deleteAdmin');
+        Route::prefix('documents')->as('documents.')->group(function () {
+            Route::apiResource('locations', DocumentLocationController::class)->only(['index', 'show', 'update']);
         });
-
-        Route::prefix('points_of_sale')->group(function () {
-            Route::get('schedules/{id?}', 'SchedulesController@getSchedules');
-            Route::post('schedules', 'SchedulesController@createSchedule');
-            Route::post('schedules/{id}', 'SchedulesController@changeSchedule');
-            Route::delete('schedules/{id}', 'SchedulesController@deleteSchedules');
-
-            Route::get('points_of_sale/{id?}', 'PointsOfSaleController@getPoints');
-            Route::post('points_of_sale', 'PointsOfSaleController@createPoints');
-            Route::post('points_of_sale/{id}', 'PointsOfSaleController@changePoints');
-            Route::delete('points_of_sale/{id}', 'PointsOfSaleController@deletePoints');
-        });
-
-        Route::prefix('products')->group(function () {
-            Route::get('categories_item/{id?}', 'CategoriesItemController@getCategories');
-            Route::post('categories_item', 'CategoriesItemController@createCategory');
-            Route::post('categories_item/{id}', 'CategoriesItemController@changeCategory');
-            Route::delete('categories_item/{id}', 'CategoriesItemController@deleteCategory');
-
-            Route::get('items/{id?}', 'ItemsController@getItems');
-            Route::post('items', 'ItemsController@createItem');
-            Route::post('items/{id}', 'ItemsController@changeItem'); //поставить POST и будет всё ок
-            Route::delete('items/{id}', 'ItemsController@deleteItem');
-
-            Route::get('products_information/{id?}', 'ProductInformationController@getProductsInfo');
-            Route::post('products_information', 'ProductInformationController@createProductInfo');
-            Route::post('products_information/{id}', 'ProductInformationController@changeProductInfo');
-            Route::delete('products_information/{id}', 'ProductInformationController@deleteProductInfo');
-        });
-
-        Route::prefix('documents')->group(function () {
-            Route::get('locations/{id?}', 'LocationsDocumentsController@getLocationsDocuments');
-            Route::post('locations/{id}', 'LocationsDocumentsController@changeLocationsDocuments');
-
-            Route::get('documents/{id?}', 'DocumentsController@getDocuments');
-            Route::post('documents', 'DocumentsController@createDocument');
-            Route::post('documents/{id}', 'DocumentsController@changeDocument');
-            Route::delete('documents/{id}', 'DocumentsController@deleteDocument');
-        });
+        Route::apiResource('/documents', DocumentController::class);
     });
 });

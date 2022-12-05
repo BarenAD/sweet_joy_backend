@@ -2,31 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginUser;
-use App\Http\Requests\RegisterUser;
+use App\Exceptions\NoReportException;
+use App\Http\Requests\Auth\AuthLoginRequest;
+use App\Http\Requests\Auth\AuthRegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(RegisterUser $request)
+    public function register(AuthRegisterRequest $request)
     {
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
+        $params = $request->validated();
+        $params['password'] = bcrypt($params['password']);
+        try {
+            $user = User::create($params);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            if ($exception->getCode() == 23000) {
+                throw new NoReportException('user_already_exists');
+            }
+            throw $exception;
+        }
         $result = $user;
-        $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
+        $result['token'] = $user->createToken($request->userAgent(), [])->plainTextToken;
 
         return response()->json($result, 200);
     }
 
-    public function login(LoginUser $request)
+    public function login(AuthLoginRequest $request)
     {
-        $user = User::where('login', $request->login)->first();
+        $params = $request->validated();
+        $user = User::where('email', $params['email'])->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Логин или пароль неверные.'], 401);
+        if (!$user || !Hash::check($params['password'], $user->password)) {
+            throw new NoReportException('invalid_login');
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
@@ -37,10 +46,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+        return response()->json("OK", 200);
     }
 
     public function allLogout(Request $request)
     {
         $request->user()->tokens()->delete();
+        return response()->json("OK", 200);
     }
 }
