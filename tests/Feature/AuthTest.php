@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
+use Laravel\Passport\Token;
 use Laravel\Sanctum\PersonalAccessToken;
 use Tests\TestCase;
 
@@ -39,7 +40,7 @@ class AuthTest extends TestCase
         unset($params['email_verified_at']);
         unset($params['password']);
         $params['id'] = $responseJson['id'];
-        $params['token'] = $responseJson['token'];
+        $params['tokens'] = $responseJson['tokens'];
         $this->assertEquals($responseJson, $params);
     }
 
@@ -59,8 +60,53 @@ class AuthTest extends TestCase
             Response::HTTP_OK
         );
         $responseJson = $response->json();
-        $params['token'] = $responseJson['token'];
+        $params['tokens'] = $responseJson['tokens'];
         $this->assertEquals($responseJson, $params);
+    }
+
+    public function testRefreshRoute()
+    {
+        $params = $this->model
+            ->factory()
+            ->create()
+            ->toArray();
+        $responseLogin = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('auth.login'), [
+                'email' => $params['email'],
+                'password' => 'password',
+            ]);
+        $responseLogin->assertStatus(
+            Response::HTTP_OK
+        );
+        $responseRefresh = $this
+            ->withHeaders([
+                'Accept' => 'application/json',
+            ])
+            ->post(route('auth.refresh'), [
+                'refresh_token' => $responseLogin->json()['tokens']['refresh_token'],
+            ]);
+        $responseRefresh->assertStatus(
+            Response::HTTP_OK
+        );
+        $responseLogoutOldToken = $this
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $responseLogin->json()['tokens']['access_token']
+            ])
+            ->post(route('auth.logout'));
+        $responseLogoutOldToken->assertStatus(
+            Response::HTTP_UNAUTHORIZED
+        );
+        $responseLogoutNewToken = $this
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $responseRefresh->json()['access_token']
+            ])
+            ->post(route('auth.logout'));
+        $responseLogoutNewToken->assertStatus(
+            Response::HTTP_OK
+        );
     }
 
     public function testInvalidLoginRoute()
@@ -99,15 +145,16 @@ class AuthTest extends TestCase
         $response = $this
             ->withHeaders([
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $loginResponseJson['token']
+                'Authorization' => 'Bearer ' . $loginResponseJson['tokens']['access_token']
             ])
             ->post(route('auth.logout'));
         $response->assertStatus(
         Response::HTTP_OK
         );
         $this->assertTrue(
-            PersonalAccessToken::query()
-                ->where('tokenable_id', $loginResponseJson['id'])
+            Token::query()
+                ->where('user_id', $loginResponseJson['id'])
+                ->where('revoked', 0)
                 ->count()
             ===
             0
@@ -142,15 +189,16 @@ class AuthTest extends TestCase
         $response = $this
             ->withHeaders([
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $loginResponseJson['token']
+                'Authorization' => 'Bearer ' . $loginResponseJson['tokens']['access_token']
             ])
             ->post(route('auth.logoutAll'));
         $response->assertStatus(
             Response::HTTP_OK
         );
         $this->assertTrue(
-            PersonalAccessToken::query()
-                ->where('tokenable_id', $loginResponseJson['id'])
+            Token::query()
+                ->where('user_id', $loginResponseJson['id'])
+                ->where('revoked', 0)
                 ->count()
             ===
             0

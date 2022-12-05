@@ -28,7 +28,6 @@ class SetUpAbilitiesMiddlewareTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->token = $this->user->createToken('Unit Test Client', [])->plainTextToken;
         $this->permissions = Permission::factory()
             ->count(10)
             ->create();

@@ -17,6 +17,8 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        \Artisan::call('passport:install');
+
         return $app;
     }
 }
