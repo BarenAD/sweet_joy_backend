@@ -144,7 +144,7 @@ class AuthTest extends TestCase
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $loginResponseJson['token']
             ])
-            ->post(route('auth.allLogout'));
+            ->post(route('auth.logoutAll'));
         $response->assertStatus(
             Response::HTTP_OK
         );

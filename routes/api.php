@@ -38,7 +38,7 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
-        Route::post('allLogout', [AuthController::class, 'allLogout'])->name('auth.allLogout');
+        Route::post('logout/all', [AuthController::class, 'logoutAll'])->name('auth.logoutAll');
     });
 
     Route::middleware(['setUpAbilities'])->prefix('management')->as('management.')->group(function () {
