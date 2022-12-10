@@ -59,7 +59,12 @@ paths:
                   shops:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Shop'
+                      allOf:
+                        - $ref: '#/components/schemas/Shop'
+                        - type: object
+                          properties:
+                            schedule:
+                              $ref: '#/components/schemas/Schedule'
                   shop_products:
                     type: array
                     items:
