@@ -28,8 +28,8 @@ class BaseExceptionTest extends TestCase
             $exception->report();
             $render = $exception->render();
             $renderContent = json_decode($render->content());
-            $this->assertTrue($render->getStatusCode() === 100);
-            $this->assertTrue($renderContent->id === -1);
+            $this->assertTrue($render->getStatusCode() === config('exceptions.test.http_code'));
+            $this->assertTrue($renderContent->id === config('exceptions.test.id'));
             $this->assertTrue($renderContent->message === $anchor);
         }
     }

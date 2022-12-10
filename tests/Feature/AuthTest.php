@@ -4,10 +4,14 @@
 namespace Tests\Feature;
 
 
+use App\Exceptions\NoReportException;
 use App\Models\User;
+use App\Repositories\DocumentRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\PersonalAccessToken;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -43,6 +47,52 @@ class AuthTest extends TestCase
         $this->assertEquals($responseJson, $params);
     }
 
+    public function testRegisterExistUserRoute()
+    {
+        $params = $this->model
+            ->factory()
+            ->create()
+            ->toArray();
+        $params['password'] = 'password';
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('auth.register'), $params);
+        $response->assertStatus(
+            Response::HTTP_BAD_REQUEST
+        );
+        $responseJson = $response->json();
+        $this->assertTrue($responseJson['id'] === config('exceptions.user_already_exists.id'));
+    }
+
+    public function testRegisterExceptionRoute()
+    {
+        $exceptionMessage = uniqid('test_exception_');
+        $params = $this->model
+            ->factory()
+            ->make()
+            ->toArray();
+        $params['password'] = 'password';
+        $this->mock(
+            UserRepository::class,
+            function (MockInterface $mock) use ($exceptionMessage) {
+                $mock->shouldReceive('store')->andThrowExceptions([
+                    new \Illuminate\Database\QueryException(
+                        'insert somebody...',
+                        [],
+                        new \Exception($exceptionMessage, 500)
+                    ),
+                ]);
+            }
+        );
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('auth.register'), $params);
+        $response->assertStatus(
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+        $this->assertTrue(strpos($response->json()['message'], $exceptionMessage) >= 0);
+    }
+
     public function testLoginRoute()
     {
         $params = $this->model
@@ -61,6 +111,33 @@ class AuthTest extends TestCase
         $responseJson = $response->json();
         $params['token'] = $responseJson['token'];
         $this->assertEquals($responseJson, $params);
+    }
+
+    public function testLoginExceptionRoute()
+    {
+        $params = $this->model
+            ->factory()
+            ->create()
+            ->toArray();
+        $this->mock(
+            UserRepository::class,
+            function (MockInterface $mock) {
+                $mock->shouldReceive('getUserByEmail')->andThrowExceptions([
+                    new NoReportException('test'),
+                ]);
+            }
+        );
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('auth.login'), [
+                'email' => $params['email'],
+                'password' => 'incorrect_password',
+            ]);
+        $response->assertStatus(
+            Response::HTTP_UNAUTHORIZED
+        );
+        $responseJson = $response->json();
+        $this->assertTrue($responseJson['id'] === config('exceptions.invalid_login.id'));
     }
 
     public function testInvalidLoginRoute()
@@ -144,7 +221,7 @@ class AuthTest extends TestCase
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $loginResponseJson['token']
             ])
-            ->post(route('auth.allLogout'));
+            ->post(route('auth.logoutAll'));
         $response->assertStatus(
             Response::HTTP_OK
         );

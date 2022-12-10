@@ -16,7 +16,9 @@ use Illuminate\Support\Str;
 class DemoDBSeeder extends Seeder
 {
 
-    public int $count = 100;
+    private int $multiplicity = 25;
+
+    public int $count;
 
     public Collection $categories;
     public Collection $products;
@@ -39,6 +41,7 @@ class DemoDBSeeder extends Seeder
         $this->documents = new Collection();
         $this->documentLocations = new Collection();
         $this->siteConfigurations = new Collection();
+        $this->count = 6 * $this->multiplicity;
     }
 
     public function seedCategories()
@@ -86,7 +89,7 @@ class DemoDBSeeder extends Seeder
         $this->schedules = $this->schedules
             ->merge(
                 Schedule::factory()
-                    ->count($this->count)
+                    ->count(ceil($this->count / 25))
                     ->create()
             )
             ->keyBy('id');
@@ -95,7 +98,7 @@ class DemoDBSeeder extends Seeder
     public function seedShops()
     {
         $newShops = new Collection();
-        for($i = 0; $i < $this->count; $i++) {
+        for($i = 0; $i < ceil($this->count / 25); $i++) {
             $newShops->push(
                 Shop::factory([
                     'schedule_id' => $this->schedules->random()['id'],

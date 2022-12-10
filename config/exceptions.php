@@ -4,7 +4,7 @@ return [
     'test' => [
         'id' => -1,
         'message' => 'test_exception',
-        'http_code' => 100
+        'http_code' => 500
     ],
     'unauthorized' => [
         'id' => 0,
