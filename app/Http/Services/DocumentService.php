@@ -45,7 +45,7 @@ class DocumentService
             $preparedDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$preparedDocument['urn']);
             $preparedDocument['location'] = $documentLocation['identify'];
             unset($preparedDocument['urn']);
-            $result[] = $preparedDocument;
+            $result[$documentLocation['identify']] = $preparedDocument;
         }
         return $result;
     }

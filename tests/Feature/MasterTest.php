@@ -62,21 +62,22 @@ class MasterTest extends TestCase
         }, $this->seeder->shops->toArray());
 
         $pathToDocuments = config('filesystems.path_inside_disk.documents');
-        $preparedDocuments = array_map(function ($documentLocation) use ($pathToDocuments) {
+        $preparedDocuments = [];
+        foreach ($this->seeder->documentLocations->toArray() as $key => $documentLocation){
             $document = $this->seeder->documents[$documentLocation['document_id']]->toArray();
             $document['url'] = Storage::disk('public')->url($pathToDocuments.$document['urn']);
             $document['location'] = $documentLocation['identify'];
             unset($document['urn']);
-            return $document;
-        }, $this->seeder->documentLocations->toArray());
+            $preparedDocuments[$documentLocation['identify']] =  $document;
+        }
 
         return [
             'categories' => array_values($this->seeder->categories->toArray()),
             'products' => array_values($preparedProducts),
             'shops' => array_values($preparedShops),
             'shop_products' => $this->seeder->shopProducts->groupBy('product_id')->toArray(),
-            'documents' => array_values($preparedDocuments),
-            'site_configurations' => array_values($this->seeder->siteConfigurations->toArray()),
+            'documents' => $preparedDocuments,
+            'site_configurations' => $this->seeder->siteConfigurations->keyBy('identify')->toArray(),
         ];
     }
 }

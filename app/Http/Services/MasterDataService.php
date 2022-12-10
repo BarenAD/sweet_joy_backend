@@ -55,7 +55,7 @@ class MasterDataService
                 'shops' => $this->shopRepository->getAllWithSchedules(),
                 'shop_products' => $this->shopProductRepository->getAllGroupProduct(),
                 'documents' => $this->documentService->getAllUsed(),
-                'site_configurations' => $this->siteConfigurationRepository->getAll(),
+                'site_configurations' => $this->siteConfigurationRepository->getAll()->keyBy('identify'),
             ];
         });
     }
