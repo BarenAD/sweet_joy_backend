@@ -13,6 +13,7 @@ use App\Models\SiteConfiguration;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DemoDBSeeder extends Seeder
@@ -49,7 +50,7 @@ class DemoDBSeeder extends Seeder
             'fio' => 'Админов Админ Админович',
             'phone' => '70000000000',
             'email' => env('DEMO_USER_EMAIL', 'admin@gmail.com'),
-            'password' => env('DEMO_USER_PASSWORD', 'qwerty'),
+            'password' => Hash::make(env('DEMO_USER_PASSWORD', 'qwerty')),
         ];
     }
 
