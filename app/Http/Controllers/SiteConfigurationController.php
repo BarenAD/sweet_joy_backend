@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\NoReportException;
 use App\Http\Requests\SiteConfigurations\SiteConfigurationIndexRequest;
 use App\Http\Requests\SiteConfigurations\SiteConfigurationUpdateRequest;
+use App\Models\SiteConfiguration;
 use App\Repositories\SiteConfigurationRepository;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -29,9 +30,21 @@ class SiteConfigurationController extends Controller
             Cache::tags(['site_configurations'])->remember('configurations', 3600, function () {
                 $result = $this->siteConfigurationRepository->getAll()->keyBy('identify');
                 if (config('app.demo_mode')) {
-                    $result['demo_mode'] = '1';
-                    $result['demo_user_email'] = env('DEMO_USER_EMAIL', 'admin@admin.ru');
-                    $result['demo_user_password'] = env('DEMO_USER_PASSWORD', 'qwerty');
+                    $result['demo_mode'] = [
+                        'name' => 'Демонстрационный режим',
+                        'identify' => 'demo_mode',
+                        'value' => '1'
+                    ];
+                    $result['demo_user_email'] = [
+                        'name' => 'Демонстрационны email администратора',
+                        'identify' => 'demo_user_email',
+                        'value' => env('DEMO_USER_EMAIL', 'admin@admin.ru'),
+                    ];
+                    $result['demo_user_password'] = [
+                        'name' => 'Демонстрационны password администратора',
+                        'identify' => 'demo_user_password',
+                        'value' => env('DEMO_USER_PASSWORD', 'qwerty'),
+                    ];
                 }
                 return $result;
             }),

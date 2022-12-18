@@ -30,9 +30,21 @@ class SiteConfigurationTest extends TestApiResource
         foreach ($params as $value) {
             $preparedParams[$value['identify']] = $value;
         }
-        $preparedParams['demo_mode'] = '1';
-        $preparedParams['demo_user_email'] = env('DEMO_USER_EMAIL', 'admin@admin.ru');
-        $preparedParams['demo_user_password'] = env('DEMO_USER_PASSWORD', 'qwerty');
+        $preparedParams['demo_mode'] = [
+            'name' => 'Демонстрационный режим',
+            'identify' => 'demo_mode',
+            'value' => '1'
+        ];
+        $preparedParams['demo_user_email'] = [
+            'name' => 'Демонстрационны email администратора',
+            'identify' => 'demo_user_email',
+            'value' => env('DEMO_USER_EMAIL', 'admin@admin.ru'),
+        ];
+        $preparedParams['demo_user_password'] = [
+            'name' => 'Демонстрационны password администратора',
+            'identify' => 'demo_user_password',
+            'value' => env('DEMO_USER_PASSWORD', 'qwerty'),
+        ];
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
             ->get(route('site_configurations.data'));
