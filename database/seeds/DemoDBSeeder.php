@@ -48,7 +48,7 @@ class DemoDBSeeder extends Seeder
         $this->userAttributes = [
             'fio' => 'Админов Админ Админович',
             'phone' => '70000000000',
-            'email' => env('DEMO_USER_EMAIL', 'admin@admin.ru'),
+            'email' => env('DEMO_USER_EMAIL', 'admin@gmail.com'),
             'password' => env('DEMO_USER_PASSWORD', 'qwerty'),
         ];
     }

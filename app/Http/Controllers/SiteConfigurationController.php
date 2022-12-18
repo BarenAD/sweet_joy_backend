@@ -38,7 +38,7 @@ class SiteConfigurationController extends Controller
                     $result['demo_user_email'] = [
                         'name' => 'Демонстрационны email администратора',
                         'identify' => 'demo_user_email',
-                        'value' => env('DEMO_USER_EMAIL', 'admin@admin.ru'),
+                        'value' => env('DEMO_USER_EMAIL', 'admin@gmail.com'),
                     ];
                     $result['demo_user_password'] = [
                         'name' => 'Демонстрационны password администратора',
