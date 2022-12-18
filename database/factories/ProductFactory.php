@@ -22,7 +22,7 @@ class ProductFactory extends CoreFactory
     {
         return $this->decorateTimestamp([
             'image' => 'demo/image_' . rand(1, 10) . '.jpg',
-            'name' => $this->faker->text(50),
+            'name' =>  uniqid($this->faker->text(rand(10, 40)).'_'),
             'composition' => $this->faker->text(50),
             'manufacturer' => $this->faker->text(50),
             'description' => $this->faker->text(100),

@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('configurations', [SiteConfigurationController::class, 'data'])->name('site_configurations.data');
 Route::get('data', [MasterDataController::class, 'masterData'])->name('master.data');
 
 Route::prefix('auth')->group(function () {

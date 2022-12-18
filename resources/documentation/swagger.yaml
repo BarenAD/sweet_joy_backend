@@ -80,11 +80,23 @@ paths:
                               location:
                                 type: string
                                 example: main_top_bar_document
-                  site_configurations:
-                    type: object
-                    properties:
-                      footer_third:
-                        $ref: '#/components/schemas/SiteConfiguration'
+  /api/configurations:
+    get:
+      tags:
+        - Master
+      summary: Получить конфигурацию сайта
+      description: Получает всю конфигурацию сайта
+      operationId: getConfigurationsData
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  footer_third:
+                    $ref: '#/components/schemas/SiteConfiguration'
 
   /api/auth/register:
     post:

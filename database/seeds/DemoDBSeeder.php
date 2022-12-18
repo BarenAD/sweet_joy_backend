@@ -3,12 +3,14 @@
 use App\Models\Category;
 use App\Models\Document;
 use App\Models\DocumentLocation;
+use App\Models\Operator;
 use App\Models\ProductCategory;
 use App\Models\Product;
 use App\Models\Schedule;
 use App\Models\Shop;
 use App\Models\ShopProduct;
 use App\Models\SiteConfiguration;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -29,6 +31,7 @@ class DemoDBSeeder extends Seeder
     public Collection $documents;
     public Collection $documentLocations;
     public Collection $siteConfigurations;
+    public array $userAttributes;
 
     public function __construct()
     {
@@ -42,6 +45,12 @@ class DemoDBSeeder extends Seeder
         $this->documentLocations = new Collection();
         $this->siteConfigurations = new Collection();
         $this->count = 6 * $this->multiplicity;
+        $this->userAttributes = [
+            'fio' => 'Админов Админ Админович',
+            'phone' => '70000000000',
+            'email' => env('DEMO_USER_EMAIL', 'admin@admin.ru'),
+            'password' => env('DEMO_USER_PASSWORD', 'qwerty'),
+        ];
     }
 
     public function seedCategories()
@@ -153,9 +162,27 @@ class DemoDBSeeder extends Seeder
     {
         $seeder = new SiteConfigurationSeeder();
         $seeder->run();
-        $this->siteConfigurations = SiteConfiguration::all()->keyBy('id');
-        foreach ($this->siteConfigurations as $siteConfiguration) {
-            $siteConfiguration->value = str::random('100');
+        $this->siteConfigurations = SiteConfiguration::all()->keyBy('identify');
+        $defaultValue = 'BARENAD';
+        $headerLastContent = '<span>Демонстрационный проект</span><span>Автор: Малашин П.С.</span><span>'.$defaultValue.'</span>';
+        foreach ($this->siteConfigurations as $identify => $siteConfiguration) {
+            switch ($identify) {
+                case SiteConfiguration::HEADER_LAST:
+                    $siteConfiguration->value = $headerLastContent;
+                    break;
+                case SiteConfiguration::FOOTER_FIRST:
+                    $siteConfiguration->value = env('AUTHOR_VK', $defaultValue);
+                    break;
+                case SiteConfiguration::FOOTER_SECOND:
+                    $siteConfiguration->value = env('AUTHOR_SUMMARY', $defaultValue);
+                    break;
+                case SiteConfiguration::FOOTER_THIRD:
+                    $siteConfiguration->value = env('AUTHOR_TELEGRAMM', $defaultValue);
+                    break;
+                default:
+                    $siteConfiguration->value = $defaultValue;
+                    break;
+            }
             $siteConfiguration->save();
         }
     }
@@ -172,6 +199,14 @@ class DemoDBSeeder extends Seeder
         $this->seedDocuments();
         $this->seedDocumentLocations();
         $this->seedSiteConfigurations();
+        try {
+            $user = User::query()->create($this->userAttributes);
+            Operator::query()->create([
+                'user_id' => $user->id,
+            ]);
+        } catch (\Throwable $exception) {
+
+        }
     }
 
     public function run()

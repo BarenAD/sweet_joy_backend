@@ -77,7 +77,6 @@ class MasterTest extends TestCase
             'shops' => array_values($preparedShops),
             'shop_products' => $this->seeder->shopProducts->groupBy('product_id')->toArray(),
             'documents' => $preparedDocuments,
-            'site_configurations' => $this->seeder->siteConfigurations->keyBy('identify')->toArray(),
         ];
     }
 }

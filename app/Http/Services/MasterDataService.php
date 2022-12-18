@@ -8,7 +8,6 @@ use App\Repositories\DocumentLocationRepository;
 use App\Repositories\ScheduleRepository;
 use App\Repositories\ShopProductRepository;
 use App\Repositories\ShopRepository;
-use App\Repositories\SiteConfigurationRepository;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -24,7 +23,6 @@ class MasterDataService
     private CategoryRepository $categoryRepository;
     private DocumentService $documentService;
     private DocumentLocationRepository $documentLocationRepository;
-    private SiteConfigurationRepository $siteConfigurationRepository;
 
     public function __construct(
         ShopProductRepository $shopProductRepository,
@@ -33,8 +31,7 @@ class MasterDataService
         ProductService $productService,
         CategoryRepository $categoryRepository,
         DocumentService $documentService,
-        DocumentLocationRepository $documentLocationRepository,
-        SiteConfigurationRepository $siteConfigurationRepository
+        DocumentLocationRepository $documentLocationRepository
     ){
         $this->shopProductRepository = $shopProductRepository;
         $this->shopRepository = $shopRepository;
@@ -43,7 +40,6 @@ class MasterDataService
         $this->categoryRepository = $categoryRepository;
         $this->documentService = $documentService;
         $this->documentLocationRepository = $documentLocationRepository;
-        $this->siteConfigurationRepository = $siteConfigurationRepository;
     }
 
     public function getMasterData()
@@ -55,7 +51,6 @@ class MasterDataService
                 'shops' => $this->shopRepository->getAllWithSchedules(),
                 'shop_products' => $this->shopProductRepository->getAllGroupProduct(),
                 'documents' => $this->documentService->getAllUsed(),
-                'site_configurations' => $this->siteConfigurationRepository->getAll()->keyBy('identify'),
             ];
         });
     }
