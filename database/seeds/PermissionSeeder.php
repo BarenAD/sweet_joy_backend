@@ -47,8 +47,8 @@ class PermissionSeeder extends Seeder
     {
         foreach ($this->inserting as $params) {
             $newModel = new Permission($params);
-            if ($newModel->exists()) {
-                $newModel->update();
+            if (Permission::query()->find($newModel->id)) {
+                $newModel->update($params);
             } else {
                 $newModel->save();
             }

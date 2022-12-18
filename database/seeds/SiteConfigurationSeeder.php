@@ -37,8 +37,8 @@ class SiteConfigurationSeeder extends Seeder
     {
         foreach ($this->inserting as $params) {
             $newModel = new SiteConfiguration($params);
-            if ($newModel->exists()) {
-                $newModel->update();
+            if (SiteConfiguration::query()->find($newModel->id)) {
+                $newModel->update($params);
             } else {
                 $newModel->save();
             }
