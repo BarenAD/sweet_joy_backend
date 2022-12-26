@@ -58,6 +58,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "phpunit-tests": " ./vendor/bin/phpunit --coverage-html public/tests",
         "tests": "php artisan test --coverage-html public/tests",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
