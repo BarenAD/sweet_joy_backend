@@ -70,6 +70,35 @@ class ProductTest extends TestCase
         $this->assertEquals($response->json(), $products);
     }
 
+    public function testIndexProductWithCategories()
+    {
+        $products = $this->product
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray();
+        foreach ($products as &$product) {
+            $categoryIds = [];
+            foreach (array_rand($this->productCategories->toArray(), 5) as $index) {
+                ProductCategory::query()->create([
+                    'product_id' => $product['id'],
+                    'category_id' => $this->productCategories[$index]->id,
+                ]);
+                $categoryIds[] = $this->productCategories[$index]->id;
+            }
+            $product['image_mini'] = Storage::disk('public')->url($this->pathToImagesMini.$product['image']);
+            $product['image'] = Storage::disk('public')->url($this->pathToImages.$product['image']);
+            $product['categories'] = $categoryIds;
+        }
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.index').'?withCategories=true');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response->json(), $products);
+    }
+
     public function testShowProduct()
     {
         $product = $this->product
@@ -124,6 +153,54 @@ class ProductTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($this->pathToImagesMini.$productImageName));
         Storage::disk('public')->delete($this->pathToImages.$productImageName);
         Storage::disk('public')->delete($this->pathToImagesMini.$productImageName);
+    }
+
+    public function testFindProduct()
+    {
+        $responseStore = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('management.products.store'), $this->params);
+        $responseShowJson = $responseStore->json();
+        $responseShow = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.show', $responseShowJson['id']));
+        $productImageName = last(explode('/',$responseShowJson['image']));
+        $preparedEquals = [
+            'id' => $responseShowJson['id'],
+            'name' => $this->params['name'],
+            'composition' => $this->params['composition'],
+            'manufacturer' => $this->params['manufacturer'],
+            'description' => $this->params['description'],
+            'product_unit' => $this->params['product_unit'],
+            'categories' => [],
+            'image' => Storage::disk('public')->url($this->pathToImages . $productImageName),
+            'image_mini' => Storage::disk('public')->url($this->pathToImagesMini.$productImageName),
+        ];
+        $this->assertEquals($responseShow->json(), $preparedEquals);
+    }
+
+    public function testFindProductWitchCategories()
+    {
+        $responseStore = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post(route('management.products.store'), $this->params);
+        $responseShowJson = $responseStore->json();
+        $responseShow = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('management.products.show', $responseShowJson['id']).'?withCategories=true');
+        $productImageName = last(explode('/',$responseShowJson['image']));
+        $preparedEquals = [
+            'id' => $responseShowJson['id'],
+            'name' => $this->params['name'],
+            'composition' => $this->params['composition'],
+            'manufacturer' => $this->params['manufacturer'],
+            'description' => $this->params['description'],
+            'product_unit' => $this->params['product_unit'],
+            'categories' => json_decode($this->params['categories']),
+            'image' => Storage::disk('public')->url($this->pathToImages . $productImageName),
+            'image_mini' => Storage::disk('public')->url($this->pathToImagesMini.$productImageName),
+        ];
+        $this->assertEquals($responseShow->json(), $preparedEquals);
     }
 
     public function testStoreProductWithoutCategories()

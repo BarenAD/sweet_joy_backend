@@ -80,6 +80,7 @@ paths:
                               location:
                                 type: string
                                 example: main_top_bar_document
+
   /api/configurations:
     get:
       tags:
@@ -1102,6 +1103,13 @@ paths:
       summary: Получить продукты
       description: Получает продукты
       operationId: getProducts
+      parameters:
+        - name: withCategories
+          in: query
+          description: Получает товары вместе с категориями
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1173,6 +1181,12 @@ paths:
             type: integer
           required: true
           description: Идентификатор модели
+        - name: withCategories
+          in: query
+          description: Получает товар вместе с категориями
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK

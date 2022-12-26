@@ -24,12 +24,17 @@ class ProductController extends Controller
 
     public function index(ProductIndexRequest $request)
     {
-        return response($this->productsService->getAll(), 200);
+        return response($this->productsService->getAll(
+            boolval($request->query('withCategories'))
+        ), 200);
     }
 
     public function show(ProductIndexRequest $request, int $id)
     {
-        return response($this->productsService->find($id), 200);
+        return response($this->productsService->find(
+            $id,
+            boolval($request->query('withCategories'))
+        ), 200);
     }
 
     public function store(ProductStoreRequest $request)

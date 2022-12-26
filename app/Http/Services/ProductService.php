@@ -65,10 +65,10 @@ class ProductService
         }
     }
 
-    public function getAll(): array
+    public function getAll(bool $withCategories = false): array
     {
         $products = $this->productsRepository->getAll();
-        $categories = $this->productCategoriesRepository->getAll()->groupBy('product_id');
+        $categories = $withCategories ? $this->productCategoriesRepository->getAll()->groupBy('product_id') : [];
         foreach ($products as &$product) {
             $this->preparedProductPathToImages($product);
             $product['categories'] = isset($categories[$product['id']]) ?
@@ -80,11 +80,16 @@ class ProductService
         return $products->toArray();
     }
 
-    public function find($id)
+    public function find($id, bool $withCategories = false)
     {
         $product = $this->productsRepository->find($id);
         $this->preparedProductPathToImages($product);
-        $product['categories'] = $this->productCategoriesRepository->getByProductId($product->id)->pluck('category_id');
+        $product['categories'] = $withCategories ?
+            $this->productCategoriesRepository
+                ->getByProductId($product->id)
+                ->pluck('category_id')
+            :
+            [];
         return $product->toArray();
     }
 

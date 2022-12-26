@@ -46,7 +46,7 @@ class MasterDataService
     {
         return Cache::tags(['products'])->remember('cache_products', 3600, function () {
             return [
-                'products' => $this->productService->getAll(),
+                'products' => $this->productService->getAll(true),
                 'categories' => $this->categoryRepository->getAll(),
                 'shops' => $this->shopRepository->getAllWithSchedules(),
                 'shop_products' => $this->shopProductRepository->getAllGroupProduct(),
