@@ -57,8 +57,12 @@ class ProductService
     }
 
     private function deleteImage(string $imageName): void {
-        Storage::disk('public')->delete($this->pathToImages.$imageName);
-        Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
+        if (!strpos($this->pathToImages.$imageName, '/demo/')) {
+            Storage::disk('public')->delete($this->pathToImages.$imageName);
+        }
+        if (!strpos($this->pathToImagesMini.$imageName, '/demo/')) {
+            Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
+        }
     }
 
     public function getAll(): array
@@ -174,8 +178,7 @@ class ProductService
             DB::beginTransaction();
             $product = $this->productsRepository->find($id);
             $result = $product->delete();
-            Storage::disk('public')->delete($this->pathToImages.$product->image);
-            Storage::disk('public')->delete($this->pathToImagesMini.$product->image);
+            $this->deleteImage($product->image);
             DB::commit();
             return $result;
         } catch (\Throwable $exception) {

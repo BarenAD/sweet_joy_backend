@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use App\Exceptions\NoReportException;
 use App\Http\Services\DocumentService;
+use App\Models\Document;
 use App\Repositories\DocumentRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -100,5 +101,16 @@ class DocumentServiceTest extends TestCase
             );
         }
         Storage::disk('public')->delete($this->pathToDocuments.$documentModel->urn);
+    }
+
+    public function testDestroyByDemo() {
+        $documentService = app()->make(DocumentService::class);
+        $pathToDocuments = config('filesystems.path_inside_disk.documents');
+        $document = Document::factory()->create();
+        $documentService->destroy($document->id);
+        $this->assertTrue(
+            Storage::disk('public')
+                ->exists($pathToDocuments . $document->urn)
+        );
     }
 }

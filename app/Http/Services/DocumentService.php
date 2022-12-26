@@ -89,7 +89,9 @@ class DocumentService
             DB::beginTransaction();
             $document = $this->documentsRepository->find($id);
             $document->delete();
-            Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
+            if (!strpos($this->pathToDocuments . $document->urn, '/demo/')) {
+                Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
+            }
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();

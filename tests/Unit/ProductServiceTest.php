@@ -179,4 +179,20 @@ class ProductServiceTest extends TestCase
         Storage::disk('public')->delete($this->pathToImages . $productImageNameBeforeDestroy);
         Storage::disk('public')->delete($this->pathToImagesMini . $productImageNameBeforeDestroy);
     }
+
+    public function testDestroyByDemo() {
+        $productService = app()->make(ProductService::class);
+        $pathToImages = config('filesystems.path_inside_disk.products.images');
+        $pathToImagesMini = config('filesystems.path_inside_disk.products.images_mini');
+        $product = Product::factory()->create();
+        $productService->destroy($product->id);
+        $this->assertTrue(
+            Storage::disk('public')
+                ->exists($pathToImages . $product->image)
+        );
+        $this->assertTrue(
+            Storage::disk('public')
+                ->exists($pathToImagesMini . $product->image)
+        );
+    }
 }
