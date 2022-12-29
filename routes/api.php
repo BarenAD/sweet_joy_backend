@@ -6,6 +6,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentLocationController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
@@ -53,11 +54,14 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
 
         Route::apiResource('categories', CategoryController::class);
 
+        Route::get('products/categories', [ProductCategoryController::class, 'indexWithNotProduct'])->name('products.categories.indexWithNotProduct');
         Route::apiResource('products', ProductController::class)->except('update');
         Route::post('products/{id}', [ProductController::class, 'update'])->name('products.update');
 
+        Route::get('shops/products', [ShopProductController::class, 'indexWithNotShop'])->name('shops.products.indexWithNotShop');
         Route::apiResource('shops', ShopController::class);
         Route::apiResource('shops.products', ShopProductController::class);
+
         Route::apiResource('schedules', ScheduleController::class);
 
         Route::prefix('configurations')->as('configurations.')->group(function () {

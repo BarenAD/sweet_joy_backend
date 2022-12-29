@@ -1284,6 +1284,47 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
+  /api/management/products/categories:
+    get:
+      tags:
+        - Products
+      summary: Получить категории присвоенные продуктам
+      description: Получает категории присвоенные продуктам
+      operationId: getAllProductsCategories
+      parameters:
+        - name: groupBy
+          in: query
+          description: Получает  категории присвоенные продуктам
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '6':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductCategory'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
 
   /api/management/shops:
     get:
@@ -1446,6 +1487,47 @@ paths:
               schema:
                 type: integer
                 example: 1
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
+  /api/management/shops/products:
+    get:
+      tags:
+        - Shops
+      summary: Получить продукты привязанные к магазинам
+      description: Получает продукты привязанные к магазинам
+      operationId: getAllShopsProducts
+      parameters:
+        - name: groupBy
+          in: query
+          description: Получает продукты привязанные к магазинам
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '6':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopProduct'
         401:
           description: Unauthorized
           content:

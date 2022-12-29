@@ -59,6 +59,56 @@ class ShopProductTest extends TestApiResource
         return $result;
     }
 
+    public function testIndexWithNotShop()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route($this->baseRouteName . '.indexWithNotShop'));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response->json(), $seeds);
+    }
+
+    public function testIndexWithNotShopGroupByProducts()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route($this->baseRouteName . '.indexWithNotShop').'?groupBy=products');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $prepared = [];
+        foreach ($seeds as $item) {
+            if (!isset($prepared[$item['product_id']])) {
+                $prepared[$item['product_id']] = [];
+            }
+            $prepared[$item['product_id']][] = $item;
+        }
+        $this->assertEquals($response->json(), $prepared);
+    }
+
+    public function testIndexWithNotShopGroupByShops()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route($this->baseRouteName . '.indexWithNotShop').'?groupBy=shops');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $prepared = [];
+        foreach ($seeds as $item) {
+            if (!isset($prepared[$item['shop_id']])) {
+                $prepared[$item['shop_id']] = [];
+            }
+            $prepared[$item['shop_id']][] = $item;
+        }
+        $this->assertEquals($response->json(), $prepared);
+    }
+
     public function testStoreRouteAlreadyException()
     {
         $params = $this->model

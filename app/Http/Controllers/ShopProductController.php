@@ -19,6 +19,17 @@ class ShopProductController extends Controller
         $this->shopProductRepository = $shopProductRepository;
     }
 
+    public function indexWithNotShop(IndexShopProductRequest $request)
+    {
+        $response = $this->shopProductRepository->getAll();
+        if ($request->query('groupBy') === 'products') {
+            $response = $response->groupBy('product_id');
+        } else if ($request->query('groupBy') === 'shops') {
+            $response = $response->groupBy('shop_id');
+        }
+        return response($response, 200);
+    }
+
     public function index(IndexShopProductRequest $request, int $shopId)
     {
         return response($this->shopProductRepository->getShopProducts($shopId), 200);

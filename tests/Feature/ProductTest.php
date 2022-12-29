@@ -177,6 +177,9 @@ class ProductTest extends TestCase
             'image_mini' => Storage::disk('public')->url($this->pathToImagesMini.$productImageName),
         ];
         $this->assertEquals($responseShow->json(), $preparedEquals);
+        $productImageName = last(explode('/',$responseStore['image']));
+        Storage::disk('public')->delete($this->pathToImages.$productImageName);
+        Storage::disk('public')->delete($this->pathToImagesMini.$productImageName);
     }
 
     public function testFindProductWitchCategories()
@@ -201,6 +204,9 @@ class ProductTest extends TestCase
             'image_mini' => Storage::disk('public')->url($this->pathToImagesMini.$productImageName),
         ];
         $this->assertEquals($responseShow->json(), $preparedEquals);
+        $productImageName = last(explode('/',$responseStore['image']));
+        Storage::disk('public')->delete($this->pathToImages.$productImageName);
+        Storage::disk('public')->delete($this->pathToImagesMini.$productImageName);
     }
 
     public function testStoreProductWithoutCategories()
