@@ -52,7 +52,7 @@ class DocumentController extends Controller
     public function destroy(DestroyDocumentRequest $request, int $id)
     {
         $this->documentsService->destroy($id);
-        return response($id . 'destroyed', 200);
+        return response('OK', 200);
     }
 
 }
