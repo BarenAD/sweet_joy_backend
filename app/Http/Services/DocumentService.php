@@ -73,10 +73,12 @@ class DocumentService
         $documentName = uniqid('document_').'.'.$document->getClientOriginalExtension();
         try {
             Storage::disk('public')->putFileAs($this->pathToDocuments, $document, $documentName);
-            return $this->documentsRepository->store([
+            $newDocument = $this->documentsRepository->store([
                 'name' => $name,
                 'urn' => $documentName
             ]);
+            $newDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+            return $newDocument;
         } catch (\Throwable $exception) {
             Storage::disk('public')->delete($this->pathToDocuments.$documentName);
             throw new BaseException('file_is_not_stored', $exception);
