@@ -68,7 +68,7 @@ class DocumentService
         return $document;
     }
 
-    public function store(string $name, UploadedFile $document): Model
+    public function store(string $name, UploadedFile $document): array
     {
         $documentName = uniqid('document_').'.'.$document->getClientOriginalExtension();
         try {
@@ -76,7 +76,8 @@ class DocumentService
             $newDocument = $this->documentsRepository->store([
                 'name' => $name,
                 'urn' => $documentName
-            ]);
+            ])
+                ->toArray();
             $newDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$newDocument['urn']);
             return $newDocument;
         } catch (\Throwable $exception) {
