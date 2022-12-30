@@ -77,7 +77,7 @@ class DocumentService
                 'name' => $name,
                 'urn' => $documentName
             ]);
-            $newDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$document['urn']);
+            $newDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$newDocument['urn']);
             return $newDocument;
         } catch (\Throwable $exception) {
             Storage::disk('public')->delete($this->pathToDocuments.$documentName);
