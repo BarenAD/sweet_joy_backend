@@ -11,6 +11,7 @@ use App\Models\Shop;
 use App\Models\ShopProduct;
 use App\Models\SiteConfiguration;
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -50,7 +51,7 @@ class DemoDBSeeder extends Seeder
             'fio' => 'Админов Админ Админович',
             'phone' => '70000000000',
             'email' => env('DEMO_USER_EMAIL', 'admin@gmail.com'),
-            'password' => Hash::make(env('DEMO_USER_PASSWORD', 'qwerty')),
+            'password' => Hash::make(env('DEMO_USER_PASSWORD', UserFactory::DEFAULT_USER_PASSWORD)),
         ];
     }
 

@@ -13,6 +13,8 @@ tags:
     description: Получение основной информации
   - name: Auth
     description: Авторизация и регистрация
+  - name: Profile
+    description: Данные профиля
   - name: Permissions
     description: Права доступа
   - name: Roles
@@ -121,6 +123,11 @@ paths:
                       token:
                         type: string
                         example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: users.roles.create
         400:
           description: Bad request
           content:
@@ -156,6 +163,11 @@ paths:
                       token:
                         type: string
                         example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: users.roles.create
         401:
           description: Unauthorized
           content:
@@ -213,6 +225,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedExeption'
+      security:
+        - bearerAuth: []
+
+  /api/profile/permissions:
+    get:
+      tags:
+        - Profile
+      summary: Права пользователя
+      description: Получает текущие права пользователя
+      operationId: profilePermissions
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: users.roles.create
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
 

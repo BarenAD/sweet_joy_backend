@@ -38,6 +38,8 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
+    Route::get('profile/permissions', [PermissionController::class, 'profilePermissions'])->name('profile.permissions');
+
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('logout/all', [AuthController::class, 'logoutAll'])->name('auth.logoutAll');

@@ -36,6 +36,11 @@ class DocumentService
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
     }
 
+    public function getUrlDocument(string $urn)
+    {
+        return Storage::disk('public')->url($this->pathToDocuments.$urn);
+    }
+
     public function getAllUsed(): array
     {
         $documentLocations = $this->documentLocationRepository->getAllWithDocuments(true)->toArray();
@@ -68,18 +73,15 @@ class DocumentService
         return $document;
     }
 
-    public function store(string $name, UploadedFile $document): array
+    public function store(string $name, UploadedFile $document): Model
     {
         $documentName = uniqid('document_').'.'.$document->getClientOriginalExtension();
         try {
             Storage::disk('public')->putFileAs($this->pathToDocuments, $document, $documentName);
-            $newDocument = $this->documentsRepository->store([
+            return $this->documentsRepository->store([
                 'name' => $name,
                 'urn' => $documentName
-            ])
-                ->toArray();
-            $newDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$newDocument['urn']);
-            return $newDocument;
+            ]);
         } catch (\Throwable $exception) {
             Storage::disk('public')->delete($this->pathToDocuments.$documentName);
             throw new BaseException('file_is_not_stored', $exception);

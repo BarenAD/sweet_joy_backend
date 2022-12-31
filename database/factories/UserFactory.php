@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 
 class UserFactory extends CoreFactory
 {
+    const DEFAULT_USER_PASSWORD = 'qwerty';
+
     protected $model = User::class;
 
     public function definition()
@@ -17,7 +19,7 @@ class UserFactory extends CoreFactory
             'note' => $this->faker->text('100'),
             'email' => $this->faker->regexify('/^\w{15}@gmail\.com'),
             'email_verified_at' => $this->generateRandomDate(),
-            'password' => '$2y$10$LaylnEmLMkaBYtIFhKL9Q.TSw5t3xxop9yqS9Vm6.r8jxmd4MkPya', // password
+            'password' => '$2a$12$fEj0.qUMQ3lp600rYbAwNefGxSETJSbWhXXPM4VTIcdZo3TnP5MbO', // qwerty
         ]);
     }
 }

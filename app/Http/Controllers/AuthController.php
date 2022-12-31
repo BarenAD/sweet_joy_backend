@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\NoReportException;
 use App\Http\Requests\Auth\AuthLoginRequest;
 use App\Http\Requests\Auth\AuthRegisterRequest;
+use App\Http\Utils\UserPermissionUtil;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
@@ -13,11 +14,14 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     private UserRepository $userRepository;
+    private UserPermissionUtil $userPermissionUtil;
 
     public function __construct(
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        UserPermissionUtil $userPermissionUtil
     ) {
         $this->userRepository = $userRepository;
+        $this->userPermissionUtil = $userPermissionUtil;
     }
 
     public function register(AuthRegisterRequest $request)
@@ -34,6 +38,7 @@ class AuthController extends Controller
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent(), [])->plainTextToken;
+        $result['permissions'] = [];
 
         return response()->json($result, 200);
     }
@@ -51,6 +56,11 @@ class AuthController extends Controller
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
+        try {
+            $result['permissions'] = $this->userPermissionUtil->getUserPermissions($user->id);
+        } catch (\Throwable $exception) {
+            $result['permissions'] = [];
+        }
 
         return response()->json($result, 200);
     }

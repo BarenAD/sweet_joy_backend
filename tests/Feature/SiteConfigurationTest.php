@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Http\Requests\SiteConfigurations\SiteConfigurationUpdateRequest;
 use App\Models\SiteConfiguration;
+use Database\Factories\UserFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Tests\TestApiResource;
@@ -43,7 +44,7 @@ class SiteConfigurationTest extends TestApiResource
         $preparedParams['demo_user_password'] = [
             'name' => 'Демонстрационны password администратора',
             'identify' => 'demo_user_password',
-            'value' => env('DEMO_USER_PASSWORD', 'qwerty'),
+            'value' => env('DEMO_USER_PASSWORD', UserFactory::DEFAULT_USER_PASSWORD),
         ];
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])

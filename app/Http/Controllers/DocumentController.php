@@ -8,6 +8,7 @@ use App\Http\Requests\Documents\UpdateDocumentRequest;
 use App\Http\Requests\Documents\StoreDocumentRequest;
 use App\Http\Services\DocumentService;
 use App\Repositories\DocumentRepository;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DocumentController
@@ -38,10 +39,12 @@ class DocumentController extends Controller
 
     public function store(StoreDocumentRequest $request)
     {
-        return response($this->documentsService->store(
+        $result = $this->documentsService->store(
             $request->get('name'),
             $request->file('document')
-        ), 200);
+        )->toArray();
+        $result['url'] = $this->documentsService->getUrlDocument($result['urn']);
+        return response($result, 200);
     }
 
     public function update(UpdateDocumentRequest $request, int $id)
