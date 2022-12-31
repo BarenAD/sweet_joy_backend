@@ -21,6 +21,7 @@ class PermissionController extends Controller
         UserPermissionUtil $userPermissionUtil
     ){
         $this->permissionRepository = $permissionRepository;
+        $this->userPermissionUtil = $userPermissionUtil;
     }
 
     public function profilePermissions(Request $request)
