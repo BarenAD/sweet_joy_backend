@@ -21,12 +21,12 @@ class UserController extends Controller
     }
     public function index(IndexUserRequest $request)
     {
-        return response($this->userRepository->getAll(), 200);
+        return response($this->userRepository->getAll()->makeVisible('note'), 200);
     }
 
     public function show(IndexUserRequest $request, int $id)
     {
-        return response($this->userRepository->find($id), 200);
+        return response($this->userRepository->find($id)->makeVisible('note'), 200);
     }
 
     public function update(UpdateUserRequest $request, int $id)
@@ -35,7 +35,7 @@ class UserController extends Controller
         if (isset($params['password'])) {
             $params['password'] = bcrypt($params['password']);
         }
-        return response($this->userRepository->update($id, $params), 200);
+        return response($this->userRepository->update($id, $params)->makeVisible('note'), 200);
     }
 
     public function destroy(DestroyUserRequest $request, int $id)
