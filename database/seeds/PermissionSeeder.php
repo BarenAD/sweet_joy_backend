@@ -364,10 +364,11 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         foreach ($this->inserting as $params) {
-            $newModel = new Permission($params);
-            if (Permission::query()->find($newModel->id)) {
-                $newModel->update($params);
+            $existModel = Permission::query()->find($params['id']);
+            if ($existModel) {
+                $existModel->update($params);
             } else {
+                $newModel = new Permission($params);
                 $newModel->save();
             }
         }
