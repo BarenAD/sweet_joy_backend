@@ -677,7 +677,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  allOf:
+                    - $ref: '#/components/schemas/User'
+                    - type: object
+                      properties:
+                        note:
+                          type: string
+                          example: Test user
         401:
           description: Unauthorized
           content:
@@ -712,7 +718,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      note:
+                        type: string
+                        example: Test user
         401:
           description: Unauthorized
           content:
@@ -746,7 +758,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserFillable'
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  properties:
+                    note:
+                      type: string
+                      example: Test user
       responses:
         200:
           description: OK
