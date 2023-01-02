@@ -6,7 +6,10 @@ use App\Http\Requests\Shops\DestroyShopRequest;
 use App\Http\Requests\Shops\IndexShopRequest;
 use App\Http\Requests\Shops\StoreShopRequest;
 use App\Http\Requests\Shops\UpdateShopRequest;
+use App\Http\Utils\UserPermissionUtil;
 use App\Repositories\ShopRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class ShopController
@@ -15,16 +18,41 @@ use App\Repositories\ShopRepository;
 class ShopController extends Controller
 {
     private ShopRepository $shopRepository;
+    private UserPermissionUtil $userPermissionUtil;
 
     public function __construct(
-        ShopRepository $shopRepository
+        ShopRepository $shopRepository,
+        UserPermissionUtil $userPermissionUtil
     ) {
         $this->shopRepository = $shopRepository;
+        $this->userPermissionUtil = $userPermissionUtil;
     }
 
-    public function index(IndexShopRequest $request)
+    public function index(Request $request)
     {
-        return response($this->shopRepository->getAll(), 200);
+        $result = null;
+        $withSchedules = boolval($request->query('withSchedules'));
+        $withCache = boolval($request->query('withCache'));
+        $cacheKey = 'cache_shops';
+        if ($withSchedules) {
+            $cacheKey = $cacheKey . '_with_schedules';
+        }
+        if (
+            $withCache ||
+            is_null($request->user()) ||
+            count($this->userPermissionUtil->getUserPermissions($request->user()->id)) === 0
+        ) {
+            $result = Cache::tags(['main_data', 'shops'])->get($cacheKey, null);
+        }
+        if (!is_null($result)) {
+            return response($result, 200);
+        }
+        $result = $withSchedules ?
+            $this->shopRepository->getAllWithSchedules()->toArray()
+            :
+            $this->shopRepository->getAll()->toArray();
+        Cache::tags(['main_data', 'shops'])->put($cacheKey, $result, config('cache.timeout'));
+        return response($result, 200);
     }
 
     public function show(IndexShopRequest $request, int $id)

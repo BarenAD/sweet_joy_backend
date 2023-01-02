@@ -27,7 +27,7 @@ class SiteConfigurationController extends Controller
     public function data()
     {
         return response(
-            Cache::tags(['site_configurations'])->remember('configurations', 3600, function () {
+            Cache::tags(['site_configurations'])->remember('configurations', config('cache.timeout'), function () {
                 $result = $this->siteConfigurationRepository->getAll()->keyBy('identify');
                 if (config('app.demo_mode')) {
                     $result['demo_mode'] = [

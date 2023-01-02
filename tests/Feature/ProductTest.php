@@ -2,16 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\NoReportException;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Repositories\ProductRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use Tests\Traits\WithoutPermissionsTrait;
 
@@ -47,6 +51,43 @@ class ProductTest extends TestCase
         $this->product = new Product();
         $this->pathToImages = config('filesystems.path_inside_disk.products.images');
         $this->pathToImagesMini = config('filesystems.path_inside_disk.products.images_mini');
+    }
+
+    public function testIndexWithCache()
+    {
+        $products = $this->product
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('products.index').'?withCache=true');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        foreach ($products as &$product) {
+            $product['image_mini'] = Storage::disk('public')->url($this->pathToImagesMini.$product['image']);
+            $product['image'] = Storage::disk('public')->url($this->pathToImages.$product['image']);
+            $product['categories'] = [];
+        }
+        $this->assertEquals($response->json(), $products);
+        $this->assertEquals(Cache::tags(['main_data', 'products'])->get('cache_products', null), $products);
+        $this->mock(
+            ProductRepository::class,
+            function (MockInterface $mock) {
+                $mock->shouldReceive('getAll')->andThrowExceptions([
+                    new NoReportException('test'),
+                ]);
+            }
+        );
+        $response2 = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('products.index').'?withCache=true');
+        $response2->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response2->json(), $products);
     }
 
     public function testIndexProduct()

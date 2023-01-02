@@ -12,7 +12,6 @@ use App\Exceptions\BaseException;
 use App\Repositories\DocumentLocationRepository;
 use App\Repositories\DocumentRepository;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

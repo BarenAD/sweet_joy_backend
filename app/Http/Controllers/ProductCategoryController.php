@@ -4,27 +4,51 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Requests\Products\Categories\ProductCategoryIndexRequest;
+use App\Http\Utils\UserPermissionUtil;
 use App\Repositories\ProductCategoryRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductCategoryController extends Controller
 {
     private ProductCategoryRepository $productCategoryRepository;
+    private UserPermissionUtil $userPermissionUtil;
 
     public function __construct(
-        ProductCategoryRepository $productCategoryRepository
+        ProductCategoryRepository $productCategoryRepository,
+        UserPermissionUtil $userPermissionUtil
     ){
         $this->productCategoryRepository = $productCategoryRepository;
+        $this->userPermissionUtil = $userPermissionUtil;
     }
 
-    public function indexWithNotProduct(ProductCategoryIndexRequest $request)
+    public function getAll(Request $request)
     {
-        $response = $this->productCategoryRepository->getAll();
-        if ($request->query('groupBy') === 'products') {
-            $response = $response->groupBy('product_id');
-        } else if ($request->query('groupBy') === 'categories') {
-            $response = $response->groupBy('category_id');
+        $result = null;
+        $withCache = boolval($request->query('withCache'));
+        $groupBy = $request->query('groupBy') ?? null;
+        $cacheKey = 'cache_product_categories';
+        if ($groupBy) {
+            $cacheKey = $cacheKey .'_group_'. $groupBy;
         }
-        return response($response, 200);
+        if (
+            $withCache ||
+            is_null($request->user()) ||
+            count($this->userPermissionUtil->getUserPermissions($request->user()->id)) === 0
+        ) {
+            $result = Cache::tags(['main_data', 'product_categories'])->get($cacheKey, null);
+        }
+        if (!is_null($result)) {
+            return response($result, 200);
+        }
+        $result = $this->productCategoryRepository->getAll();
+        if ($groupBy === 'products') {
+            $result = $result->groupBy('product_id');
+        } else if ($groupBy === 'categories') {
+            $result = $result->groupBy('category_id');
+        }
+        $result = $result->toArray();
+        Cache::tags(['main_data', 'product_categories'])->put($cacheKey, $result, config('cache.timeout'));
+        return response($result, 200);
     }
 }
