@@ -2,16 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\NoReportException;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Repositories\CategoryRepository;
+use App\Repositories\ProductCategoryRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use Tests\Traits\WithoutPermissionsTrait;
 
@@ -43,22 +46,49 @@ class ProductCategoryTest extends TestCase
         }
     }
 
-    public function testIndexWithNotProduct()
+    public function testGetAllWithCache()
     {
+        $prepared = [];
+        foreach ($this->productCategories as $item) {
+            if (!isset($prepared[$item['product_id']])) {
+                $prepared[$item['product_id']] = [];
+            }
+            $prepared[$item['product_id']][] = $item;
+        }
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->get(route('management.products.categories.indexWithNotProduct'));
+            ->get(route('products.categories.getAll').'?groupBy=products&withCache=true');
         $response->assertStatus(
             Response::HTTP_OK
         );
-        $this->assertEquals($response->json(), $this->productCategories);
+        $this->assertEquals($response->json(), $prepared);
+        $this->assertEquals(
+            Cache::tags(['main_data', 'product_categories'])
+                ->get('cache_product_categories_group_products', null),
+            $prepared
+        );
+        $this->mock(
+            ProductCategoryRepository::class,
+            function (MockInterface $mock) {
+                $mock->shouldReceive('getAll')->andThrowExceptions([
+                    new NoReportException('test'),
+                ]);
+            }
+        );
+        $response2 = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('products.categories.getAll').'?groupBy=products&withCache=true');
+        $response2->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response2->json(), $prepared);
     }
 
-    public function testIndexWithNotProductByProducts()
+    public function testGetAllGroupByProducts()
     {
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->get(route('management.products.categories.indexWithNotProduct').'?groupBy=products');
+            ->get(route('products.categories.getAll').'?groupBy=products');
         $response->assertStatus(
             Response::HTTP_OK
         );
@@ -72,11 +102,11 @@ class ProductCategoryTest extends TestCase
         $this->assertEquals($response->json(), $prepared);
     }
 
-    public function testIndexWithNotProductByCategories()
+    public function testGetAllGroupByCategories()
     {
         $response = $this
             ->withHeaders(['Accept' => 'application/json'])
-            ->get(route('management.products.categories.indexWithNotProduct').'?groupBy=categories');
+            ->get(route('products.categories.getAll').'?groupBy=categories');
         $response->assertStatus(
             Response::HTTP_OK
         );

@@ -12,6 +12,7 @@ class RoleFactory extends CoreFactory
     {
         return $this->decorateTimestamp([
             'name' => $this->faker->text(100),
+            'description' => $this->faker->text(100),
         ]);
     }
 }

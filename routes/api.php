@@ -30,7 +30,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('configurations', [SiteConfigurationController::class, 'data'])->name('site_configurations.data');
-Route::get('data', [MasterDataController::class, 'masterData'])->name('master.data');
+Route::get('/documents', [DocumentController::class, 'getUsed'])->name('documents.index.used');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/shops', [ShopController::class, 'index'])->name('shops.index');
+Route::get('/products/categories', [ProductCategoryController::class, 'getAll'])->name('products.categories.getAll');
+Route::get('/shops/products', [ShopProductController::class, 'getAll'])->name('shops.products.getAll');
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
@@ -56,11 +61,11 @@ Route::middleware(['auth:sanctum'])->namespace('\\')->group(function () {
 
         Route::apiResource('categories', CategoryController::class);
 
-        Route::get('products/categories', [ProductCategoryController::class, 'indexWithNotProduct'])->name('products.categories.indexWithNotProduct');
+        Route::get('/products/categories', [ProductCategoryController::class, 'getAll'])->name('products.categories.getAll');
         Route::apiResource('products', ProductController::class)->except('update');
         Route::post('products/{id}', [ProductController::class, 'update'])->name('products.update');
 
-        Route::get('shops/products', [ShopProductController::class, 'indexWithNotShop'])->name('shops.products.indexWithNotShop');
+        Route::get('/shops/products', [ShopProductController::class, 'getAll'])->name('shops.products.getAll');
         Route::apiResource('shops', ShopController::class);
         Route::apiResource('shops.products', ShopProductController::class);
 

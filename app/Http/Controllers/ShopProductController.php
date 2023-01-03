@@ -7,27 +7,52 @@ use App\Http\Requests\Shops\Products\DestroyShopProductRequest;
 use App\Http\Requests\Shops\Products\IndexShopProductRequest;
 use App\Http\Requests\Shops\Products\StoreShopProductRequest;
 use App\Http\Requests\Shops\Products\UpdateShopProductRequest;
+use App\Http\Utils\UserPermissionUtil;
 use App\Repositories\ShopProductRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ShopProductController extends Controller
 {
     private ShopProductRepository $shopProductRepository;
+    private UserPermissionUtil $userPermissionUtil;
 
     public function __construct(
-        ShopProductRepository $shopProductRepository
+        ShopProductRepository $shopProductRepository,
+        UserPermissionUtil $userPermissionUtil
     ){
         $this->shopProductRepository = $shopProductRepository;
+        $this->userPermissionUtil = $userPermissionUtil;
     }
 
-    public function indexWithNotShop(IndexShopProductRequest $request)
+    public function getAll(Request $request)
     {
-        $response = $this->shopProductRepository->getAll();
-        if ($request->query('groupBy') === 'products') {
-            $response = $response->groupBy('product_id');
-        } else if ($request->query('groupBy') === 'shops') {
-            $response = $response->groupBy('shop_id');
+        $result = null;
+        $withCache = boolval($request->query('withCache'));
+        $groupBy = $request->query('groupBy') ?? null;
+        $cacheKey = 'cache_shop_products';
+        if ($groupBy) {
+            $cacheKey = $cacheKey .'_group_'. $groupBy;
         }
-        return response($response, 200);
+        if (
+            $withCache ||
+            is_null($request->user()) ||
+            count($this->userPermissionUtil->getUserPermissions($request->user()->id)) === 0
+        ) {
+            $result = Cache::tags(['main_data', 'shop_products'])->get($cacheKey, null);
+        }
+        if (!is_null($result)) {
+            return response($result, 200);
+        }
+        $result = $this->shopProductRepository->getAll();
+        if ($groupBy === 'products') {
+            $result = $result->groupBy('product_id');
+        } else if ($groupBy === 'shops') {
+            $result = $result->groupBy('shop_id');
+        }
+        $result = $result->toArray();
+        Cache::tags(['main_data', 'shop_products'])->put($cacheKey, $result, config('cache.timeout'));
+        return response($result, 200);
     }
 
     public function index(IndexShopProductRequest $request, int $shopId)

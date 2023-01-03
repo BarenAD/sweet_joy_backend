@@ -35,54 +35,6 @@ tags:
     description: Документы
 
 paths:
-  /api/data:
-    get:
-      tags:
-        - Master
-      summary: Получить основную информацию
-      description: Получает всю основную информацию
-      operationId: getMasterData
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  products:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Product'
-                  categories:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Category'
-                  shops:
-                    type: array
-                    items:
-                      allOf:
-                        - $ref: '#/components/schemas/Shop'
-                        - type: object
-                          properties:
-                            schedule:
-                              $ref: '#/components/schemas/Schedule'
-                  shop_products:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ShopProduct'
-                  documents:
-                    type: object
-                    properties:
-                      main_top_bar_document:
-                        allOf:
-                          - $ref: '#/components/schemas/Document'
-                          - type: object
-                            properties:
-                              location:
-                                type: string
-                                example: main_top_bar_document
-
   /api/configurations:
     get:
       tags:
@@ -100,6 +52,150 @@ paths:
                 properties:
                   footer_third:
                     $ref: '#/components/schemas/SiteConfiguration'
+  /api/products:
+    get:
+      tags:
+        - Master
+      summary: Получить все товары
+      description: Получает товары
+      operationId: getProductsNoAuth
+      parameters:
+        - name: withCategories
+          in: query
+          description: Получить товары вместе с категориями
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  /api/products/categories:
+    get:
+      tags:
+        - Master
+      summary: Получить категории присвоенные продуктам
+      description: Получает категории присвоенные продуктам
+      operationId: getAllProductsCategoriesNoAuth
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или категориям
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '6':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductCategory'
+  /api/categories:
+    get:
+      tags:
+        - Master
+      summary: Получить все категории
+      description: Получает категории
+      operationId: getCategoriesNoAuth
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /api/shops:
+    get:
+      tags:
+        - Master
+      summary: Получить все магазины
+      description: Получает магазины
+      operationId: getShopsNoAuth
+      parameters:
+        - name: withSchedules
+          in: query
+          description: Получить магазины вместе с расписаниями
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Shop'
+                    - type: object
+                      properties:
+                        schedule:
+                          $ref: '#/components/schemas/Schedule'
+  /api/shops/products:
+    get:
+      tags:
+        - Master
+      summary: Получить все товары, присвоенные магазинам
+      description: Получить все товары, присвоенные магазинам
+      operationId: getShopsProductsNoAuth
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или магазину
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "6":
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopProduct'
+  /api/documents:
+    get:
+      tags:
+        - Master
+      summary: Получить все используемисые документы
+      description: Получает документы, присвоенные локациям
+      operationId: getUsedDocuments
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  main_top_bar_document:
+                    allOf:
+                      - $ref: '#/components/schemas/Document'
+                      - type: object
+                        properties:
+                          location:
+                            type: string
+                            example: main_top_bar_document
 
   /api/auth/register:
     post:
@@ -989,6 +1085,13 @@ paths:
       summary: Получить категории
       description: Получает все категории
       operationId: getCategories
+      parameters:
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1169,6 +1272,12 @@ paths:
         - name: withCategories
           in: query
           description: Получает товары вместе с категориями
+          required: false
+          schema:
+            type: boolean
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
           required: false
           schema:
             type: boolean
@@ -1356,11 +1465,17 @@ paths:
       parameters:
         - name: groupBy
           in: query
-          description: Получает  категории присвоенные продуктам
+          description: Группировка по продуктам или категориям
           required: false
           schema:
             type: string
             example: products
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1395,6 +1510,13 @@ paths:
       summary: Получить магазины
       description: Получает магазины
       operationId: getShops
+      parameters:
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1567,17 +1689,23 @@ paths:
     get:
       tags:
         - Shops
-      summary: Получить продукты привязанные к магазинам
-      description: Получает продукты привязанные к магазинам
-      operationId: getAllShopsProducts
+      summary: Получить все товары, присвоенные магазинам
+      description: Получить все товары, присвоенные магазинам
+      operationId: getShopsProducts
       parameters:
         - name: groupBy
           in: query
-          description: Получает продукты привязанные к магазинам
+          description: Группировка по продуктам или магазину
           required: false
           schema:
             type: string
             example: products
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1586,7 +1714,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  '6':
+                  "6":
                     type: array
                     items:
                       $ref: '#/components/schemas/ShopProduct'
@@ -1610,7 +1738,7 @@ paths:
         - Shops
       summary: Получить ассортимент продуктов магазина
       description: Получает ассортимент продуктов магазина
-      operationId: getShopsProducts
+      operationId: getShopsProductsByShop
       parameters:
         - in: path
           name: shopId

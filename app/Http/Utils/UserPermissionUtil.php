@@ -20,7 +20,7 @@ class UserPermissionUtil
             }
             $userRoles = UserRole::where('user_id', $idUser)->get();
             if (count($userRoles) === 0) {
-                throw new NoReportException('is_not_admin');
+                return [];
             }
             $permissions = Role::query()
                 ->whereIn('id', $userRoles->pluck('role_id'))

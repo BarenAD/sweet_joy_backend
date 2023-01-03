@@ -56,11 +56,7 @@ class AuthController extends Controller
         }
         $result = $user;
         $result['token'] = $user->createToken($request->userAgent())->plainTextToken;
-        try {
-            $result['permissions'] = $this->userPermissionUtil->getUserPermissions($user->id);
-        } catch (\Throwable $exception) {
-            $result['permissions'] = [];
-        }
+        $result['permissions'] = $this->userPermissionUtil->getUserPermissions($user->id);
 
         return response()->json($result, 200);
     }

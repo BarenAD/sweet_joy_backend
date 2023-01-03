@@ -21,7 +21,7 @@ class PermissionTest extends TestApiResource
     public function testProfilePermissions()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestUserAgent')->plainTextToken;
+        $token = $user->createToken('Feature Test Client')->plainTextToken;
         $response = $this
             ->withHeaders([
                 'Accept' => 'application/json',
