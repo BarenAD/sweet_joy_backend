@@ -4,7 +4,7 @@ return [
     'test' => [
         'id' => -1,
         'message' => 'test_exception',
-        'http_code' => 100
+        'http_code' => 500
     ],
     'unauthorized' => [
         'id' => 0,
@@ -50,5 +50,10 @@ return [
         'id' => 8,
         'message' => 'Пользователь с таким e-mail или телефоном уже существует.',
         'http_code' => 400
+    ],
+    'forbidden_by_demo' => [
+        'id' => 9,
+        'message' => 'Доступ к этому функционалу в демонстрационном режиме запрещён!',
+        'http_code' => 403
     ],
 ];

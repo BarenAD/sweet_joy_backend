@@ -29,6 +29,10 @@ class SetUpAbilitiesMiddlewareTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('Unit Test Client', [])->plainTextToken;
+    }
+
+    public function testHandle()
+    {
         $this->permissions = Permission::factory()
             ->count(10)
             ->create();
@@ -43,10 +47,6 @@ class SetUpAbilitiesMiddlewareTest extends TestCase
             'user_id' => $this->user->id,
             'role_id' => $role->id,
         ])->create();
-    }
-
-    public function testHandle()
-    {
         $middleware = app()->make(SetUpAbilities::class);
         $request = app()->make(Request::class);
 
@@ -62,5 +62,22 @@ class SetUpAbilitiesMiddlewareTest extends TestCase
                 ->pluck('permission')
                 ->toArray()
         );
+    }
+
+    public function testHandleNoRoles()
+    {
+        $middleware = app()->make(SetUpAbilities::class);
+        $request = app()->make(Request::class);
+
+        $request->setUserResolver(function () {
+            return $this->user;
+        });
+
+        try {
+            $middleware->handle($request, function () {});
+            $this->markTestIncomplete();
+        } catch (\Throwable $exception) {
+            $this->assertTrue($exception->getMessage() === config('exceptions.is_not_admin.message'));
+        }
     }
 }

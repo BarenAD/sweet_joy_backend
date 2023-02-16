@@ -12,7 +12,6 @@ use App\Exceptions\BaseException;
 use App\Repositories\DocumentLocationRepository;
 use App\Repositories\DocumentRepository;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +35,11 @@ class DocumentService
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
     }
 
+    public function getUrlDocument(string $urn)
+    {
+        return Storage::disk('public')->url($this->pathToDocuments.$urn);
+    }
+
     public function getAllUsed(): array
     {
         $documentLocations = $this->documentLocationRepository->getAllWithDocuments(true)->toArray();
@@ -45,7 +49,7 @@ class DocumentService
             $preparedDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$preparedDocument['urn']);
             $preparedDocument['location'] = $documentLocation['identify'];
             unset($preparedDocument['urn']);
-            $result[] = $preparedDocument;
+            $result[$documentLocation['identify']] = $preparedDocument;
         }
         return $result;
     }
@@ -89,7 +93,9 @@ class DocumentService
             DB::beginTransaction();
             $document = $this->documentsRepository->find($id);
             $document->delete();
-            Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
+            if (!strpos($this->pathToDocuments . $document->urn, '/demo/')) {
+                Storage::disk('public')->delete($this->pathToDocuments . $document->urn);
+            }
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();

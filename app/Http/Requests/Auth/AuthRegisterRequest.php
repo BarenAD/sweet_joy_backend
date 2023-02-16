@@ -14,8 +14,8 @@ class AuthRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'fio' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
+            'fio' => 'required|string|regex:/^\w{1,}\s\w{1,}\s\w{1,}$/iu',
+            'email' => 'required|email:rfc,dns',
             'password' => 'required|string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',
         ];

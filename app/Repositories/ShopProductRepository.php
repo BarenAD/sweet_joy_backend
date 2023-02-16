@@ -50,9 +50,4 @@ class ShopProductRepository extends CoreRepository
             ->where('id', $id)
             ->delete();
     }
-
-    public function getAllGroupProduct()
-    {
-        return $this->model->get()->groupBy('product_id');
-    }
 }

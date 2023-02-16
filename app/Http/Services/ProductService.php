@@ -57,14 +57,18 @@ class ProductService
     }
 
     private function deleteImage(string $imageName): void {
-        Storage::disk('public')->delete($this->pathToImages.$imageName);
-        Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
+        if (!strpos($this->pathToImages.$imageName, '/demo/')) {
+            Storage::disk('public')->delete($this->pathToImages.$imageName);
+        }
+        if (!strpos($this->pathToImagesMini.$imageName, '/demo/')) {
+            Storage::disk('public')->delete($this->pathToImagesMini.$imageName);
+        }
     }
 
-    public function getAll(): array
+    public function getAll(bool $withCategories = false): array
     {
         $products = $this->productsRepository->getAll();
-        $categories = $this->productCategoriesRepository->getAll()->groupBy('product_id');
+        $categories = $withCategories ? $this->productCategoriesRepository->getAll()->groupBy('product_id') : [];
         foreach ($products as &$product) {
             $this->preparedProductPathToImages($product);
             $product['categories'] = isset($categories[$product['id']]) ?
@@ -76,11 +80,16 @@ class ProductService
         return $products->toArray();
     }
 
-    public function find($id)
+    public function find($id, bool $withCategories = false)
     {
         $product = $this->productsRepository->find($id);
         $this->preparedProductPathToImages($product);
-        $product['categories'] = $this->productCategoriesRepository->getByProductId($product->id)->pluck('category_id');
+        $product['categories'] = $withCategories ?
+            $this->productCategoriesRepository
+                ->getByProductId($product->id)
+                ->pluck('category_id')
+            :
+            [];
         return $product->toArray();
     }
 
@@ -174,8 +183,7 @@ class ProductService
             DB::beginTransaction();
             $product = $this->productsRepository->find($id);
             $result = $product->delete();
-            Storage::disk('public')->delete($this->pathToImages.$product->image);
-            Storage::disk('public')->delete($this->pathToImagesMini.$product->image);
+            $this->deleteImage($product->image);
             DB::commit();
             return $result;
         } catch (\Throwable $exception) {

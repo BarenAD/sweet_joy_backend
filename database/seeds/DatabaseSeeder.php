@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
                 $this->call(DocumentLocationSeeder::class);
                 $this->call(SiteConfigurationSeeder::class);
                 $this->call(PermissionSeeder::class);
+                $this->call(RolesSeeder::class);
                 $this->call(DemoDBSeeder::class);
                 DB::commit();
             });

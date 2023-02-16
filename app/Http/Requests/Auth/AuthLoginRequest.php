@@ -14,7 +14,7 @@ class AuthLoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|max:255',
+            'email' => 'required|email:rfc,dns',
             'password' => 'required|string|max:255',
         ];
     }

@@ -13,6 +13,8 @@ tags:
     description: Получение основной информации
   - name: Auth
     description: Авторизация и регистрация
+  - name: Profile
+    description: Данные профиля
   - name: Permissions
     description: Права доступа
   - name: Roles
@@ -33,13 +35,13 @@ tags:
     description: Документы
 
 paths:
-  /api/data:
+  /api/configurations:
     get:
       tags:
         - Master
-      summary: Получить основную информацию
-      description: Получает всю основную информацию
-      operationId: getMasterData
+      summary: Получить конфигурацию сайта
+      description: Получает всю конфигурацию сайта
+      operationId: getConfigurationsData
       responses:
         200:
           description: OK
@@ -48,36 +50,152 @@ paths:
               schema:
                 type: object
                 properties:
-                  products:
+                  footer_third:
+                    $ref: '#/components/schemas/SiteConfiguration'
+  /api/products:
+    get:
+      tags:
+        - Master
+      summary: Получить все товары
+      description: Получает товары
+      operationId: getProductsNoAuth
+      parameters:
+        - name: withCategories
+          in: query
+          description: Получить товары вместе с категориями
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  /api/products/categories:
+    get:
+      tags:
+        - Master
+      summary: Получить категории присвоенные продуктам
+      description: Получает категории присвоенные продуктам
+      operationId: getAllProductsCategoriesNoAuth
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или категориям
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '6':
                     type: array
                     items:
-                      $ref: '#/components/schemas/Product'
-                  categories:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Category'
-                  shops:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Shop'
-                  shop_products:
+                      $ref: '#/components/schemas/ProductCategory'
+  /api/categories:
+    get:
+      tags:
+        - Master
+      summary: Получить все категории
+      description: Получает категории
+      operationId: getCategoriesNoAuth
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /api/shops:
+    get:
+      tags:
+        - Master
+      summary: Получить все магазины
+      description: Получает магазины
+      operationId: getShopsNoAuth
+      parameters:
+        - name: withSchedules
+          in: query
+          description: Получить магазины вместе с расписаниями
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Shop'
+                    - type: object
+                      properties:
+                        schedule:
+                          $ref: '#/components/schemas/Schedule'
+  /api/shops/products:
+    get:
+      tags:
+        - Master
+      summary: Получить все товары, присвоенные магазинам
+      description: Получить все товары, присвоенные магазинам
+      operationId: getShopsProductsNoAuth
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или магазину
+          required: false
+          schema:
+            type: string
+            example: products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "6":
                     type: array
                     items:
                       $ref: '#/components/schemas/ShopProduct'
-                  documents:
-                    type: array
-                    items:
-                      allOf:
-                        - $ref: '#/components/schemas/Document'
-                        - type: object
-                          properties:
-                            location:
-                              type: string
-                              example: main_top_bar_document
-                  site_configurations:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/SiteConfiguration'
+  /api/documents:
+    get:
+      tags:
+        - Master
+      summary: Получить все используемисые документы
+      description: Получает документы, присвоенные локациям
+      operationId: getUsedDocuments
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  main_top_bar_document:
+                    allOf:
+                      - $ref: '#/components/schemas/Document'
+                      - type: object
+                        properties:
+                          location:
+                            type: string
+                            example: main_top_bar_document
 
   /api/auth/register:
     post:
@@ -101,6 +219,11 @@ paths:
                       token:
                         type: string
                         example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: users.roles.create
         400:
           description: Bad request
           content:
@@ -136,6 +259,11 @@ paths:
                       token:
                         type: string
                         example: 9|BUvbnBzZHJ6eCm1qhI6472ffFrZqcCRukn7YuBsO
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: users.roles.create
         401:
           description: Unauthorized
           content:
@@ -193,6 +321,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedExeption'
+      security:
+        - bearerAuth: []
+
+  /api/profile/permissions:
+    get:
+      tags:
+        - Profile
+      summary: Права пользователя
+      description: Получает текущие права пользователя
+      operationId: profilePermissions
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: users.roles.create
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
 
@@ -613,7 +773,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  allOf:
+                    - $ref: '#/components/schemas/User'
+                    - type: object
+                      properties:
+                        note:
+                          type: string
+                          example: Test user
         401:
           description: Unauthorized
           content:
@@ -648,7 +814,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      note:
+                        type: string
+                        example: Test user
         401:
           description: Unauthorized
           content:
@@ -682,7 +854,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserFillable'
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  properties:
+                    note:
+                      type: string
+                      example: Test user
       responses:
         200:
           description: OK
@@ -907,6 +1085,13 @@ paths:
       summary: Получить категории
       description: Получает все категории
       operationId: getCategories
+      parameters:
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1083,6 +1268,19 @@ paths:
       summary: Получить продукты
       description: Получает продукты
       operationId: getProducts
+      parameters:
+        - name: withCategories
+          in: query
+          description: Получает товары вместе с категориями
+          required: false
+          schema:
+            type: boolean
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1154,6 +1352,12 @@ paths:
             type: integer
           required: true
           description: Идентификатор модели
+        - name: withCategories
+          in: query
+          description: Получает товар вместе с категориями
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1251,6 +1455,53 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
+  /api/management/products/categories:
+    get:
+      tags:
+        - Products
+      summary: Получить категории присвоенные продуктам
+      description: Получает категории присвоенные продуктам
+      operationId: getAllProductsCategories
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или категориям
+          required: false
+          schema:
+            type: string
+            example: products
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '6':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductCategory'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
 
   /api/management/shops:
     get:
@@ -1259,6 +1510,13 @@ paths:
       summary: Получить магазины
       description: Получает магазины
       operationId: getShops
+      parameters:
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: OK
@@ -1427,13 +1685,60 @@ paths:
                 $ref: '#/components/schemas/NotEnoughPermissionsExeption'
       security:
         - bearerAuth: []
+  /api/management/shops/products:
+    get:
+      tags:
+        - Shops
+      summary: Получить все товары, присвоенные магазинам
+      description: Получить все товары, присвоенные магазинам
+      operationId: getShopsProducts
+      parameters:
+        - name: groupBy
+          in: query
+          description: Группировка по продуктам или магазину
+          required: false
+          schema:
+            type: string
+            example: products
+        - name: withCache
+          in: query
+          description: Использовать ли кеш
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "6":
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopProduct'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedExeption'
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotEnoughPermissionsExeption'
+      security:
+        - bearerAuth: []
   /api/management/shops/{shopId}/products:
     get:
       tags:
         - Shops
       summary: Получить ассортимент продуктов магазина
       description: Получает ассортимент продуктов магазина
-      operationId: getShopsProducts
+      operationId: getShopsProductsByShop
       parameters:
         - in: path
           name: shopId

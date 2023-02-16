@@ -2,13 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\NoReportException;
 use App\Models\Document;
+use App\Models\DocumentLocation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use Tests\Traits\WithoutPermissionsTrait;
 
@@ -30,6 +33,49 @@ class DocumentTest extends TestCase
         $this->currentFile = UploadedFile::fake()->create('test.pdf', 100);
         $this->currentName = $this->faker->text(30);
         $this->pathToDocuments = config('filesystems.path_inside_disk.documents');
+    }
+
+    public function testAllUsedDocumentsWithCache()
+    {
+        $documents = $this->document
+            ->factory()
+            ->count(10)
+            ->create()
+            ->toArray();
+        $documentLocations = DocumentLocation::factory()
+            ->count(10)
+            ->create();
+        $preparedDocuments = [];
+        foreach ($documentLocations as $documentLocation) {
+            $newPreparedDocument = $documents[rand(0,9)];
+            $documentLocation->update(['document_id' => $newPreparedDocument['id']]);
+            $newPreparedDocument['url'] = Storage::disk('public')->url($this->pathToDocuments.$newPreparedDocument['urn']);
+            $newPreparedDocument['location'] = $documentLocation->identify;
+            unset($newPreparedDocument['urn']);
+            $preparedDocuments[$documentLocation->identify] = $newPreparedDocument;
+        }
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('documents.index.used').'?withCache=true');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response->json(), $preparedDocuments);
+        $this->mock(
+            DocumentLocation::class,
+            function (MockInterface $mock) {
+                $mock->shouldReceive('getAllWithDocuments')->andThrowExceptions([
+                    new NoReportException('test'),
+                ]);
+            }
+        );
+        $response2 = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('documents.index.used').'?withCache=true');
+        $response2->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response2->json(), $preparedDocuments);
     }
 
     public function testIndexDocument()

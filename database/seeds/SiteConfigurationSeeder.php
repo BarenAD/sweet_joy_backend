@@ -9,22 +9,22 @@ class SiteConfigurationSeeder extends Seeder
         [
             'id' => 1,
             'name' => 'Футер первый блок слева',
-            'identify' => 'footer_first',
+            'identify' => SiteConfiguration::FOOTER_FIRST,
         ],
         [
             'id' => 2,
             'name' => 'Футер второй блок слева',
-            'identify' => 'footer_second',
+            'identify' => SiteConfiguration::FOOTER_SECOND,
         ],
         [
             'id' => 3,
             'name' => 'Футер третий блок слева',
-            'identify' => 'footer_third',
+            'identify' => SiteConfiguration::FOOTER_THIRD,
         ],
         [
             'id' => 4,
             'name' => 'Шапка первый блок справа (преимущества)',
-            'identify' => 'header_last',
+            'identify' => SiteConfiguration::HEADER_LAST,
         ],
     ];
 
@@ -37,8 +37,8 @@ class SiteConfigurationSeeder extends Seeder
     {
         foreach ($this->inserting as $params) {
             $newModel = new SiteConfiguration($params);
-            if ($newModel->exists()) {
-                $newModel->update();
+            if (SiteConfiguration::query()->find($newModel->id)) {
+                $newModel->update($params);
             } else {
                 $newModel->save();
             }

@@ -22,8 +22,8 @@ class DocumentLocationSeeder extends Seeder
     {
         foreach ($this->inserting as $params) {
             $newModel = new DocumentLocation($params);
-            if ($newModel->exists()) {
-                $newModel->update();
+            if (DocumentLocation::query()->find($newModel->id)) {
+                $newModel->update($params);
             } else {
                 $newModel->save();
             }

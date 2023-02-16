@@ -16,4 +16,11 @@ class UserRepository extends CoreRepository
     {
         return User::class;
     }
+
+    public function getUserByEmail(string $email)
+    {
+        return $this->model
+            ->where('email', $email)
+            ->firstOrFail();
+    }
 }

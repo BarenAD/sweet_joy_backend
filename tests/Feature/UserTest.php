@@ -21,6 +21,16 @@ class UserTest extends TestApiResource
         ];
     }
 
+    protected function seedsBD(): array
+    {
+        return $this->model
+            ->factory($this->parentModelsIds)
+            ->count(10)
+            ->create()
+            ->makeVisible('note')
+            ->toArray();
+    }
+
     public function testUpdateRoute()
     {
         $user = $this->model

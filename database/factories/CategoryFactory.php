@@ -11,7 +11,7 @@ class CategoryFactory extends CoreFactory
     public function definition()
     {
         return $this->decorateTimestamp([
-            'name' => $this->faker->text(100),
+            'name' => uniqid(),
         ]);
     }
 }

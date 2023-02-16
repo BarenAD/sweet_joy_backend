@@ -19,6 +19,7 @@ class UpdateUserRequest extends FormRequest
             'email' => 'required|string|max:255',
             'password' => 'string|max:255',
             'phone' => 'required|regex:/^[7]\d{10}$/',
+            'note' => 'string',
         ];
     }
 }

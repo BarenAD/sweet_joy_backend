@@ -5,6 +5,7 @@ namespace Tests\Feature;
 
 
 use App\DTO\ParentModelDTO;
+use App\Exceptions\NoReportException;
 use App\Http\Requests\Shops\Products\StoreShopProductRequest;
 use App\Http\Requests\Shops\Products\UpdateShopProductRequest;
 use App\Models\Product;
@@ -13,6 +14,7 @@ use App\Models\Shop;
 use App\Models\ShopProduct;
 use App\Repositories\ShopProductRepository;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Mockery\MockInterface;
 use Tests\TestApiResource;
 
@@ -25,8 +27,7 @@ class ShopProductTest extends TestApiResource
         $this->formRequests = [
             'store' => StoreShopProductRequest::class,
             'update' => UpdateShopProductRequest::class,
-        ];
-        $this->parentModelDTOs = [
+        ];        $this->parentModelDTOs = [
             ParentModelDTO::make([
                 'model' => new Schedule(),
                 'foreignKey' => 'schedule_id',
@@ -57,6 +58,95 @@ class ShopProductTest extends TestApiResource
                 ->toArray();
         }
         return $result;
+    }
+
+    public function testGetAllWithCache()
+    {
+        $seeds = $this->seedsBD();
+        $prepared = [];
+        foreach ($seeds as $item) {
+            if (!isset($prepared[$item['product_id']])) {
+                $prepared[$item['product_id']] = [];
+            }
+            $prepared[$item['product_id']][] = $item;
+        }
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('shops.products.getAll').'?groupBy=products&withCache=true');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response->json(), $prepared);
+        $this->assertEquals(
+            Cache::tags(['main_data', 'shop_products'])
+                ->get('cache_shop_products_group_products', null),
+            $prepared
+        );
+        $this->mock(
+            ShopProductRepository::class,
+            function (MockInterface $mock) {
+                $mock->shouldReceive('getAll')->andThrowExceptions([
+                    new NoReportException('test'),
+                ]);
+            }
+        );
+        $response2 = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('shops.products.getAll').'?groupBy=products&withCache=true');
+        $response2->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response2->json(), $prepared);
+    }
+
+    public function testGetAll()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('shops.products.getAll'));
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $this->assertEquals($response->json(), $seeds);
+    }
+
+    public function testGetAllGroupByProducts()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('shops.products.getAll').'?groupBy=products');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $prepared = [];
+        foreach ($seeds as $item) {
+            if (!isset($prepared[$item['product_id']])) {
+                $prepared[$item['product_id']] = [];
+            }
+            $prepared[$item['product_id']][] = $item;
+        }
+        $this->assertEquals($response->json(), $prepared);
+    }
+
+    public function testGetAllGroupByShops()
+    {
+        $seeds = $this->seedsBD();
+        $response = $this
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get(route('shops.products.getAll').'?groupBy=shops');
+        $response->assertStatus(
+            Response::HTTP_OK
+        );
+        $prepared = [];
+        foreach ($seeds as $item) {
+            if (!isset($prepared[$item['shop_id']])) {
+                $prepared[$item['shop_id']] = [];
+            }
+            $prepared[$item['shop_id']][] = $item;
+        }
+        $this->assertEquals($response->json(), $prepared);
     }
 
     public function testStoreRouteAlreadyException()

@@ -29,27 +29,22 @@ class UserPermissionUtilTest extends TestCase
 
     public function testGetPermissionOperator()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
         $operator = new Operator(['user_id' => $this->user->id]);
         $operator->save();
-        $result = $documentService->getUserPermissions($this->user->id);
+        $result = $userPermissionUtil->getUserPermissions($this->user->id);
         $this->assertEquals($result, ['*']);
     }
 
     public function testGetPermissionNoRoles()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
-        try {
-            $documentService->getUserPermissions($this->user->id);
-            $this->markTestIncomplete();
-        } catch (\Throwable $exception) {
-            $this->assertTrue($exception->getMessage() === config('exceptions.is_not_admin.message'));
-        }
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
+        $this->assertEquals($userPermissionUtil->getUserPermissions($this->user->id), []);
     }
 
     public function testGetPermissionWithRoles()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
         $permissions = Permission::factory()
             ->count(10)
             ->create();
@@ -64,14 +59,14 @@ class UserPermissionUtilTest extends TestCase
             'user_id' => $this->user->id,
             'role_id' => $role->id,
         ])->create();
-        $result = $documentService->getUserPermissions($this->user->id);
+        $result = $userPermissionUtil->getUserPermissions($this->user->id);
         $this->assertEquals($result, $permissions->pluck('permission')->toArray());
     }
 
     public function testCheckCanActionByPermissionsOperator()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
-        $result = $documentService->checkCanActionByPermissions(
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
+        $result = $userPermissionUtil->checkCanActionByPermissions(
             ['users.roles.index', 'users.roles.update', 'users.roles.destroy'],
             ['*']
         );
@@ -80,8 +75,8 @@ class UserPermissionUtilTest extends TestCase
 
     public function testCheckCanActionByPermissionsExist()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
-        $result = $documentService->checkCanActionByPermissions(
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
+        $result = $userPermissionUtil->checkCanActionByPermissions(
             ['users.roles.index', 'users.roles.update', 'users.roles.destroy'],
             ['users.roles.update']
         );
@@ -90,8 +85,8 @@ class UserPermissionUtilTest extends TestCase
 
     public function testCheckCanActionByPermissionsNotObviousExist()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
-        $result = $documentService->checkCanActionByPermissions(
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
+        $result = $userPermissionUtil->checkCanActionByPermissions(
             ['users.roles.index', 'users.roles.update', 'users.roles.destroy'],
             ['users.*']
         );
@@ -100,8 +95,8 @@ class UserPermissionUtilTest extends TestCase
 
     public function testCheckCanActionByPermissionsNotExist()
     {
-        $documentService = app()->make(UserPermissionUtil::class);
-        $result = $documentService->checkCanActionByPermissions(
+        $userPermissionUtil = app()->make(UserPermissionUtil::class);
+        $result = $userPermissionUtil->checkCanActionByPermissions(
             ['users.roles.index', 'users.roles.update', 'users.roles.destroy'],
             ['users.index']
         );
