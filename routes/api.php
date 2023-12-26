@@ -28,6 +28,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::any('/test', function () {
+    return response()->json('SUCCESS');
+});
+Route::post('/register', [\App\Http\Controllers\VintageStoryController::class, 'register']);
+Route::post('/heartbeat', [\App\Http\Controllers\VintageStoryController::class, 'heartbeat']);
+
 
 Route::get('configurations', [SiteConfigurationController::class, 'data'])->name('site_configurations.data');
 Route::get('/documents', [DocumentController::class, 'getUsed'])->name('documents.index.used');
