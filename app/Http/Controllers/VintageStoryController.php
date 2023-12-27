@@ -33,7 +33,7 @@ class VintageStoryController extends Controller
     {
         $data = $request->all();
         $lastResponse = null;
-        $countPlayer = $data['players'] + 8;
+        $countPlayer = $data['players'];
         foreach ($this->clients as $client) {
             $preparedData = [
                 'token' => Cache::get($client->url),
